@@ -1,5 +1,7 @@
 # ORBIT · 宇宙漫游
 
+[简体中文](README.md) | [English](README_EN.md)
+
 直接双击本目录的 **index.html** 即可使用。Three.js 和全部 13 张纹理已嵌入 HTML，无需联网、安装依赖或启动服务器。建议使用支持 WebGL 2、已开启硬件加速的新版 Chrome、Edge 或 Safari。
 
 ## 演示视频
