@@ -2,6 +2,8 @@
 
 [简体中文](README.md) | [English](README_EN.md)
 
+**Live demo:** [https://ryh842487118-bot.github.io/orbit/](https://ryh842487118-bot.github.io/orbit/)
+
 Double-click **index.html** in this directory to launch ORBIT. Three.js and all 13 textures are embedded in the HTML, so no internet connection, dependency installation, or local server is required. A current version of Chrome, Edge, or Safari with WebGL 2 and hardware acceleration enabled is recommended.
 
 ## Demo Video
