@@ -2,6 +2,14 @@
 
 直接双击本目录的 **index.html** 即可使用。Three.js 和全部 13 张纹理已嵌入 HTML，无需联网、安装依赖或启动服务器。建议使用支持 WebGL 2、已开启硬件加速的新版 Chrome、Edge 或 Safari。
 
+## 演示视频
+
+[![ORBIT 宇宙漫游演示预览](demo-preview.jpg)](demo.mp4)
+
+**[查看演示视频](demo.mp4)** · [下载 MP4](https://github.com/ryh842487118-bot/orbit/raw/refs/heads/main/demo.mp4)
+
+58 秒，1440 × 900，30 FPS。实际网页录制，依次展示地球夜景、国际空间站、月球、木星、土星环、太阳系轨道与银河，最后返回地球。
+
 ## 探索
 
 - 鼠标拖动旋转视角；滚轮缩放；触屏单指旋转、双指捏合缩放。
@@ -26,6 +34,8 @@ Three.js r185；地球昼夜着色、夜景灯光、独立云层、大气边缘�
 - `assets/`：原始纹理、来源和许可。
 - `build.mjs`：将引擎、场景脚本和纹理打包进一个 HTML。
 - `index.html`：单文件构建产物。
+- `demo.mp4`：网页演示视频。
+- `demo-preview.jpg`：README 视频预览图。
 
 重新构建：先运行 `npm install`，再运行 `npm run build`。输出写入本目录的 `index.html`，所有依赖均来自本项目。
 
