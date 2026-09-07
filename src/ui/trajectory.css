@@ -1,0 +1,70 @@
+/* Trajectory controls occupy the destination dock's space, leaving time controls live. */
+:root{--trajectory-panel-height:113px;--trajectory-footer-height:48px;--trajectory-ease:cubic-bezier(.22,1,.36,1)}
+.trajectory-panel{position:absolute;left:0;right:0;bottom:var(--trajectory-footer-height);height:var(--trajectory-panel-height);box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:9px;padding:12px 18px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(110deg,#111b24ed,#0c141de8);backdrop-filter:blur(20px);color:var(--ink);opacity:0;visibility:hidden;transform:translateY(10px);pointer-events:none;transition:opacity 220ms var(--trajectory-ease),transform 360ms var(--trajectory-ease),visibility 0s 220ms}
+.trajectory-panel-floating{position:fixed;left:42px;right:42px;z-index:5}
+body.trajectory-active:not(.earthsense-active) .trajectory-panel{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;transition:opacity 380ms var(--trajectory-ease),transform 420ms var(--trajectory-ease),visibility 0s}
+body.trajectory-active:not(.earthsense-active) .planet-dock{opacity:0;visibility:hidden;pointer-events:none}
+body.trajectory-active:not(.earthsense-active) .control-row{transform:translateY(calc(var(--orbit-dock-height,113px) - var(--trajectory-panel-height)))}
+#toggle-trajectories{white-space:nowrap}
+#toggle-orbits,#toggle-labels{transition:background .2s,color .2s,border-color .2s,opacity 260ms var(--trajectory-ease),transform 320ms var(--trajectory-ease),visibility 0s}
+body.trajectory-active #toggle-orbits,body.trajectory-active #toggle-labels{opacity:0;visibility:hidden;transform:translateY(5px);pointer-events:none;transition-delay:0s,0s,0s,0s,0s,260ms}
+.trajectory-controls{display:flex;align-items:center;gap:14px;min-width:0}
+.trajectory-segment{display:flex;align-items:center;min-width:0;border:1px solid #9abcc132;border-radius:6px;background:#08131b9c;padding:3px}
+.trajectory-segment button{min-height:28px;padding:6px 15px;border-radius:4px;font-size:11px;line-height:1.3;letter-spacing:.4px;white-space:nowrap;color:#8fa5b3;flex:1}
+.trajectory-segment button[aria-pressed=true]{background:#253b41;color:#bbf0e4}
+.trajectory-segment button:hover{color:#e0f7ef;background:#23393e9c}
+.trajectory-segment button:disabled{opacity:.45;cursor:wait}
+.trajectory-actions{display:flex;align-items:center;justify-content:flex-end;gap:16px;min-width:0;margin-left:auto}
+.trajectory-actions button{min-height:32px;padding:7px 1px;color:#97acb9;font-size:11px;letter-spacing:.4px;white-space:nowrap}
+.trajectory-actions .trajectory-back{color:var(--accent)}
+.trajectory-actions button:hover{color:#e0f7ef}
+.trajectory-legend{display:flex;align-items:center;flex-wrap:wrap;gap:7px 22px;min-width:0}
+.trajectory-legend-item{display:inline-flex;align-items:center;gap:7px;font-size:10px;line-height:1.3;color:#9aafbc;white-space:nowrap}
+.trajectory-legend-item i{display:block;width:15px;height:2px;background:var(--trajectory-color);border-radius:1px;opacity:.9;flex-shrink:0}
+.trajectory-note{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+.trajectory-intro{margin:0;min-width:0;font-size:9px;line-height:1.5;color:#7f96a5;letter-spacing:.3px}
+.trajectory-explanation{flex-shrink:0}
+.trajectory-explanation summary{padding:1px 0;color:#a1b9bf;font-size:10px;line-height:1.5;cursor:pointer;list-style:none;white-space:nowrap}
+.trajectory-explanation summary::-webkit-details-marker{display:none}
+.trajectory-explanation summary:after{content:'＋';margin-left:6px;color:#81aaa3}
+.trajectory-explanation[open] summary:after{content:'−'}
+.trajectory-explanation-content{position:absolute;right:0;bottom:calc(100% + 12px);width:min(390px,100%);padding:16px 18px;border:1px solid #91bbb43d;border-radius:8px;background:#0c1b25fa;box-shadow:0 12px 35px #0004;color:#a7bdc8;z-index:2}
+.trajectory-explanation-content p{margin:0 0 12px;font-size:11px;line-height:1.9}
+.trajectory-explanation-content a{font-size:10px;color:var(--accent);text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+body.immersive.trajectory-active .trajectory-panel{opacity:0;visibility:hidden;pointer-events:none}
+body.trajectory-active:not(.earthsense-active) .scale-waypoint,
+body.trajectory-active:not(.earthsense-active) .scale-line,
+body.trajectory-active:not(.earthsense-active) .rail-title{opacity:0;visibility:hidden;pointer-events:none}
+body.trajectory-active .gesture-hint>span:last-child,
+body.trajectory-active .gesture-hint>i:last-of-type{display:none}
+@media(max-height:800px) and (min-width:901px){:root{--trajectory-panel-height:98px;--trajectory-footer-height:38px}.trajectory-panel{padding-block:9px;gap:6px}.trajectory-segment button{min-height:25px;padding-block:5px}}
+@media(max-width:900px){:root{--trajectory-panel-height:100px;--trajectory-footer-height:35px}.trajectory-panel{padding:10px 13px;gap:7px}.trajectory-controls{gap:10px}.trajectory-segment button{padding-inline:11px;font-size:10px}.trajectory-actions{gap:12px}.trajectory-actions button{font-size:10px}.trajectory-legend{gap:6px 15px}.trajectory-legend-item{font-size:9px;gap:5px}}
+@media(max-width:600px){
+  :root{--trajectory-panel-height:156px;--trajectory-footer-height:36px}
+  .layer-toggles{gap:4px;flex-shrink:0}
+  .layer-toggles button{padding:8px 7px;gap:4px;white-space:nowrap}
+  .layer-toggles svg{width:13px;height:13px}
+  #toggle-trajectories{padding-inline:6px;flex-shrink:0}
+  .time-control{gap:4px;flex-shrink:0}
+  .time-control>span{display:none}
+  .time-control #speed{min-width:40px}
+  .trajectory-panel{padding:10px 12px;gap:8px;border-radius:10px}
+  .trajectory-panel-floating{left:14px;right:14px;bottom:calc(36px + env(safe-area-inset-bottom,0px))}
+  .trajectory-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 8px}
+  .trajectory-segment{padding:2px}
+  .trajectory-segment button{min-height:29px;padding:6px 4px;font-size:10px;letter-spacing:0}
+  .trajectory-actions{grid-column:1/-1;justify-content:space-between;margin:0;gap:8px}
+  .trajectory-actions button{min-height:25px;padding:4px 0;font-size:10px}
+  .trajectory-legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 8px}
+  .trajectory-legend-item{font-size:9px;gap:5px;line-height:12px}
+  .trajectory-legend-item i{width:11px}
+  .trajectory-note{gap:7px}
+  .trajectory-intro{font-size:8px;line-height:1.5;letter-spacing:0}
+  .trajectory-explanation summary{font-size:9px}
+  .trajectory-explanation-content{padding:13px 15px;bottom:calc(100% + 9px)}
+  .trajectory-explanation-content p{font-size:10px;line-height:1.8}
+  body.trajectory-active:not(.earthsense-active) .view-caption{top:calc(100% - var(--trajectory-panel-height) - var(--trajectory-footer-height) - 74px);bottom:auto}
+  body.trajectory-active:not(.earthsense-active) .scale-control{top:214px}
+  body.trajectory-active:not(.earthsense-active) .zoom-controls{position:absolute;right:0;top:0;margin-top:0}
+}
+@media(prefers-reduced-motion:reduce){.trajectory-panel{transition:none}}

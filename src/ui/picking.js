@@ -30,6 +30,9 @@ export function bindBodyPicking({ renderer, camera, world, navigation, onPick })
     pointer.set(event.clientX / innerWidth * 2 - 1, -event.clientY / innerHeight * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
     if (onPick?.(raycaster, event)) return;
+    // The motion view owns its model; the exploration bodies behind it are
+    // never destinations, including while the arrival flight is in progress.
+    if (navigation.getState().stage === 'trajectory') return;
     // THREE.Raycaster does not respect visibility, including hidden ancestors.
     const meshes = [...world.bodies.values()].filter(body => body.mesh
       && isVisible(body.mesh) && isVisible(body.group)).map(body => body.mesh);

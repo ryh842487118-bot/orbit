@@ -56,6 +56,7 @@ export async function startOrbit() {
     setTimeout(() => document.getElementById('loading')?.remove(), 900);
 
     let hidden = false, lastFrameTime = performance.now(), uiTick = 0, observingEarth = false;
+    let trajectoriesVisible = false;
     function animate(now) {
       requestAnimationFrame(animate);
       const dt = Math.min((now - lastFrameTime) / 1000, .05);
@@ -64,13 +65,22 @@ export async function startOrbit() {
       const settings = ui.getState();
       const navigationState = navigation.getState();
       const navigating = navigationState.flight;
+      const inTrajectories = navigationState.stage === 'trajectory';
+      if (inTrajectories) trajectoriesVisible = true;
+      else if (!navigating) trajectoriesVisible = false;
       // Keep the entire astronomical simulation intact while observing the surface.
       navigation.update(dt, now, () => world.update(dt, {
-        ...settings, paused: earthsense.active || navigationState.returning || settings.paused,
+        ...settings, paused: earthsense.active || navigationState.returning || trajectoriesVisible || settings.paused,
       }));
+      // Freeze both the model and any reference-frame transition while the
+      // camera is borrowed, so EarthSense returns to exactly the saved view.
+      world.motionTrajectories.update(navigating || earthsense.active || !inTrajectories ? 0 : dt, {
+        active: trajectoriesVisible, speed: settings.speed,
+        paused: settings.paused || navigating || earthsense.active || !inTrajectories,
+      });
       world.backgroundStars.position.copy(camera.position);
       world.flybys.update(dt, camera, {
-        paused: settings.paused, enabled: !earthsense.active, navigating,
+        paused: settings.paused, enabled: !earthsense.active && !trajectoriesVisible, navigating,
       });
       updateWorldVisibility(world, camera, controls, settings.orbitsVisible, navigation.getState());
       navigation.updateStage();
@@ -89,7 +99,7 @@ export async function startOrbit() {
         world.orbitGroup.visible = false;
       }
       if (++uiTick % 2 === 0) labels.update({ ...settings, ...navigation.getState(),
-        labelsVisible: settings.labelsVisible && !earthsense.visible,
+        labelsVisible: settings.labelsVisible && !earthsense.visible && !trajectoriesVisible,
       });
       if (uiTick % 10 === 0) {
         ui.updateHud();
@@ -111,7 +121,7 @@ export async function startOrbit() {
     });
     requestAnimationFrame(animate);
     window.ORBIT = {
-      version: '1.5.0',
+      version: '1.6.0',
       getState: () => ({
         ...navigation.getState(), ...ui.getState(),
         planetCount: data.filter(d => d.orbit && d.id !== 'moon').length,
@@ -119,6 +129,7 @@ export async function startOrbit() {
         galaxyStars: world.galaxy.geometry.attributes.position.count,
         galaxyCount: world.galaxyDefinitions.length, deepSpaceBodyCount: world.deepSpace.bodies.size,
         flybys: world.flybys.getState(),
+        trajectories: world.motionTrajectories.getState(),
         drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
         mode: earthsense.active ? 'earthsense' : 'universe',
         earthDetail: earthDetail.getState(), pixelRatio: renderer.getPixelRatio(),
@@ -126,6 +137,11 @@ export async function startOrbit() {
       goTo: navigation.flyTo, zoom: navigation.zoom, setPaused: ui.setPaused,
       setMode: earthsense.setMode,
       earthsense: { getState: earthsense.diagnostics, setLayer: earthsense.toggleLayer },
+      trajectories: {
+        getState: world.motionTrajectories.getState,
+        setReferenceFrame: world.motionTrajectories.setReferenceFrame,
+        setTrailLength: world.motionTrajectories.setTrailLength,
+      },
       destinations: () => [...world.galaxyDefinitions, ...world.deepSpace.bodies.values()].map(body => ({
         id: body.id, name: body.cn, kind: body.kind, parentGalaxy: body.parentGalaxy,
         parentStarId: body.parentStarId, modelStatus: body.modelStatus,

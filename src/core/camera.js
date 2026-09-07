@@ -29,10 +29,12 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   const temp = new THREE.Vector3(), collisionOffset = new THREE.Vector3();
   let selected = 'earth', focusBody = 'earth', displayedId = 'earth';
   let activeGalaxyId = 'galaxy', activeSystemId = 'solar';
+  let trajectoryView = false;
   let flight = null, returnFlight = null, lastMode = 'earth';
 
   function destinationDistance(id) {
     const destination = getData(id);
+    if (destination.kind === 'trajectory') return destination.viewDistance * (mobile() ? 1.7 : 1);
     if (destination.kind === 'group') return destination.viewDistance * (mobile() ? 1.65 : 1);
     if (destination.kind === 'galaxy') return destination.viewDistance * (mobile() ? 1.25 : 1);
     if (id === 'galaxy') return 68000;
@@ -44,6 +46,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
 
   function destinationDirection(id, night = false) {
     const destination = getData(id);
+    if (destination.kind === 'trajectory') return new THREE.Vector3(.6, .45, 1).normalize();
     if (destination.kind === 'group') return new THREE.Vector3(.12, .8, 1.65).normalize();
     if (destination.kind === 'galaxy') return new THREE.Vector3(.16, 1.3, 1.7).normalize();
     if (destination.parentStarId) {
@@ -76,7 +79,12 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     if (!destination) return;
     returnFlight = null;
     selected = id;
-    if (id === 'galaxy' || id === 'solar') {
+    trajectoryView = destination.kind === 'trajectory';
+    if (trajectoryView) {
+      focusBody = 'earth';
+      activeGalaxyId = 'galaxy';
+      activeSystemId = 'solar';
+    } else if (id === 'galaxy' || id === 'solar') {
       if (activeGalaxyId !== 'galaxy' || activeSystemId !== 'solar') focusBody = 'earth';
       activeGalaxyId = 'galaxy';
       activeSystemId = 'solar';
@@ -90,7 +98,9 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
       activeSystemId = destination.parentStarId || (destination.kind === 'star' ? id : 'solar');
     }
     updateInfo(id);
-    controls.minDistance = focusBody === 'iss' ? .20 : getData(focusBody).r * 1.13;
+    // Destination limits apply after arrival; applying them now would clamp the
+    // starting view (for example Earth at 4.65 → trajectories at minimum 60).
+    controls.minDistance = .001;
     controls.maxDistance = MAX_DISTANCE;
     const startOffset = camera.position.clone().sub(controls.target);
     flight = {
@@ -154,6 +164,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   }
 
   function trackingCenter(distance) {
+    if (trajectoryView) return getPosition('trajectory');
     const body = getData(focusBody), target = getPosition(focusBody);
     const leave = smooth(Math.max(body.r * 9, 8), Math.max(body.r * 25, 75), distance);
     target.lerp(activeSystemId === 'solar' ? zero : getPosition(activeSystemId), leave);
@@ -168,7 +179,8 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     temp.copy(trackingCenter(distance)).sub(controls.target).multiplyScalar(1 - Math.exp(-dt * 8));
     controls.target.add(temp);
     camera.position.add(temp);
-    controls.minDistance = focusBody === 'iss' ? .20 : body.r * 1.13;
+    controls.minDistance = trajectoryView ? 60 : focusBody === 'iss' ? .20 : body.r * 1.13;
+    controls.maxDistance = trajectoryView ? 2400 : MAX_DISTANCE;
     controls.update();
     keepOutsideBodies();
   }
@@ -177,6 +189,8 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     flight = null;
     returnFlight = null;
     controls.enabled = true;
+    controls.minDistance = trajectoryView ? 60 : focusBody === 'iss' ? .20 : getData(focusBody).r * 1.13;
+    controls.maxDistance = trajectoryView ? 2400 : MAX_DISTANCE;
   }
 
   function zoom(factor) {
@@ -188,6 +202,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   }
 
   function stage() {
+    if (trajectoryView) return 'trajectory';
     const distance = camera.position.distanceTo(controls.target);
     if (getData('local-group') && distance > 200000) return 'local-group';
     return distance > 2600 ? 'galaxy' : distance > Math.max(28, getData(focusBody).r * 10) ? 'solar' : 'earth';
@@ -202,7 +217,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
       if (mode === 'local-group') toast('进入本星系群 · 点击星系继续远行');
     }
     if (!flight && !returnFlight) {
-      const infoId = mode === 'earth' ? focusBody : mode === 'solar' ? activeSystemId
+      const infoId = mode === 'trajectory' ? 'trajectory' : mode === 'earth' ? focusBody : mode === 'solar' ? activeSystemId
         : mode === 'galaxy' ? activeGalaxyId : 'local-group';
       if (displayedId !== infoId) updateInfo(infoId);
       selected = infoId;
@@ -240,7 +255,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     if (returnFlight) return returnFlight.saved;
     return {
       selected, focusBody, displayedId, lastMode,
-      activeGalaxyId, activeSystemId,
+      activeGalaxyId, activeSystemId, trajectoryView,
       camera: snapshotCamera(camera, controls), flight: snapshotFlight(flight, performance.now()),
     };
   }
@@ -253,6 +268,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     lastMode = saved.lastMode;
     activeGalaxyId = saved.activeGalaxyId || 'galaxy';
     activeSystemId = saved.activeSystemId || 'solar';
+    trajectoryView = saved.trajectoryView || false;
     flight = null;
     returnFlight = null;
     if (startCamera) {
@@ -281,7 +297,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
 
   return {
     initialize, flyTo, zoom, cancelFlight, trackingCenter, stage, update, updateStage, focusEarth, snapshot, restore,
-    getState: () => ({ selected, focusBody, displayedId, activeGalaxyId, activeSystemId,
+    getState: () => ({ selected, focusBody, displayedId, activeGalaxyId, activeSystemId, trajectoryView,
       flight: !!flight || !!returnFlight, returning: !!returnFlight,
       stage: stage(), distance: camera.position.distanceTo(controls.target) }),
   };

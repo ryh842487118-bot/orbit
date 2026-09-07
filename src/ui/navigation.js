@@ -1,12 +1,13 @@
 import { reducedMotion } from '../core/math.js';
 import { bindBodyPicking } from './picking.js';
 import { createDestinations } from './destinations.js';
+import { createTrajectoryPanel } from './trajectory-panel.js';
 
 export function bindNavigationUI({ renderer, camera, world, navigation, assets, toast, onPick }) {
   const $ = id => document.getElementById(id);
   const { flyTo, zoom } = navigation;
   let paused = reducedMotion, speed = 1, orbitsVisible = true, labelsVisible = true;
-  let destinations;
+  let destinations, trajectoryPanel;
 
   function setPaused(value) {
     paused = value;
@@ -26,6 +27,8 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
       button.setAttribute('aria-pressed', String(active));
     });
     destinations?.update();
+    trajectoryPanel?.update();
+    $('toggle-trajectories').setAttribute('aria-pressed', String(mode === 'trajectory'));
   }
 
   function restoreState(settings) {
@@ -41,7 +44,11 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
   function updateHud() {
     const { stage, focusBody, activeGalaxyId, activeSystemId } = navigation.getState();
     updateStage(stage);
-    if (stage === 'local-group') {
+    if (stage === 'trajectory') {
+      $('view-caption').textContent = '太阳系运动轨迹';
+      $('view-distance').textContent = world.motionTrajectories.getState().referenceFrame === 'solar'
+        ? '太阳参照 · 观察行星公转' : '银河参照 · 观察前进与公转';
+    } else if (stage === 'local-group') {
       $('view-caption').textContent = '本星系群';
       $('view-distance').textContent = '5 座星系 · 点击开始星际航行';
     } else if (stage === 'galaxy') {
@@ -75,6 +82,8 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
   }
 
   destinations = createDestinations({ world, navigation, assets });
+  trajectoryPanel = createTrajectoryPanel({ world, navigation });
+  $('toggle-trajectories').onclick = () => flyTo(navigation.getState().stage === 'trajectory' ? 'solar' : 'trajectory');
   document.querySelectorAll('[data-view]').forEach(button => button.onclick = () => flyTo(button.dataset.view));
   $('home').onclick = event => { event.preventDefault(); flyTo('earth'); };
   $('night-view').onclick = () => flyTo('earth', { night: true });

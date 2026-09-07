@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | [English](README_EN.md)
 
-Current version: **1.5.0**.
+Current version: **1.6.0**.
 
 **Live demo:** [https://ryh842487118-bot.github.io/orbit/](https://ryh842487118-bot.github.io/orbit/)
 
@@ -27,8 +27,15 @@ The 58-second video is recorded from the actual website at 1440 × 900 and 30 FP
 - Use **City Lights** and **Visit the Space Station** from the Earth panel.
 - Jump between **Near-Earth Orbit**, **Solar System**, **Milky Way**, and **Local Group** using the navigation at the top.
 - Toggle orbits and labels independently. Pause celestial motion or switch between 0.25×, 1×, 5×, and 20× simulation speeds.
+- Select **运动轨迹 (Motion Trails)** beside the orbit and label controls to follow the Sun and eight planets. Switch between Galactic and Sun reference frames and short or long histories, use the existing pause and speed controls, rotate and zoom freely, or choose **返回太阳系 (Return to Solar System)**.
 - Warm meteoroids and comets with two soft tails occasionally cross the sky, one at a time at random intervals. They follow the pause control and are hidden in EarthSense and reduced-motion mode.
 - Keyboard shortcuts: `+` / `-` to zoom, Space to pause, `H` to return to Earth, `F` for fullscreen, `I` to hide the interface, and `?` for help.
+
+## Solar System Motion Trails
+
+The Galactic reference view combines the Solar System’s overall translation with planetary motion around the Sun. The Sun reference view follows the Sun and removes that common translation so you can compare the paths. The Solar System does orbit the galactic center; NASA gives an orbital period of approximately 230 million years. [NASA Sun Facts](https://science.nasa.gov/sun/facts/), [NASA Solar System Facts](https://science.nasa.gov/solar-system/solar-system-facts/).
+
+The Galactic reference is a **local illustration**. Historical trails are calculated backward from the demonstration model, with adjusted time, sizes, orbital periods, translation direction, and display proportions. A spiral shape seen from one viewpoint is not a unique true route through space or an observed ephemeris. See [motion-trail model and sources](docs/motion-trajectories.md).
 
 ## EarthSense
 
@@ -73,13 +80,13 @@ In the new catalog, `modelStatus: 'confirmed'` identifies real objects, while `'
 - `src/style.css`: interface styling and mobile layouts.
 - `src/universe.js`: compatibility entry only; `src/app.js` assembles the application.
 - `src/core/`: renderer, camera flights, scene assembly, textures.
-- `src/universe/`: body catalogs, planets, orbits, satellites, simulation, the Local Group, and independent deep-space stellar systems.
+- `src/universe/`: body catalogs, planets, orbits, satellites, simulation, the Local Group, independent deep-space stellar systems, and illustrative motion trails.
 - `src/earth/`: day/night shading, atmosphere, clouds, geographic coordinates, and on-demand detailed textures.
 - `src/earthsense/`: the current weather, lightning, and cyclone overlays, feed state, mode restoration, and illustrative weather effects in `effects/`.
 - `src/data/`: Open-Meteo, NASA EONET, and GDACS adapters, wind-unit conversion, and shared requests; `cyclone-track.js` loads official cyclone tracks on demand.
-- `src/ui/`: original controls, labels, EarthSense panel and event details.
+- `src/ui/`: original controls, labels, the motion-trail panel, EarthSense panel and event details.
 - `tests/`: navigation, deep-space catalogs and orbital tracking, picking, restoration, caching, cancellation, and adapter tests.
-- `docs/`: validation, public data documentation, and deep-space sources.
+- `docs/`: validation, public data documentation, deep-space sources, and the motion-trail model.
 - `assets/`: original textures, attribution, and licenses.
 - `build.mjs`: bundles the engine, scene code, and textures into one HTML file.
 - `index.html`: self-contained build output.

@@ -6,7 +6,7 @@ import { bindBodyPicking } from '../src/ui/picking.js';
 globalThis.innerWidth = 1000;
 globalThis.innerHeight = 800;
 
-function setup(onPick) {
+function setup(onPick, stage = 'earth') {
   const canvas = new EventTarget(), selected = [];
   const camera = new THREE.PerspectiveCamera(43, 1.25, .001, 100);
   camera.updateMatrixWorld();
@@ -17,7 +17,7 @@ function setup(onPick) {
   bindBodyPicking({
     renderer: { domElement: canvas }, camera,
     world: { bodies: new Map([['earth', { mesh: earth }]]) },
-    navigation: { getState: () => ({ flight: false }), flyTo: id => selected.push(id), cancelFlight() {} },
+    navigation: { getState: () => ({ flight: false, stage }), flyTo: id => selected.push(id), cancelFlight() {} },
     onPick,
   });
   function pointer(type, values = {}) {
@@ -47,6 +47,13 @@ test('an unhandled overlay click retains original celestial body navigation', ()
   pointer('pointerdown');
   pointer('pointerup');
   assert.deepEqual(selected, ['earth']);
+});
+
+test('trajectory clicks cannot select an exploration body behind the separate model', () => {
+  const { pointer, selected } = setup(() => false, 'trajectory');
+  pointer('pointerdown');
+  pointer('pointerup');
+  assert.deepEqual(selected, []);
 });
 
 test('drag and pinch gestures never select an overlay or celestial body', () => {

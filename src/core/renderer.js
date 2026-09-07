@@ -82,6 +82,7 @@ export function createPipeline(renderer, scene, camera) {
     for (const stars of world?.starFields || [world?.galaxy, world?.backgroundStars]) {
       if (stars) stars.material.uniforms.uRatio.value = pixels;
     }
+    world?.motionTrajectories?.resize(pixels);
     return pixels;
   }
   return { composer, resize, updateFraming };
