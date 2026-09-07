@@ -62,11 +62,15 @@ export async function startOrbit() {
       lastFrameTime = now;
       if (hidden) return;
       const settings = ui.getState();
+      const navigating = navigation.getState().flight;
       // Keep the entire astronomical simulation intact while observing the surface.
       navigation.update(dt, now, () => world.update(dt, {
         ...settings, paused: earthsense.active || settings.paused,
       }));
       world.backgroundStars.position.copy(camera.position);
+      world.flybys.update(dt, camera, {
+        paused: settings.paused, enabled: !earthsense.active, navigating,
+      });
       updateWorldVisibility(world, camera, controls, settings.orbitsVisible);
       navigation.updateStage();
       earthsense.update(now / 1000, { scaleFactor: THREE.MathUtils.clamp(
@@ -111,6 +115,7 @@ export async function startOrbit() {
         planetCount: data.filter(d => d.orbit && d.id !== 'moon').length,
         satelliteCount: world.satellites.length,
         galaxyStars: world.galaxy.geometry.attributes.position.count,
+        flybys: world.flybys.getState(),
         drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
         mode: earthsense.active ? 'earthsense' : 'universe',
         earthDetail: earthDetail.getState(), pixelRatio: renderer.getPixelRatio(),

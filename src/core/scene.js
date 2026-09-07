@@ -4,6 +4,7 @@ import { specials } from '../universe/catalog.js';
 import { createPlanets } from '../universe/planets.js';
 import { createGalaxy } from '../universe/galaxy.js';
 import { createSimulation } from '../universe/solar-system.js';
+import { createFlybys } from '../universe/flybys.js';
 
 export function createWorld(scene, textures, pixels) {
   const galaxyCenter = new THREE.Vector3(-18000, 0, 0);
@@ -11,6 +12,7 @@ export function createWorld(scene, textures, pixels) {
     ...createPlanets(scene, textures),
     ...createGalaxy(scene, pixels, galaxyCenter),
     galaxyCenter,
+    flybys: createFlybys(scene),
   };
   world.getData = id => world.bodies.get(id) || specials[id];
   world.getPosition = (id, out = new THREE.Vector3()) => {

@@ -24,6 +24,7 @@ The 58-second video is recorded from the actual website at 1440 × 900 and 30 FP
 - Use **City Lights** and **Visit the Space Station** from the Earth panel.
 - Jump between **Near-Earth Orbit**, **Solar System**, and **Milky Way** using the navigation at the top.
 - Toggle orbits and labels independently. Pause celestial motion or switch between 0.25×, 1×, 5×, and 20× simulation speeds.
+- Warm meteoroids and comets with two soft tails occasionally cross the sky, one at a time at random intervals. They follow the pause control and are hidden in EarthSense and reduced-motion mode.
 - Keyboard shortcuts: `+` / `-` to zoom, Space to pause, `H` to return to Earth, `F` for fullscreen, `I` to hide the interface, and `?` for help.
 
 ## EarthSense
