@@ -295,6 +295,7 @@ test('EarthSense restores a foreign system and settings after borrowing the came
   ui.restoreState({ paused: true, speed: .25, orbitsVisible: true, labelsVisible: false });
   navigation.update(0, performance.now() + 10000, () => {});
   session.leave();
+  navigation.update(0, performance.now() + 10000, () => {});
   assert.deepEqual(navigation.snapshot(), saved);
   assert.deepEqual(ui.getState(), savedSettings);
   assert.deepEqual(camera.position.toArray(), saved.camera.position);
@@ -315,6 +316,8 @@ test('EarthSense resumes an interrupted intergalactic flight with its remaining 
   now += 10000;
   navigation.update(0, now, () => {});
   session.leave();
+  now += 3000;
+  navigation.update(0, now, () => {});
   assert.deepEqual(navigation.snapshot(), saved);
   assert.equal(navigation.getState().activeGalaxyId, 'andromeda');
   now += saved.flight.remaining;

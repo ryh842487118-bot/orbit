@@ -32,7 +32,8 @@ export function createEarthSensePanel({ layers, onModeChange, onToggle, onRefres
   });
   const panel = element('aside', 'earthsense-panel ui');
   panel.id = 'earthsense-panel';
-  panel.hidden = true;
+  panel.inert = true;
+  panel.setAttribute('aria-hidden', 'true');
   panel.setAttribute('aria-label', '感知地球图层与事件');
   const eyebrow = element('div', 'eyebrow', '+ EARTHSENSE');
   const titleRow = element('div', 'earthsense-title-row');
@@ -98,8 +99,18 @@ export function createEarthSensePanel({ layers, onModeChange, onToggle, onRefres
   const liveLabel = document.querySelector('.live');
   const originalGesture = gestureHint?.textContent;
   const originalLiveNodes = liveLabel ? [...liveLabel.childNodes].map(child => child.cloneNode(true)) : [];
+  const universeControls = [...document.querySelectorAll('.info-panel, .planet-dock, .time-control, .layer-toggles')]
+    .map(node => ({ node, inert: node.inert, ariaHidden: node.getAttribute('aria-hidden') }));
   let displayedMode = null;
   let listSignature = '';
+
+  function restoreUniverseControls() {
+    for (const { node, inert, ariaHidden } of universeControls) {
+      node.inert = inert;
+      if (ariaHidden === null) node.removeAttribute('aria-hidden');
+      else node.setAttribute('aria-hidden', ariaHidden);
+    }
+  }
 
   function renderEvents(state) {
     const query = search.value.trim().toLocaleLowerCase();
@@ -137,9 +148,22 @@ export function createEarthSensePanel({ layers, onModeChange, onToggle, onRefres
   function update(state) {
     currentState = { ...state, layers: state.layers || {}, events: state.events || [] };
     document.body.classList.toggle('earthsense-active', !!state.active);
-    panel.hidden = !state.active;
     if (displayedMode !== !!state.active) {
       displayedMode = !!state.active;
+      const outgoing = state.active ? universeControls.map(({ node }) => node) : [panel];
+      if (outgoing.some(node => node.contains(document.activeElement))) {
+        modeButtons.find(button => (button.dataset.mode === 'earthsense') === !!state.active)
+          ?.focus({ preventScroll: true });
+      }
+      // Keep both trees mounted so CSS can reverse a transition immediately.
+      // Inactive trees stop receiving pointer and keyboard input at once.
+      panel.inert = !state.active;
+      panel.setAttribute('aria-hidden', String(!state.active));
+      if (state.active) for (const { node } of universeControls) {
+        node.inert = true;
+        node.setAttribute('aria-hidden', 'true');
+      }
+      else restoreUniverseControls();
       if (gestureHint) gestureHint.textContent = state.active ? '点击地球事件' : originalGesture;
       if (liveLabel) {
         liveLabel.replaceChildren(...originalLiveNodes.map(child => child.cloneNode(true)));
@@ -166,6 +190,7 @@ export function createEarthSensePanel({ layers, onModeChange, onToggle, onRefres
   }
   return { update, dispose() {
     panel.remove(); switcher.remove(); document.body.classList.remove('earthsense-active');
+    restoreUniverseControls();
     if (gestureHint) gestureHint.textContent = originalGesture;
     liveLabel?.replaceChildren(...originalLiveNodes);
   } };

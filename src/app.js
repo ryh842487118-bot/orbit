@@ -25,7 +25,7 @@ export async function startOrbit() {
       fail('图形上下文已丢失。请关闭占用显卡的页面后，重新加载星空。'));
     const scene = new THREE.Scene();
     const { camera, controls } = createCamera(renderer);
-    const { composer, resize } = createPipeline(renderer, scene, camera);
+    const { composer, resize, updateFraming } = createPipeline(renderer, scene, camera);
     const pixels = resize();
     const assets = window.ORBIT_ASSETS;
     const textures = await loadTextures(assets, fraction => {
@@ -62,10 +62,11 @@ export async function startOrbit() {
       lastFrameTime = now;
       if (hidden) return;
       const settings = ui.getState();
-      const navigating = navigation.getState().flight;
+      const navigationState = navigation.getState();
+      const navigating = navigationState.flight;
       // Keep the entire astronomical simulation intact while observing the surface.
       navigation.update(dt, now, () => world.update(dt, {
-        ...settings, paused: earthsense.active || settings.paused,
+        ...settings, paused: earthsense.active || navigationState.returning || settings.paused,
       }));
       world.backgroundStars.position.copy(camera.position);
       world.flybys.update(dt, camera, {
@@ -79,8 +80,8 @@ export async function startOrbit() {
       if (observingEarth !== earthsense.visible) {
         observingEarth = earthsense.visible;
         earthDetail.setObservation(observingEarth);
-        resize(world, observingEarth);
       }
+      updateFraming(observingEarth, dt);
       if (earthsense.visible) {
         world.earthSatellites.visible = false;
         world.station.visible = false;
@@ -103,7 +104,7 @@ export async function startOrbit() {
       }
       composer.render();
     }
-    addEventListener('resize', () => resize(world, earthsense.visible));
+    addEventListener('resize', () => resize(world));
     document.addEventListener('visibilitychange', () => {
       hidden = document.hidden;
       lastFrameTime = performance.now();

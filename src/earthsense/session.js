@@ -13,7 +13,7 @@ export function createEarthSession(navigation, ui) {
       if (!active) return;
       active = false;
       ui.restoreState(saved.settings);
-      navigation.restore(saved.navigation);
+      navigation.restore(saved.navigation, { animate: true });
       saved = null;
     },
   };

@@ -3,11 +3,20 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { mobile } from './math.js';
+import { mobile, reducedMotion } from './math.js';
 
 export function renderPixelRatio({ width, height, pixelRatio, compact }) {
   const requested = Math.min(Math.max(pixelRatio, 1.5), compact ? 2 : 2.5);
   return Math.min(requested, Math.max(1, Math.sqrt(6000000 / (width * height))));
+}
+
+/** Frame-rate-independent framing, settling within roughly 0.58 seconds. */
+export function advanceObservationFraming(current, earthObservation, dt, { reducedMotion = false } = {}) {
+  const target = earthObservation ? 1 : 0;
+  if (reducedMotion) return target;
+  const seconds = Number.isFinite(dt) ? Math.max(0, dt) : 0;
+  const next = current + (target - current) * (1 - Math.exp(-seconds * 12));
+  return Math.abs(target - next) < .001 ? target : next;
 }
 
 export function createRenderer(container, onContextLost) {
@@ -38,17 +47,36 @@ export function createPipeline(renderer, scene, camera) {
     target.samples = Math.min(2, renderer.capabilities.maxSamples);
   }
 
-  function resize(world, earthObservation = false) {
+  let observationFraming = 0;
+  let width = innerWidth, height = innerHeight, compact = mobile();
+
+  function applyFraming() {
+    camera.aspect = width / height;
+    // Leave room for the observation sheet without jumping the shared globe.
+    const offsetY = height * THREE.MathUtils.lerp(-.045, .03, observationFraming);
+    camera.setViewOffset(width, height, compact ? 0 : -width * .105,
+      compact ? offsetY : 0, width, height);
+  }
+
+  function updateFraming(earthObservation, dt) {
+    const next = advanceObservationFraming(observationFraming, earthObservation, dt, { reducedMotion });
+    if (next !== observationFraming) {
+      observationFraming = next;
+      if (compact) applyFraming();
+    }
+    return observationFraming;
+  }
+
+  function resize(world) {
     const w = innerWidth, h = innerHeight;
+    width = w;
+    height = h;
+    compact = mobile();
     const pixels = renderPixelRatio({ width: w, height: h, pixelRatio: devicePixelRatio,
-      compact: mobile(), earthObservation });
+      compact });
     renderer.setPixelRatio(pixels);
     renderer.setSize(w, h);
-    camera.aspect = w / h;
-    // Leave the lower phone screen available for the EarthSense observation sheet.
-    const mobileOffset = earthObservation ? h * .03 : -h * .045;
-    camera.setViewOffset(w, h, mobile() ? 0 : -w * .105, mobile() ? mobileOffset : 0, w, h);
-    camera.updateProjectionMatrix();
+    applyFraming();
     composer.setPixelRatio(pixels);
     composer.setSize(w, h);
     for (const stars of world?.starFields || [world?.galaxy, world?.backgroundStars]) {
@@ -56,5 +84,5 @@ export function createPipeline(renderer, scene, camera) {
     }
     return pixels;
   }
-  return { composer, resize };
+  return { composer, resize, updateFraming };
 }

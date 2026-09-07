@@ -29,7 +29,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   const temp = new THREE.Vector3(), collisionOffset = new THREE.Vector3();
   let selected = 'earth', focusBody = 'earth', displayedId = 'earth';
   let activeGalaxyId = 'galaxy', activeSystemId = 'solar';
-  let flight = null, lastMode = 'earth';
+  let flight = null, returnFlight = null, lastMode = 'earth';
 
   function destinationDistance(id) {
     const destination = getData(id);
@@ -74,6 +74,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   function flyTo(id, { night = false, immediate = false, earthFocus = null, distance } = {}) {
     const destination = getData(id);
     if (!destination) return;
+    returnFlight = null;
     selected = id;
     if (id === 'galaxy' || id === 'solar') {
       if (activeGalaxyId !== 'galaxy' || activeSystemId !== 'solar') focusBody = 'earth';
@@ -135,6 +136,23 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     if (t >= 1) cancelFlight();
   }
 
+  function updateReturnFlight(now) {
+    const current = returnFlight;
+    const t = clamp((now - current.start) / current.duration, 0, 1);
+    const eased = t * t * (3 - 2 * t);
+    controls.target.lerpVectors(current.startTarget, current.endTarget, eased);
+    const direction = temp.lerpVectors(current.startDir, current.endDir, eased);
+    if (direction.lengthSq() < .000001) direction.copy(current.endDir);
+    direction.normalize();
+    const distance = Math.exp(THREE.MathUtils.lerp(Math.log(current.startDist), Math.log(current.endDist), eased));
+    camera.position.copy(controls.target).addScaledVector(direction, distance);
+    camera.zoom = THREE.MathUtils.lerp(current.startZoom, current.saved.camera.zoom, eased);
+    camera.updateProjectionMatrix();
+    controls.update();
+    keepOutsideBodies();
+    if (t >= 1) restore(current.saved);
+  }
+
   function trackingCenter(distance) {
     const body = getData(focusBody), target = getPosition(focusBody);
     const leave = smooth(Math.max(body.r * 9, 8), Math.max(body.r * 25, 75), distance);
@@ -157,11 +175,12 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
 
   function cancelFlight() {
     flight = null;
+    returnFlight = null;
     controls.enabled = true;
   }
 
   function zoom(factor) {
-    if (flight) cancelFlight();
+    if (flight || returnFlight) cancelFlight();
     const offset = camera.position.clone().sub(controls.target);
     offset.setLength(clamp(offset.length() * factor, controls.minDistance, controls.maxDistance));
     camera.position.copy(controls.target).add(offset);
@@ -182,7 +201,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
       if (mode === 'galaxy') toast(`进入${getData(activeGalaxyId).cn} · 继续缩小可探索星系群`);
       if (mode === 'local-group') toast('进入本星系群 · 点击星系继续远行');
     }
-    if (!flight) {
+    if (!flight && !returnFlight) {
       const infoId = mode === 'earth' ? focusBody : mode === 'solar' ? activeSystemId
         : mode === 'galaxy' ? activeGalaxyId : 'local-group';
       if (displayedId !== infoId) updateInfo(infoId);
@@ -192,9 +211,10 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
 
   function update(dt, now, updateBodies) {
     // Follow orbital motion exactly, including at 20×; smooth only exploration scale changes.
-    const distance = camera.position.distanceTo(controls.target), before = flight ? null : trackingCenter(distance);
+    const distance = camera.position.distanceTo(controls.target), before = flight || returnFlight ? null : trackingCenter(distance);
     updateBodies(dt);
-    if (flight) updateFlight(now);
+    if (returnFlight) updateReturnFlight(now);
+    else if (flight) updateFlight(now);
     else {
       const motion = trackingCenter(distance).sub(before);
       controls.target.add(motion);
@@ -216,6 +236,8 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   }
 
   function snapshot() {
+    // A second mode switch during the return still preserves the original trip.
+    if (returnFlight) return returnFlight.saved;
     return {
       selected, focusBody, displayedId, lastMode,
       activeGalaxyId, activeSystemId,
@@ -223,15 +245,36 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     };
   }
 
-  function restore(saved) {
+  function restore(saved, { animate = false } = {}) {
+    const startCamera = animate && !reducedMotion ? snapshotCamera(camera, controls) : null;
     selected = saved.selected;
     focusBody = saved.focusBody;
     displayedId = saved.displayedId;
     lastMode = saved.lastMode;
     activeGalaxyId = saved.activeGalaxyId || 'galaxy';
     activeSystemId = saved.activeSystemId || 'solar';
-    flight = restoreFlight(saved.flight, performance.now());
-    restoreCamera(camera, controls, saved.camera);
+    flight = null;
+    returnFlight = null;
+    if (startCamera) {
+      const startTarget = new THREE.Vector3().fromArray(startCamera.target);
+      const endTarget = new THREE.Vector3().fromArray(saved.camera.target);
+      const startOffset = new THREE.Vector3().fromArray(startCamera.position).sub(startTarget);
+      const endOffset = new THREE.Vector3().fromArray(saved.camera.position).sub(endTarget);
+      // Drain drag damping without changing the view visible at the mode click.
+      restoreCamera(camera, controls, startCamera);
+      returnFlight = { saved, start: performance.now(),
+        duration: startTarget.distanceTo(endTarget) > 10000 || Math.max(startOffset.length(), endOffset.length()) > 2600 ? 2200 : 1000,
+        startTarget, endTarget, startDir: startOffset.clone().normalize(), endDir: endOffset.clone().normalize(),
+        startDist: Math.max(.001, startOffset.length()), endDist: Math.max(.001, endOffset.length()),
+        startZoom: startCamera.zoom,
+      };
+      controls.minDistance = .001;
+      controls.maxDistance = MAX_DISTANCE;
+      controls.enabled = false;
+    } else {
+      flight = restoreFlight(saved.flight, performance.now());
+      restoreCamera(camera, controls, saved.camera);
+    }
     onInfo(displayedId);
     onStage(lastMode);
   }
@@ -239,6 +282,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   return {
     initialize, flyTo, zoom, cancelFlight, trackingCenter, stage, update, updateStage, focusEarth, snapshot, restore,
     getState: () => ({ selected, focusBody, displayedId, activeGalaxyId, activeSystemId,
-      flight: !!flight, stage: stage(), distance: camera.position.distanceTo(controls.target) }),
+      flight: !!flight || !!returnFlight, returning: !!returnFlight,
+      stage: stage(), distance: camera.position.distanceTo(controls.target) }),
   };
 }

@@ -138,6 +138,62 @@ function navigationFixture() {
   return { navigation, controls, camera, world, ui };
 }
 
+test('leaving EarthSense starts a return flight without moving the camera in the click handler', context => {
+  let now = 1000;
+  context.mock.method(performance, 'now', () => now);
+  const { navigation, ui, camera, controls } = navigationFixture();
+  navigation.flyTo('galaxy', { immediate: true });
+  navigation.update(0, ++now, () => {});
+  const original = navigation.snapshot();
+  const session = createEarthSession(navigation, ui);
+  session.enter();
+  now += 2000;
+  navigation.update(0, now, () => {});
+  const earthPosition = camera.position.clone(), earthTarget = controls.target.clone();
+  session.leave();
+  assert.ok(camera.position.distanceTo(earthPosition) < 1e-8, 'mode exit must not teleport the camera');
+  assert.ok(controls.target.distanceTo(earthTarget) < 1e-8, 'mode exit must not teleport the target');
+  assert.equal(navigation.getState().flight, true);
+  now += 500;
+  navigation.update(0, now, () => {});
+  assert.ok(camera.position.distanceTo(earthPosition) > 1, 'the return flight progresses');
+  assert.notDeepEqual(camera.position.toArray(), original.camera.position, 'the return has an intermediate view');
+  now += 10000;
+  navigation.update(0, now, () => {});
+  assert.equal(navigation.getState().returning, false);
+  assert.deepEqual(camera.position.toArray(), original.camera.position);
+  assert.deepEqual(controls.target.toArray(), original.camera.target);
+  assert.deepEqual(navigation.snapshot(), original);
+});
+
+test('rapid mode reversal starts from the visible camera and retains the original universe view', context => {
+  let now = 1000;
+  context.mock.method(performance, 'now', () => now);
+  const { navigation, ui, camera, controls } = navigationFixture();
+  navigation.flyTo('galaxy', { immediate: true });
+  navigation.update(0, ++now, () => {});
+  const original = navigation.snapshot();
+  const session = createEarthSession(navigation, ui);
+  session.enter();
+  now += 2000;
+  navigation.update(0, now, () => {});
+  session.leave();
+  now += 500;
+  navigation.update(0, now, () => {});
+  const intermediate = camera.position.clone();
+  session.enter();
+  assert.ok(camera.position.distanceTo(intermediate) < 1e-8, 'reversing a return cannot jump');
+  now += 2000;
+  navigation.update(0, now, () => {});
+  session.leave();
+  now += 3000;
+  navigation.update(0, now, () => {});
+  assert.equal(navigation.getState().returning, false);
+  assert.deepEqual(camera.position.toArray(), original.camera.position);
+  assert.deepEqual(controls.target.toArray(), original.camera.target);
+  assert.deepEqual(navigation.snapshot(), original);
+});
+
 test('mode sessions restore the universe settings, camera and remaining flight unchanged', context => {
   let now = 1000;
   context.mock.method(performance, 'now', () => now);
@@ -156,6 +212,8 @@ test('mode sessions restore the universe settings, camera and remaining flight u
   session.leave();
   assert.equal(session.active, false);
   assert.deepEqual(ui.getState(), originalSettings);
+  now += 3000;
+  navigation.update(0, now, () => {});
   assert.deepEqual(navigation.snapshot(), originalView);
   session.leave();
   assert.deepEqual(navigation.snapshot(), originalView);

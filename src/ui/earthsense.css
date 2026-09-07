@@ -1,12 +1,14 @@
 /* EarthSense extends ORBIT's existing observatory UI. The universe skin stays intact. */
+:root{--earthsense-ease:cubic-bezier(.22,1,.36,1);--orbit-dock-height:113px}
 .brand small{letter-spacing:1.5px;white-space:nowrap}
 .brand-english{display:block;font-size:8px;letter-spacing:.15px;color:#6f8595;margin-top:6px;font-weight:400}
 .earthsense-mode-switch{position:fixed;top:101px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:0;border-bottom:1px solid var(--line);background:#0710189c;backdrop-filter:blur(14px)}
 .earthsense-mode-switch button{position:relative;padding:11px 21px;font-size:11px;letter-spacing:1.5px;color:#8c9ca9}
 .earthsense-mode-switch button[aria-pressed=true]{color:var(--accent)}
 .earthsense-mode-switch button[aria-pressed=true]:after{content:'';position:absolute;bottom:-1px;left:21px;right:21px;height:1px;background:var(--accent)}
-.earthsense-panel{position:fixed;left:52px;top:171px;bottom:99px;width:290px;display:flex;flex-direction:column;min-height:0;pointer-events:auto}
-.earthsense-panel[hidden],.earthsense-popup[hidden],.earthsense-panel [hidden]{display:none!important}
+.earthsense-panel{position:fixed;left:52px;top:171px;bottom:99px;width:290px;display:flex;flex-direction:column;min-height:0;opacity:0;visibility:hidden;transform:translateY(10px);pointer-events:none;transition:opacity 280ms var(--earthsense-ease),transform 380ms var(--earthsense-ease),visibility 0s 280ms}
+body.earthsense-active .earthsense-panel{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;transition:opacity 420ms var(--earthsense-ease),transform 420ms var(--earthsense-ease),visibility 0s}
+.earthsense-popup[hidden],.earthsense-panel [hidden]{display:none!important}
 .earthsense-panel>.eyebrow{color:var(--accent);letter-spacing:3px;font-size:10px;flex-shrink:0}
 .earthsense-title-row{display:flex;align-items:center;justify-content:space-between;margin:17px 0 0}
 .earthsense-title-row h1{font-size:34px;letter-spacing:3px;font-weight:400;line-height:1.2;margin:0}
@@ -46,10 +48,15 @@
 .earthsense-list-note{font-size:9px}
 .earthsense-update-status{font-size:9px;line-height:1.65;letter-spacing:.2px;color:#95acb6;margin:13px 0 0;flex-shrink:0}
 .earthsense-tagline{font-size:9px;color:#657f8e;letter-spacing:.1px;margin:9px 0 0;flex-shrink:0}
-body.earthsense-active .info-panel,body.earthsense-active .planet-dock,body.earthsense-active .time-control{display:none}
+.info-panel,.planet-dock,.time-control,.layer-toggles{opacity:1;visibility:visible;transition:opacity 420ms var(--earthsense-ease),transform 420ms var(--earthsense-ease),visibility 0s}
+body.earthsense-active .info-panel,body.earthsense-active .planet-dock,body.earthsense-active .time-control,body.earthsense-active .layer-toggles{opacity:0;visibility:hidden;transform:translateY(8px);pointer-events:none;transition:opacity 280ms var(--earthsense-ease),transform 380ms var(--earthsense-ease),visibility 0s 280ms}
+.bottom-ui{pointer-events:none}
+.bottom-ui .planet-dock,.bottom-ui .control-row,.bottom-ui .footer-meta{pointer-events:auto}
+.control-row{transform:translateY(0);transition:transform 420ms var(--earthsense-ease)}
+body.earthsense-active .control-row{transform:translateY(var(--orbit-dock-height));pointer-events:none}
+.scale-control{transition:top 420ms var(--earthsense-ease),opacity 300ms}
+.view-caption{transition:top 420ms var(--earthsense-ease),bottom 420ms var(--earthsense-ease),opacity 300ms}
 body.earthsense-active .view-caption{bottom:110px}
-body.earthsense-active .gesture-hint{margin-left:auto}
-body.earthsense-active .layer-toggles{display:none}
 .earthsense-popup{position:fixed;right:143px;bottom:132px;width:310px;max-height:calc(100dvh - 290px);overflow:auto;padding:25px 24px 20px;border:1px solid #91bbb43d;border-radius:9px;background:linear-gradient(130deg,#102028f7,#09131ced);backdrop-filter:blur(20px);box-shadow:0 16px 60px #0005;scrollbar-width:thin;scrollbar-color:#34535e transparent;z-index:7}
 .earthsense-popup-close{position:absolute;right:9px;top:7px;width:31px;height:31px;font-size:25px;color:#93a9b6}
 .earthsense-popup .eyebrow{padding-right:19px;font-size:9px;letter-spacing:1.8px;color:var(--accent);line-height:1.7}
@@ -76,13 +83,14 @@ body.earthsense-active .layer-toggles{display:none}
 .earthsense-popup-focus:disabled{opacity:.5;cursor:default}
 body.immersive .earthsense-panel,body.immersive .earthsense-popup{pointer-events:none;visibility:hidden}
 @media(min-width:1700px){.earthsense-panel{left:64px;width:310px;top:185px}.earthsense-popup{width:335px;right:165px}}
-@media(max-height:800px) and (min-width:901px){.earthsense-mode-switch{top:85px}.earthsense-panel{top:139px;bottom:90px}.earthsense-title-row{margin-top:12px}.earthsense-title-row h1{font-size:29px}.earthsense-intro{margin:9px 0 14px}.earthsense-sampling{margin-bottom:12px}.earthsense-popup{bottom:113px;max-height:calc(100dvh - 250px)}}
+@media(max-height:800px) and (min-width:901px){:root{--orbit-dock-height:98px}.earthsense-mode-switch{top:85px}.earthsense-panel{top:139px;bottom:90px}.earthsense-title-row{margin-top:12px}.earthsense-title-row h1{font-size:29px}.earthsense-intro{margin:9px 0 14px}.earthsense-sampling{margin-bottom:12px}.earthsense-popup{bottom:113px;max-height:calc(100dvh - 250px)}}
 @media(max-width:1150px){.earthsense-panel{left:34px;width:260px}.earthsense-popup{right:112px;width:288px}.brand-english{font-size:7px}}
-@media(max-width:900px){.earthsense-mode-switch{top:88px}.earthsense-panel{left:26px;top:148px;width:245px;bottom:96px}.earthsense-title-row h1{font-size:28px}.earthsense-intro{font-size:10px}.earthsense-layer{padding:8px;gap:6px}.earthsense-layer-name{font-size:10px}.earthsense-popup{right:93px;width:276px;bottom:114px;max-height:calc(100dvh - 270px)}.brand-english{display:none}.brand small{font-size:8px;letter-spacing:.65px}}
+@media(max-width:900px){:root{--orbit-dock-height:100px}.earthsense-mode-switch{top:88px}.earthsense-panel{left:26px;top:148px;width:245px;bottom:96px}.earthsense-title-row h1{font-size:28px}.earthsense-intro{font-size:10px}.earthsense-layer{padding:8px;gap:6px}.earthsense-layer-name{font-size:10px}.earthsense-popup{right:93px;width:276px;bottom:114px;max-height:calc(100dvh - 270px)}.brand-english{display:none}.brand small{font-size:8px;letter-spacing:.65px}}
 @media(max-width:600px){
+  :root{--orbit-dock-height:89px}
   .earthsense-mode-switch{top:138px;background:#071018b8}
   .earthsense-mode-switch button{padding:8px 23px;font-size:10px;min-height:34px}
-  body:not(.earthsense-active) .info-panel{top:193px}
+  .info-panel{top:193px}
   .earthsense-panel{top:auto;left:14px;right:14px;bottom:67px;width:auto;max-height:43dvh;padding:13px 14px 10px;border:1px solid #91bbb430;border-radius:9px;background:#09151fef;backdrop-filter:blur(18px);overflow:auto}
   .earthsense-panel>.eyebrow,.earthsense-intro,.earthsense-tagline{display:none}
   .earthsense-title-row{margin:0 0 10px;flex-shrink:0}
@@ -105,8 +113,7 @@ body.immersive .earthsense-panel,body.immersive .earthsense-popup{pointer-events
   .earthsense-return{font-size:10px;margin:4px 0 9px;padding:9px 0}
   .earthsense-return p{margin-bottom:3px}
   .earthsense-empty{font-size:10px;margin-bottom:8px}
-  body.earthsense-active .control-row{height:30px}
-  body.earthsense-active .layer-toggles{display:none}
+  .view-caption{bottom:auto;top:calc(100% - 204px);line-height:14px}
   body.earthsense-active .view-caption{bottom:auto;top:185px;left:50%;font-size:8px}
   body.earthsense-active .scale-control{top:29%}
   .earthsense-popup{left:14px;right:14px;bottom:67px;width:auto;max-height:42dvh;padding:19px 20px 17px;background:#0c1b25fa;z-index:8}
@@ -115,3 +122,4 @@ body.immersive .earthsense-panel,body.immersive .earthsense-popup{pointer-events
   .earthsense-popup-focus{padding-top:12px;margin-top:13px;min-height:35px}
 }
 @media(max-width:360px){.brand small{font-size:7px;letter-spacing:.25px}.earthsense-layer-dot{width:4px;height:4px}.earthsense-layer-name{font-size:9px}.earthsense-panel{padding-inline:10px}}
+@media(prefers-reduced-motion:reduce){.earthsense-panel,.info-panel,.planet-dock,.time-control,.layer-toggles,.control-row,.scale-control,.view-caption{transition:none}}
