@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#05090e">
-  <meta name="description" content="从地球的万家灯火，到土星环和银河。在 Three.js 三维宇宙中自由探索。">
+  <meta name="description" content="ORBIT · 漫游宇宙，感知地球。探索地球、太阳系与银河，观察天气、风场与自然灾害。Explore the Universe. Sense the Earth.">
   <meta name="google-adsense-account" content="ca-pub-7122901138309816">
-  <title>ORBIT · 宇宙漫游</title>
+  <title>ORBIT · 漫游宇宙 · 感知地球</title>
   <style>/* INLINE_CSS */</style>
 </head>
 <body>
@@ -16,7 +16,7 @@
   <div id="loading" role="status"><div class="load-mark">O<span>R</span>BIT</div><p id="load-text">正在展开宇宙</p><div class="load-track"><i id="load-progress"></i></div><small>准备天体纹理与星际航线</small></div>
   <div id="error" role="alert" hidden><h1>星空暂时无法展开</h1><p id="error-message"></p><button onclick="location.reload()">重新加载</button></div>
   <header class="topbar ui">
-    <a class="brand" href="#" id="home" aria-label="返回地球"><svg viewBox="0 0 38 38" fill="none" aria-hidden="true"><circle cx="19" cy="19" r="9" stroke="currentColor" stroke-width="1.4"/><ellipse cx="19" cy="19" rx="20" ry="7" transform="rotate(-42 19 19)" stroke="currentColor" stroke-width="1.4"/><circle cx="29" cy="7" r="2.6" fill="currentColor"/></svg><span>ORBIT<small>宇宙漫游</small></span></a>
+    <a class="brand" href="#" id="home" aria-label="返回地球"><svg viewBox="0 0 38 38" fill="none" aria-hidden="true"><circle cx="19" cy="19" r="9" stroke="currentColor" stroke-width="1.4"/><ellipse cx="19" cy="19" rx="20" ry="7" transform="rotate(-42 19 19)" stroke="currentColor" stroke-width="1.4"/><circle cx="29" cy="7" r="2.6" fill="currentColor"/></svg><span>ORBIT<small>漫游宇宙 · 感知地球</small><span class="brand-english">Explore the Universe. Sense the Earth.</span></span></a>
     <nav class="scenes" aria-label="探索尺度"><button data-view="earth" class="active">近地轨道</button><button data-view="solar">太阳系</button><button data-view="galaxy">银河系</button></nav>
 <div class="header-right"><span class="live"><i></i>自由探索</span><a class="icon-button github-link" href="https://github.com/ryh842487118-bot/orbit" target="_blank" rel="noopener noreferrer" aria-label="查看 GitHub 源码（新标签页）" title="GitHub · 查看源码"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.73 1.16 1.73 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.5-.29-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.09 1.15a10.77 10.77 0 0 1 5.62 0c2.14-1.45 3.08-1.15 3.08-1.15.62 1.55.23 2.7.12 2.98.72.79 1.15 1.79 1.15 3.02 0 4.32-2.63 5.27-5.14 5.55.4.35.76 1.03.76 2.08v3.11c0 .3.2.65.78.54A11.25 11.25 0 0 0 12 .75Z"/></svg></a><button class="icon-button" id="fullscreen" aria-label="切换全屏" title="全屏（F）"><svg viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button><button class="icon-button" id="help-button" aria-label="打开操作说明" title="操作说明（?）"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 8.5a2.5 2.5 0 0 1 5 .5c0 2-2.5 2-2.5 4m0 3h.01"/></svg></button></div>
   </header>
@@ -37,8 +37,8 @@
     <div class="footer-meta"><span><span class="tiny-cross">+</span>滚动，向更远的宇宙出发</span><span>距离与体积采用视觉比例 · 轨道为演示 <button id="credits-button">素材来源 ↗</button></span></div>
   </footer>
   <div id="toast" role="status"></div>
-  <dialog id="help-dialog"><button class="dialog-close icon-button" data-close aria-label="关闭">×</button><div class="eyebrow">FLIGHT MANUAL</div><h2>你的宇宙，由你探索</h2><p>从一颗星球出发，持续缩小，即可看见太阳系轨道与银河旋臂。</p><dl><dt>旋转视角</dt><dd>鼠标拖动 / 单指拖动</dd><dt>放大与缩小</dt><dd>鼠标滚轮 / 双指捏合 / + −</dd><dt>飞向天体</dt><dd>点击天体、天体标记或底部目的地</dd><dt>暂停与继续</dt><dd>空格键</dd><dt>回到地球</dt><dd>H 键</dd><dt>沉浸模式</dt><dd>F 键全屏 / I 键隐藏界面</dd></dl><p class="dialog-note">本作品是宇宙可视化演示。天体大小、距离、轨道速度和卫星比例经过调整，银河为程序生成的示意模型。</p><button class="primary" data-close>开始探索 <span>↗</span></button></dialog>
-  <dialog id="credits-dialog"><button class="dialog-close icon-button" data-close aria-label="关闭">×</button><div class="eyebrow">CREDITS</div><h2>真实纹理，想象中的远行</h2><p>天体表面、地球夜景、云层与土星环纹理：<a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener noreferrer">Solar System Scope</a>，按 <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> 使用。纹理经过实时光照与着色显示。</p><p>三维引擎：<a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">Three.js</a>（MIT）。卫星与国际空间站为简化几何模型；轨道和银河不用于真实导航或天文测量。</p><button class="primary" data-close>回到星空 <span>↗</span></button></dialog>
+  <dialog id="help-dialog"><button class="dialog-close icon-button" data-close aria-label="关闭">×</button><div class="eyebrow">FLIGHT MANUAL</div><h2>你的宇宙，由你探索</h2><p>从一颗星球出发，持续缩小，即可看见太阳系轨道与银河旋臂。</p><dl><dt>旋转视角</dt><dd>鼠标拖动 / 单指拖动</dd><dt>放大与缩小</dt><dd>鼠标滚轮 / 双指捏合 / + −</dd><dt>飞向天体</dt><dd>点击天体、天体标记或底部目的地</dd><dt>暂停与继续</dt><dd>空格键</dd><dt>回到地球</dt><dd>H 键</dd><dt>感知地球</dt><dd>切换「感知地球」，独立开启图层；点击地球事件可查看详情、放大观察</dd><dt>沉浸模式</dt><dd>F 键全屏 / I 键隐藏界面</dd></dl><p class="dialog-note">本作品是宇宙可视化演示。天体大小、距离、轨道速度和卫星比例经过调整，银河为程序生成的示意模型。</p><button class="primary" data-close>开始探索 <span>↗</span></button></dialog>
+  <dialog id="credits-dialog"><button class="dialog-close icon-button" data-close aria-label="关闭">×</button><div class="eyebrow">CREDITS</div><h2>真实纹理，想象中的远行</h2><p>天体表面、地球夜景、云层与土星环纹理：<a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener noreferrer">Solar System Scope</a>，按 <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> 使用。纹理经过实时光照与着色显示。</p><p>三维引擎：<a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">Three.js</a>（MIT）。卫星与国际空间站为简化几何模型；轨道和银河不用于真实导航或天文测量。</p><p>地球感知数据：Open-Meteo 当前天气模型、NASA EONET 热带风暴事件与 GDACS 台风预警。图层显示各数据源最近提供的记录；闪电为模拟演示。</p><button class="primary" data-close>回到星空 <span>↗</span></button></dialog>
   <script>/* INLINE_ASSETS */</script>
   <script>/* INLINE_JS */</script>
 </body>

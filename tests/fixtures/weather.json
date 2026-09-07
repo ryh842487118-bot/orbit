@@ -1,0 +1,69 @@
+[
+  {
+    "latitude": 31.247803,
+    "longitude": 121.5,
+    "generationtime_ms": 0.22804737091064453,
+    "utc_offset_seconds": 0,
+    "timezone": "GMT",
+    "timezone_abbreviation": "GMT",
+    "elevation": 3.0,
+    "current_units": {
+      "time": "unixtime",
+      "interval": "seconds",
+      "temperature_2m": "°C",
+      "relative_humidity_2m": "%",
+      "precipitation": "mm",
+      "rain": "mm",
+      "weather_code": "wmo code",
+      "cloud_cover": "%",
+      "wind_speed_10m": "km/h",
+      "wind_direction_10m": "°"
+    },
+    "current": {
+      "time": 1788714000,
+      "interval": 900,
+      "temperature_2m": 23.2,
+      "relative_humidity_2m": 87,
+      "precipitation": 0.0,
+      "rain": 0.0,
+      "weather_code": 1,
+      "cloud_cover": 23,
+      "wind_speed_10m": 5.8,
+      "wind_direction_10m": 284
+    }
+  },
+  {
+    "latitude": 51.51147,
+    "longitude": -0.13078308,
+    "generationtime_ms": 0.2052783966064453,
+    "utc_offset_seconds": 0,
+    "timezone": "GMT",
+    "timezone_abbreviation": "GMT",
+    "elevation": 29.0,
+    "location_id": 1,
+    "current_units": {
+      "time": "unixtime",
+      "interval": "seconds",
+      "temperature_2m": "°C",
+      "relative_humidity_2m": "%",
+      "precipitation": "mm",
+      "rain": "mm",
+      "weather_code": "wmo code",
+      "cloud_cover": "%",
+      "wind_speed_10m": "km/h",
+      "wind_direction_10m": "°"
+    },
+    "current": {
+      "time": 1788714000,
+      "interval": 900,
+      "temperature_2m": 24.5,
+      "relative_humidity_2m": 41,
+      "precipitation": 0.0,
+      "rain": 0.0,
+      "weather_code": 3,
+      "cloud_cover": 100,
+      "wind_speed_10m": 15.8,
+      "wind_direction_10m": 190
+    }
+  }
+]

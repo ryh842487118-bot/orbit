@@ -1,0 +1,117 @@
+/* EarthSense extends ORBIT's existing observatory UI. The universe skin stays intact. */
+.brand small{letter-spacing:1.5px;white-space:nowrap}
+.brand-english{display:block;font-size:8px;letter-spacing:.15px;color:#6f8595;margin-top:6px;font-weight:400}
+.earthsense-mode-switch{position:fixed;top:101px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:0;border-bottom:1px solid var(--line);background:#0710189c;backdrop-filter:blur(14px)}
+.earthsense-mode-switch button{position:relative;padding:11px 21px;font-size:11px;letter-spacing:1.5px;color:#8c9ca9}
+.earthsense-mode-switch button[aria-pressed=true]{color:var(--accent)}
+.earthsense-mode-switch button[aria-pressed=true]:after{content:'';position:absolute;bottom:-1px;left:21px;right:21px;height:1px;background:var(--accent)}
+.earthsense-panel{position:fixed;left:52px;top:171px;bottom:99px;width:290px;display:flex;flex-direction:column;min-height:0;pointer-events:auto}
+.earthsense-panel[hidden],.earthsense-popup[hidden],.earthsense-panel [hidden]{display:none!important}
+.earthsense-panel>.eyebrow{color:var(--accent);letter-spacing:3px;font-size:10px;flex-shrink:0}
+.earthsense-title-row{display:flex;align-items:center;justify-content:space-between;margin:17px 0 0}
+.earthsense-title-row h1{font-size:34px;letter-spacing:3px;font-weight:400;line-height:1.2;margin:0}
+.earthsense-refresh{width:34px;height:34px;font-size:25px;line-height:1;border:1px solid var(--line);border-radius:50%;color:#99b6be}
+.earthsense-refresh:disabled{opacity:.45;cursor:wait}
+.earthsense-intro{font-size:11px;letter-spacing:.5px;line-height:1.8;color:#9cafbc;margin:13px 0 20px}
+.earthsense-layers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;flex-shrink:0}
+.earthsense-layer{min-height:39px;display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid #8eabbc28;border-radius:5px;text-align:left;color:#7e909f;background:#08121bc2}
+.earthsense-layer[aria-pressed=true]{color:#d1e2e7;border-color:#9cbcc24a;background:#15272cce}
+.earthsense-layer:hover{border-color:#a5d8d47a;color:#e5f9f4}
+.earthsense-layer-dot{width:5px;height:5px;border-radius:50%;border:1px solid var(--layer-color);opacity:.6;flex-shrink:0}
+.earthsense-layer[aria-pressed=true] .earthsense-layer-dot{background:var(--layer-color);opacity:1}
+.earthsense-layer-name{font-size:11px;letter-spacing:.4px;white-space:nowrap}
+.earthsense-layer-name small{font-size:8px;color:#93a6af;margin-left:3px}
+.earthsense-layer-count{font-size:10px;font-variant-numeric:tabular-nums;margin-left:auto;color:#93a9b6}
+.earthsense-layer.has-error .earthsense-layer-count{color:#edbb82}
+.earthsense-sampling{color:#7b909f;font-size:9px;line-height:1.6;margin:11px 0 20px;flex-shrink:0}
+.earthsense-return{border-block:1px solid var(--line);padding:12px 0;margin-bottom:15px;font-size:11px;color:#9aafbc}
+.earthsense-return p{margin:0 0 8px;line-height:1.7}
+.earthsense-return button{color:var(--accent);padding:6px 0}
+.earthsense-events-section{border-top:1px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#34535e transparent}
+.earthsense-events-heading{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:14px 0;font-size:11px;letter-spacing:1px;color:#b5c7d3}
+.earthsense-events-heading::-webkit-details-marker{display:none}
+.earthsense-events-heading:after{content:'+';margin-left:auto;color:#83a59e;font-size:16px}
+.earthsense-events-section[open] .earthsense-events-heading:after{content:'−'}
+.earthsense-total{color:var(--accent);font-size:10px;font-variant-numeric:tabular-nums}
+.earthsense-search{width:100%;min-width:0;min-height:32px;border:0;border-bottom:1px solid #91bbb430;background:#09151f85;border-radius:0;padding:7px 9px;margin:0 0 3px;font:inherit;font-size:10px;color:#c7dce4;outline-offset:2px}
+.earthsense-search::placeholder{color:#839ca9}
+.earthsense-search:focus-visible{outline:1px solid var(--accent)}
+.earthsense-events{display:flex;flex-direction:column}
+.earthsense-event{position:relative;padding:12px 22px 12px 0;text-align:left;border-bottom:1px solid #9db4c119;flex-shrink:0}
+.earthsense-event-meta{display:block;font-size:9px;letter-spacing:.5px;color:#849da9;margin-bottom:6px}
+.earthsense-event-name{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.6;color:#c2d1d9;overflow-wrap:anywhere}
+.earthsense-event-arrow{position:absolute;right:1px;top:22px;color:#73b4ad;font-size:14px}
+.earthsense-event:hover .earthsense-event-name{color:var(--accent)}
+.earthsense-empty,.earthsense-list-note{font-size:11px;color:#8aa2af;line-height:1.8;margin:4px 0 12px}
+.earthsense-list-note{font-size:9px}
+.earthsense-update-status{font-size:9px;line-height:1.65;letter-spacing:.2px;color:#95acb6;margin:13px 0 0;flex-shrink:0}
+.earthsense-tagline{font-size:9px;color:#657f8e;letter-spacing:.1px;margin:9px 0 0;flex-shrink:0}
+body.earthsense-active .info-panel,body.earthsense-active .planet-dock,body.earthsense-active .time-control{display:none}
+body.earthsense-active .view-caption{bottom:110px}
+body.earthsense-active .gesture-hint{margin-left:auto}
+body.earthsense-active .layer-toggles{display:none}
+.earthsense-popup{position:fixed;right:143px;bottom:132px;width:310px;max-height:calc(100dvh - 290px);overflow:auto;padding:25px 24px 20px;border:1px solid #91bbb43d;border-radius:9px;background:linear-gradient(130deg,#102028f7,#09131ced);backdrop-filter:blur(20px);box-shadow:0 16px 60px #0005;scrollbar-width:thin;scrollbar-color:#34535e transparent;z-index:7}
+.earthsense-popup-close{position:absolute;right:9px;top:7px;width:31px;height:31px;font-size:25px;color:#93a9b6}
+.earthsense-popup .eyebrow{padding-right:19px;font-size:9px;letter-spacing:1.8px;color:var(--accent);line-height:1.7}
+.earthsense-popup h2{font-size:20px;line-height:1.5;font-weight:400;letter-spacing:.3px;margin:14px 0 9px;overflow-wrap:anywhere}
+.earthsense-popup-location{font-size:10px;color:#a0b8c3;letter-spacing:.8px;font-variant-numeric:tabular-nums;margin:0 0 15px}
+.earthsense-popup-description{font-size:11px;color:#9bb0be;line-height:1.8;margin:0 0 16px;white-space:pre-line;overflow-wrap:anywhere}
+.earthsense-popup-metrics{border-block:1px solid var(--line);padding:13px 0;margin:0 0 14px;display:grid;grid-template-columns:minmax(60px,.8fr) minmax(0,1fr);gap:10px;font-size:11px;line-height:1.5}
+.earthsense-popup-metrics dt{color:#879fac}
+.earthsense-popup-metrics dd{margin:0;color:#d1e1e6;overflow-wrap:anywhere}
+.earthsense-popup-time{font-size:9px;color:#8ca4b0;line-height:1.7;margin:0 0 8px}
+.earthsense-route-info{border-top:1px solid var(--line);padding:12px 0;margin:0 0 8px;font-size:10px;color:#a6bac5;line-height:1.65}
+.earthsense-route-info p{margin:4px 0}
+.earthsense-route-info a{display:inline-block;margin-top:7px;color:#b5e5dc}
+.earthsense-route-wind,.earthsense-route-point{color:#d8e6ec}
+.earthsense-route-legend{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0}
+.earthsense-route-legend span:before{content:'';display:inline-block;width:17px;border-top:2px solid currentColor;vertical-align:middle;margin-right:6px}
+.earthsense-route-history{color:#83decd}
+.earthsense-route-forecast{color:#ffc17c}
+.earthsense-route-legend .earthsense-route-forecast:before{border-top-style:dashed}
+.earthsense-route-status{color:#b5a98c}
+.earthsense-popup-source{font-size:10px;color:#9bdbce;display:inline-block;max-width:100%;overflow-wrap:anywhere}
+.earthsense-popup-source[href]:hover{text-decoration:underline}
+.earthsense-popup-focus{margin-top:19px;display:block;width:100%;border-top:1px solid var(--line);text-align:left;padding:15px 0 0;color:var(--accent);font-size:12px;letter-spacing:1px}
+.earthsense-popup-focus:disabled{opacity:.5;cursor:default}
+body.immersive .earthsense-panel,body.immersive .earthsense-popup{pointer-events:none;visibility:hidden}
+@media(min-width:1700px){.earthsense-panel{left:64px;width:310px;top:185px}.earthsense-popup{width:335px;right:165px}}
+@media(max-height:800px) and (min-width:901px){.earthsense-mode-switch{top:85px}.earthsense-panel{top:139px;bottom:90px}.earthsense-title-row{margin-top:12px}.earthsense-title-row h1{font-size:29px}.earthsense-intro{margin:9px 0 14px}.earthsense-sampling{margin-bottom:12px}.earthsense-popup{bottom:113px;max-height:calc(100dvh - 250px)}}
+@media(max-width:1150px){.earthsense-panel{left:34px;width:260px}.earthsense-popup{right:112px;width:288px}.brand-english{font-size:7px}}
+@media(max-width:900px){.earthsense-mode-switch{top:88px}.earthsense-panel{left:26px;top:148px;width:245px;bottom:96px}.earthsense-title-row h1{font-size:28px}.earthsense-intro{font-size:10px}.earthsense-layer{padding:8px;gap:6px}.earthsense-layer-name{font-size:10px}.earthsense-popup{right:93px;width:276px;bottom:114px;max-height:calc(100dvh - 270px)}.brand-english{display:none}.brand small{font-size:8px;letter-spacing:.65px}}
+@media(max-width:600px){
+  .earthsense-mode-switch{top:138px;background:#071018b8}
+  .earthsense-mode-switch button{padding:8px 23px;font-size:10px;min-height:34px}
+  body:not(.earthsense-active) .info-panel{top:193px}
+  .earthsense-panel{top:auto;left:14px;right:14px;bottom:67px;width:auto;max-height:43dvh;padding:13px 14px 10px;border:1px solid #91bbb430;border-radius:9px;background:#09151fef;backdrop-filter:blur(18px);overflow:auto}
+  .earthsense-panel>.eyebrow,.earthsense-intro,.earthsense-tagline{display:none}
+  .earthsense-title-row{margin:0 0 10px;flex-shrink:0}
+  .earthsense-title-row h1{font-size:18px;letter-spacing:2px}
+  .earthsense-refresh{width:27px;height:27px;font-size:20px}
+  .earthsense-layers{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .earthsense-layer{padding:7px 5px;gap:4px;min-height:35px;justify-content:center}
+  .earthsense-layer-name{font-size:10px;letter-spacing:0}
+  .earthsense-layer-name small{font-size:7px;display:block;margin:2px 0 0;line-height:1}
+  .earthsense-layer-count{display:none}
+  .earthsense-sampling{margin:8px 0;font-size:8px}
+  .earthsense-events-section{flex-shrink:0;overflow:visible}
+  .earthsense-events-heading{padding:9px 0;font-size:10px;min-height:31px}
+  .earthsense-events{max-height:125px;overflow:auto}
+  .earthsense-search{font-size:11px;min-height:34px}
+  .earthsense-event{padding:9px 20px 9px 0}
+  .earthsense-event-meta{font-size:8px;margin-bottom:3px}
+  .earthsense-event-name{font-size:11px;-webkit-line-clamp:1}
+  .earthsense-update-status{font-size:8px;margin-top:5px}
+  .earthsense-return{font-size:10px;margin:4px 0 9px;padding:9px 0}
+  .earthsense-return p{margin-bottom:3px}
+  .earthsense-empty{font-size:10px;margin-bottom:8px}
+  body.earthsense-active .control-row{height:30px}
+  body.earthsense-active .layer-toggles{display:none}
+  body.earthsense-active .view-caption{bottom:auto;top:185px;left:50%;font-size:8px}
+  body.earthsense-active .scale-control{top:29%}
+  .earthsense-popup{left:14px;right:14px;bottom:67px;width:auto;max-height:42dvh;padding:19px 20px 17px;background:#0c1b25fa;z-index:8}
+  .earthsense-popup h2{font-size:18px;margin:10px 0 7px}
+  .earthsense-popup-description{font-size:10px;line-height:1.7}
+  .earthsense-popup-focus{padding-top:12px;margin-top:13px;min-height:35px}
+}
+@media(max-width:360px){.brand small{font-size:7px;letter-spacing:.25px}.earthsense-layer-dot{width:4px;height:4px}.earthsense-layer-name{font-size:9px}.earthsense-panel{padding-inline:10px}}

@@ -1,0 +1,192 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "bbox": [
+        95.0002042,
+        17.6027475,
+        95.0002042,
+        17.6027475
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          95.0002042,
+          17.6027475
+        ]
+      },
+      "properties": {
+        "eventtype": "FL",
+        "eventid": 1104011,
+        "episodeid": 7,
+        "eventname": "",
+        "glide": "FL-2026-000141-MMR",
+        "name": "Flood in Myanmar",
+        "description": "Flood in Myanmar",
+        "htmldescription": "Green Flood in Myanmar from: 04 Jul 2026 01 to: 03 Sep 2026 01.",
+        "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png",
+        "iconoverall": null,
+        "url": {
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=FL&eventid=1104011&episodeid=7",
+          "report": "https://www.gdacs.org/report.aspx?eventid=1104011&episodeid=7&eventtype=FL",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=FL&eventid=1104011"
+        },
+        "alertlevel": "Green",
+        "alertscore": 1,
+        "episodealertlevel": "Green",
+        "episodealertscore": 0.5,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": "Myanmar",
+        "fromdate": "2026-07-04T01:00:00",
+        "todate": "2026-09-03T01:00:00",
+        "datemodified": "2026-09-06T12:29:25",
+        "iso3": "MMR",
+        "source": "GLOFAS",
+        "sourceid": "58c8afb2-1d48-4c50-ae6a-14d107e9e6f7",
+        "polygonlabel": "Centroid",
+        "Class": "Point_Centroid",
+        "affectedcountries": [
+          {
+            "iso2": "MM",
+            "iso3": "MMR",
+            "countryname": "Myanmar"
+          }
+        ],
+        "severitydata": {
+          "severity": 0.0,
+          "severitytext": "Magnitude 0 ",
+          "severityunit": ""
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "bbox": [
+        95.18273718807725,
+        17.624134718063285,
+        95.18273718807725,
+        17.624134718063285
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          95.18273718807725,
+          17.624134718063285
+        ]
+      },
+      "properties": {
+        "eventtype": "FL",
+        "eventid": 1104011,
+        "episodeid": 7,
+        "eventname": "",
+        "glide": "FL-2026-000141-MMR",
+        "name": "Flood in Myanmar",
+        "description": "Flood in Myanmar",
+        "htmldescription": "Green Flood in Myanmar from: 04 Jul 2026 01 to: 03 Sep 2026 01.",
+        "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png",
+        "iconoverall": null,
+        "url": {
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=FL&eventid=1104011&episodeid=7",
+          "report": "https://www.gdacs.org/report.aspx?eventid=1104011&episodeid=7&eventtype=FL",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=FL&eventid=1104011"
+        },
+        "alertlevel": "Green",
+        "alertscore": 1,
+        "episodealertlevel": "Green",
+        "episodealertscore": 0.5,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": "Myanmar",
+        "fromdate": "2026-07-04T01:00:00",
+        "todate": "2026-09-03T01:00:00",
+        "datemodified": "2026-09-06T12:29:25",
+        "iso3": "MMR",
+        "source": "GLOFAS",
+        "sourceid": "58c8afb2-1d48-4c50-ae6a-14d107e9e6f7",
+        "polygondate": "2026-08-30T01:00:00",
+        "polygonlabel": "Affected area",
+        "affectedcountries": [
+          {
+            "iso2": "MM",
+            "iso3": "MMR",
+            "countryname": "Myanmar"
+          }
+        ],
+        "severitydata": {
+          "severity": 0.0,
+          "severitytext": "Magnitude 0 ",
+          "severityunit": ""
+        },
+        "Class": "Point_Affected",
+        "iconeventlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png",
+        "iconitemlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png"
+      }
+    },
+    {
+      "type": "Feature",
+      "bbox": [
+        95.69116382133576,
+        20.026828525936008,
+        95.69116382133576,
+        20.026828525936008
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          95.69116382133576,
+          20.026828525936008
+        ]
+      },
+      "properties": {
+        "eventtype": "FL",
+        "eventid": 1104011,
+        "episodeid": 7,
+        "eventname": "",
+        "glide": "FL-2026-000141-MMR",
+        "name": "Flood in Myanmar",
+        "description": "Flood in Myanmar",
+        "htmldescription": "Green Flood in Myanmar from: 04 Jul 2026 01 to: 03 Sep 2026 01.",
+        "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png",
+        "iconoverall": null,
+        "url": {
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=FL&eventid=1104011&episodeid=7",
+          "report": "https://www.gdacs.org/report.aspx?eventid=1104011&episodeid=7&eventtype=FL",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=FL&eventid=1104011"
+        },
+        "alertlevel": "Green",
+        "alertscore": 1,
+        "episodealertlevel": "Green",
+        "episodealertscore": 0.5,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": "Myanmar",
+        "fromdate": "2026-07-04T01:00:00",
+        "todate": "2026-09-03T01:00:00",
+        "datemodified": "2026-09-06T12:29:25",
+        "iso3": "MMR",
+        "source": "GLOFAS",
+        "sourceid": "58c8afb2-1d48-4c50-ae6a-14d107e9e6f7",
+        "polygondate": "2026-08-30T01:00:00",
+        "polygonlabel": "Global area",
+        "affectedcountries": [
+          {
+            "iso2": "MM",
+            "iso3": "MMR",
+            "countryname": "Myanmar"
+          }
+        ],
+        "severitydata": {
+          "severity": 0.0,
+          "severitytext": "Magnitude 0 ",
+          "severityunit": ""
+        },
+        "Class": "Point_Global",
+        "iconeventlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png",
+        "iconitemlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png"
+      }
+    }
+  ],
+  "bbox": null
+}

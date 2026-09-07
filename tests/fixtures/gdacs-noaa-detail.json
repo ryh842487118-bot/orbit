@@ -1,0 +1,40 @@
+{
+  "type": "Feature",
+  "bbox": [
+    -120.4,
+    21.8,
+    -120.4,
+    21.8
+  ],
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      -120.4,
+      21.8
+    ]
+  },
+  "properties": {
+    "eventtype": "TC",
+    "eventid": 1001317,
+    "episodeid": 18,
+    "url": {
+      "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001317&episodeid=18",
+      "report": "https://www.gdacs.org/report.aspx?eventid=1001317&episodeid=18&eventtype=TC",
+      "media": "https://www.gdacs.org/gdacsapi/api/emm/getemmnewsbykey?eventtype=TC&eventid=1001317",
+      "eventnews": "https://www.gdacs.org/gdacsapi/api/news/getnewsbygdacskey?eventtype=TC&eventid=1001317"
+    },
+    "todate": "2026-09-05T15:00:00",
+    "datemodified": "2026-09-05T23:59:14",
+    "source": "NOAA",
+    "impacts": [
+      {
+        "source": "NOAA",
+        "resource": {
+          "timeline": "https://www.gdacs.org/gdacsapi/api/export/gettimeline?id=793141",
+          "buffer74": "https://www.gdacs.org/gdacsapi/api/export/getimpact?id=793142",
+          "buffer39": "https://www.gdacs.org/gdacsapi/api/export/getimpact?id=793143"
+        }
+      }
+    ]
+  }
+}

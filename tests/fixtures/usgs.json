@@ -1,0 +1,141 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "generated": 1788714782000,
+    "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+    "title": "USGS All Earthquakes, Past Day",
+    "status": 200,
+    "api": "2.7.0",
+    "count": 175
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 2,
+        "place": "17 km NNE of Aleneva, Alaska",
+        "time": 1788714176653,
+        "updated": 1788714249540,
+        "tz": null,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026rrjnww",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/aka2026rrjnww.geojson",
+        "felt": null,
+        "cdi": null,
+        "mmi": null,
+        "alert": null,
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 62,
+        "net": "ak",
+        "code": "a2026rrjnww",
+        "ids": ",aka2026rrjnww,",
+        "sources": ",ak,",
+        "types": ",origin,phase-data,",
+        "nst": 16,
+        "dmin": 0.4,
+        "rms": 0.6,
+        "gap": 131,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 2.0 - 17 km NNE of Aleneva, Alaska"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -152.833,
+          58.209,
+          22.5
+        ]
+      },
+      "id": "aka2026rrjnww"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.01,
+        "place": "7 km WNW of Cobb, CA",
+        "time": 1788713092250,
+        "updated": 1788714742590,
+        "tz": null,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75430757",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc75430757.geojson",
+        "felt": null,
+        "cdi": null,
+        "mmi": null,
+        "alert": null,
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 16,
+        "net": "nc",
+        "code": "75430757",
+        "ids": ",nc75430757,",
+        "sources": ",nc,",
+        "types": ",nearby-cities,origin,phase-data,scitech-link,",
+        "nst": 14,
+        "dmin": 0.01017,
+        "rms": 0.01,
+        "gap": 61,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 1.0 - 7 km WNW of Cobb, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.803169250488,
+          38.8366661071777,
+          2.30999994277954
+        ]
+      },
+      "id": "nc75430757"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.71,
+        "place": "1 km ESE of Maria Antonia, Puerto Rico",
+        "time": 1788712322440,
+        "updated": 1788713447480,
+        "tz": null,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/pr71531098",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/pr71531098.geojson",
+        "felt": null,
+        "cdi": null,
+        "mmi": null,
+        "alert": null,
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 45,
+        "net": "pr",
+        "code": "71531098",
+        "ids": ",pr71531098,",
+        "sources": ",pr,",
+        "types": ",origin,phase-data,",
+        "nst": 8,
+        "dmin": 0.0004197,
+        "rms": 0.22,
+        "gap": 185,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 1.7 - 1 km ESE of Maria Antonia, Puerto Rico"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -66.8788333333333,
+          17.9751666666667,
+          15.65
+        ]
+      },
+      "id": "pr71531098"
+    }
+  ],
+  "bbox": [
+    -176.8095,
+    -39.2175,
+    -0.79000002145767,
+    173.8015,
+    76.1481,
+    240.38
+  ]
+}

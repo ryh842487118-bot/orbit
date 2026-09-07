@@ -1,0 +1,69 @@
+{
+  "title": "EONET Events",
+  "description": "Natural events from EONET.",
+  "link": "https://eonet.gsfc.nasa.gov/api/v3/events",
+  "events": [
+    {
+      "id": "EONET_23868",
+      "title": "Emergency Stabilization BAER McConnell, Humboldt, Nevada",
+      "description": null,
+      "link": "https://eonet.gsfc.nasa.gov/api/v3/events/EONET_23868",
+      "closed": null,
+      "categories": [
+        {
+          "id": "wildfires",
+          "title": "Wildfires"
+        }
+      ],
+      "sources": [
+        {
+          "id": "IRWIN",
+          "url": "https://irwin.doi.gov/observer/incidents/2026-NVWID-020663"
+        }
+      ],
+      "geometry": [
+        {
+          "magnitudeValue": 500.0,
+          "magnitudeUnit": "acres",
+          "date": "2026-09-03T13:03:00Z",
+          "type": "Point",
+          "coordinates": [
+            -117.74215,
+            41.517567
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EONET_23869",
+      "title": "Wildfire Ayers Pond, Prairie, Montana",
+      "description": "25 Miles SE from Terry, MT",
+      "link": "https://eonet.gsfc.nasa.gov/api/v3/events/EONET_23869",
+      "closed": null,
+      "categories": [
+        {
+          "id": "wildfires",
+          "title": "Wildfires"
+        }
+      ],
+      "sources": [
+        {
+          "id": "IRWIN",
+          "url": "https://irwin.doi.gov/observer/incidents/2026-MTMCD-000777"
+        }
+      ],
+      "geometry": [
+        {
+          "magnitudeValue": 565.8,
+          "magnitudeUnit": "acres",
+          "date": "2026-09-03T01:45:00Z",
+          "type": "Point",
+          "coordinates": [
+            -104.83045,
+            46.65069
+          ]
+        }
+      ]
+    }
+  ]
+}

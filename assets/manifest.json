@@ -180,5 +180,33 @@
     "license": "CC BY 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
     "modifications": "None; original downloaded files have only been renamed."
+  },
+  {
+    "path": "assets/earth-day-8k.jpg",
+    "url": "https://www.solarsystemscope.com/textures/download/8k_earth_daymap.jpg",
+    "bytes": 4565076,
+    "sha256": "88ab060b6e7d241cfc590c69f528fab2b3247b738d40124cb590999a6fe44abc",
+    "width": 8192,
+    "height": 4096,
+    "hasAlpha": false,
+    "author": "Solar System Scope",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "downloadedDateUtc": "2026-09-06",
+    "modifications": "None; original downloaded file has only been renamed."
+  },
+  {
+    "path": "assets/earth-night-8k.jpg",
+    "url": "https://www.solarsystemscope.com/textures/download/8k_earth_nightmap.jpg",
+    "bytes": 3144468,
+    "sha256": "9894e83a585a22c1c425e7ca4f987a9ba625bf08ecee45d3c9dcacae3c2ad5f7",
+    "width": 8192,
+    "height": 4096,
+    "hasAlpha": false,
+    "author": "Solar System Scope",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "downloadedDateUtc": "2026-09-06",
+    "modifications": "None; original downloaded file has only been renamed."
   }
 ]

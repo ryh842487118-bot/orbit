@@ -1,0 +1,39 @@
+{
+  "type": "Feature",
+  "bbox": [
+    128.2,
+    25.5,
+    128.2,
+    25.5
+  ],
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      128.2,
+      25.5
+    ]
+  },
+  "properties": {
+    "eventtype": "TC",
+    "eventid": 1001318,
+    "episodeid": 18,
+    "url": {
+      "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001318&episodeid=18",
+      "report": "https://www.gdacs.org/report.aspx?eventid=1001318&episodeid=18&eventtype=TC",
+      "media": "https://www.gdacs.org/gdacsapi/api/emm/getemmnewsbykey?eventtype=TC&eventid=1001318",
+      "eventnews": "https://www.gdacs.org/gdacsapi/api/news/getnewsbygdacskey?eventtype=TC&eventid=1001318"
+    },
+    "todate": "2026-09-05T12:00:00",
+    "datemodified": "2026-09-05T14:27:13",
+    "source": "JTWC",
+    "impacts": [
+      {
+        "source": "JTWC",
+        "resource": {
+          "timeline": "https://www.gdacs.org/gdacsapi/api/export/gettimeline?id=793134",
+          "buffer39": "https://www.gdacs.org/gdacsapi/api/export/getimpact?id=793135"
+        }
+      }
+    ]
+  }
+}

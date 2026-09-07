@@ -1,0 +1,253 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "bbox": [
+        133.8,
+        28.5,
+        133.8,
+        28.5
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          133.8,
+          28.5
+        ]
+      },
+      "properties": {
+        "eventtype": "TC",
+        "eventid": 1001319,
+        "episodeid": 5,
+        "eventname": "TWENTYTHREE-26",
+        "glide": "",
+        "name": "Tropical Cyclone TWENTYTHREE-26",
+        "description": "Tropical Cyclone TWENTYTHREE-26",
+        "htmldescription": "Green Tropical Cyclone TWENTYTHREE-26 off-shore from: 04 Sep 2026  to: 05 Sep 2026 .",
+        "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png",
+        "iconoverall": null,
+        "url": {
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001319&episodeid=5",
+          "report": "https://www.gdacs.org/report.aspx?eventid=1001319&episodeid=5&eventtype=TC",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=TC&eventid=1001319"
+        },
+        "alertlevel": "Green",
+        "alertscore": 1,
+        "episodealertlevel": "Green",
+        "episodealertscore": 1.0,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": "",
+        "fromdate": "2026-09-04T12:00:00",
+        "todate": "2026-09-05T12:00:00",
+        "datemodified": "2026-09-05T14:28:54",
+        "iso3": "",
+        "source": "JTWC",
+        "sourceid": "",
+        "polygonlabel": "Centroid",
+        "Class": "Point_Centroid",
+        "countryonland": "",
+        "affectedcountries": [],
+        "severitydata": {
+          "severity": 74.0736,
+          "severitytext": "Tropical Depression (maximum wind speed of 74 km/h)",
+          "severityunit": "km/h"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "bbox": [
+        130.8,
+        29.7,
+        132.1,
+        30.6
+      ],
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            132.1,
+            29.7
+          ],
+          [
+            130.8,
+            30.6
+          ]
+        ]
+      },
+      "properties": {
+        "eventtype": "TC",
+        "eventid": 1001319,
+        "episodeid": 5,
+        "eventname": "TWENTYTHREE-26",
+        "glide": "",
+        "name": "Tropical Cyclone TWENTYTHREE-26",
+        "description": "Tropical Cyclone TWENTYTHREE-26",
+        "htmldescription": "Green Tropical Cyclone TWENTYTHREE-26 off-shore from: 04 Sep 2026  to: 05 Sep 2026 .",
+        "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png",
+        "iconoverall": null,
+        "url": {
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001319&episodeid=5",
+          "report": "https://www.gdacs.org/report.aspx?eventid=1001319&episodeid=5&eventtype=TC",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=TC&eventid=1001319"
+        },
+        "alertlevel": "Green",
+        "alertscore": 1,
+        "episodealertlevel": "Green",
+        "episodealertscore": 1.0,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": "",
+        "fromdate": "2026-09-04T12:00:00",
+        "todate": "2026-09-05T12:00:00",
+        "datemodified": "2026-09-05T14:28:54",
+        "iso3": "",
+        "source": "JTWC",
+        "sourceid": "",
+        "polygondate": "2026-09-05T12:00:00",
+        "polygonlabel": "TD",
+        "countryonland": "",
+        "affectedcountries": [],
+        "severitydata": {
+          "severity": 74.0736,
+          "severitytext": "Tropical Depression (maximum wind speed of 74 km/h)",
+          "severityunit": "km/h"
+        },
+        "Class": "Line_Line_0",
+        "iconeventlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png",
+        "iconitemlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png"
+      }
+    },
+    {
+      "type": "Feature",
+      "bbox": [
+        132.1,
+        28.5,
+        133.8,
+        29.7
+      ],
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            133.8,
+            28.5
+          ],
+          [
+            132.1,
+            29.7
+          ]
+        ]
+      },
+      "properties": {
+        "eventtype": "TC",
+        "eventid": 1001319,
+        "episodeid": 5,
+        "eventname": "TWENTYTHREE-26",
+        "glide": "",
+        "name": "Tropical Cyclone TWENTYTHREE-26",
+        "description": "Tropical Cyclone TWENTYTHREE-26",
+        "htmldescription": "Green Tropical Cyclone TWENTYTHREE-26 off-shore from: 04 Sep 2026  to: 05 Sep 2026 .",
+        "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png",
+        "iconoverall": null,
+        "url": {
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001319&episodeid=5",
+          "report": "https://www.gdacs.org/report.aspx?eventid=1001319&episodeid=5&eventtype=TC",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=TC&eventid=1001319"
+        },
+        "alertlevel": "Green",
+        "alertscore": 1,
+        "episodealertlevel": "Green",
+        "episodealertscore": 1.0,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": "",
+        "fromdate": "2026-09-04T12:00:00",
+        "todate": "2026-09-05T12:00:00",
+        "datemodified": "2026-09-05T14:28:54",
+        "iso3": "",
+        "source": "JTWC",
+        "sourceid": "",
+        "polygondate": "2026-09-05T12:00:00",
+        "polygonlabel": "TD",
+        "countryonland": "",
+        "affectedcountries": [],
+        "severitydata": {
+          "severity": 74.0736,
+          "severitytext": "Tropical Depression (maximum wind speed of 74 km/h)",
+          "severityunit": "km/h"
+        },
+        "Class": "Line_Line_1",
+        "iconeventlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png",
+        "iconitemlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png"
+      }
+    },
+    {
+      "type": "Feature",
+      "bbox": [
+        133.8,
+        27.6,
+        135.2,
+        28.5
+      ],
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            135.2,
+            27.6
+          ],
+          [
+            133.8,
+            28.5
+          ]
+        ]
+      },
+      "properties": {
+        "eventtype": "TC",
+        "eventid": 1001319,
+        "episodeid": 5,
+        "eventname": "TWENTYTHREE-26",
+        "glide": "",
+        "name": "Tropical Cyclone TWENTYTHREE-26",
+        "description": "Tropical Cyclone TWENTYTHREE-26",
+        "htmldescription": "Green Tropical Cyclone TWENTYTHREE-26 off-shore from: 04 Sep 2026  to: 05 Sep 2026 .",
+        "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png",
+        "iconoverall": null,
+        "url": {
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001319&episodeid=5",
+          "report": "https://www.gdacs.org/report.aspx?eventid=1001319&episodeid=5&eventtype=TC",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=TC&eventid=1001319"
+        },
+        "alertlevel": "Green",
+        "alertscore": 1,
+        "episodealertlevel": "Green",
+        "episodealertscore": 1.0,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": "",
+        "fromdate": "2026-09-04T12:00:00",
+        "todate": "2026-09-05T12:00:00",
+        "datemodified": "2026-09-05T14:28:54",
+        "iso3": "",
+        "source": "JTWC",
+        "sourceid": "",
+        "polygondate": "2026-09-05T12:00:00",
+        "polygonlabel": "TD",
+        "countryonland": "",
+        "affectedcountries": [],
+        "severitydata": {
+          "severity": 74.0736,
+          "severitytext": "Tropical Depression (maximum wind speed of 74 km/h)",
+          "severityunit": "km/h"
+        },
+        "Class": "Line_Line_2",
+        "iconeventlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png",
+        "iconitemlink": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png"
+      }
+    }
+  ],
+  "bbox": null
+}
