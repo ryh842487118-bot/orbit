@@ -51,7 +51,7 @@ export function createPipeline(renderer, scene, camera) {
     camera.updateProjectionMatrix();
     composer.setPixelRatio(pixels);
     composer.setSize(w, h);
-    for (const stars of [world?.galaxy, world?.backgroundStars]) {
+    for (const stars of world?.starFields || [world?.galaxy, world?.backgroundStars]) {
       if (stars) stars.material.uniforms.uRatio.value = pixels;
     }
     return pixels;

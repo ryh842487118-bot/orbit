@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | [English](README_EN.md)
 
-Current version: **1.4.0**.
+Current version: **1.5.0**.
 
 **Live demo:** [https://ryh842487118-bot.github.io/orbit/](https://ryh842487118-bot.github.io/orbit/)
 
@@ -19,10 +19,13 @@ The 58-second video is recorded from the actual website at 1440 × 900 and 30 FP
 ## Explore
 
 - Drag to rotate the camera and use the mouse wheel to zoom. On touchscreens, drag with one finger to rotate and pinch with two fingers to zoom.
-- Keep zooming out from Earth to move through the Solar System and into the Milky Way. Zoom back in to return to the tracked body.
+- Keep zooming out from Earth to move through the Solar System, the Milky Way, and the Local Group. Zoom back in to return to the tracked body.
 - Select a body from the bottom dock, the 3D scene, or a label to fly smoothly to it.
+- Explore **five galaxies: the Milky Way, Andromeda, Triangulum, the Large Magellanic Cloud, and the Small Magellanic Cloud**. Selecting a galaxy fills the bottom dock with its stellar and planetary destinations. Use the galaxy, stellar-system overview, and Local Group controls to move back through the navigation hierarchy.
+- Visit **eight additional real stellar targets**: Betelgeuse, HR 8799, AF And, AE And, Romano’s Star, R136a1, WOH G64, and HD 5980. HD 5980 is a multiple-star system represented by one luminous object.
+- Explore **four confirmed giant planets, HR 8799 b, c, d, and e**, plus **four explicitly fictional extragalactic giant-planet illustrations**, giving every new galaxy a planetary destination. The fictional planets and their placement beside real stars are demonstrations, not discoveries or measured orbits. All exoplanet surfaces are artistic. See [deep-space catalog and sources](docs/deep-space-sources.md).
 - Use **City Lights** and **Visit the Space Station** from the Earth panel.
-- Jump between **Near-Earth Orbit**, **Solar System**, and **Milky Way** using the navigation at the top.
+- Jump between **Near-Earth Orbit**, **Solar System**, **Milky Way**, and **Local Group** using the navigation at the top.
 - Toggle orbits and labels independently. Pause celestial motion or switch between 0.25×, 1×, 5×, and 20× simulation speeds.
 - Warm meteoroids and comets with two soft tails occasionally cross the sky, one at a time at random intervals. They follow the pause control and are hidden in EarthSense and reduced-motion mode.
 - Keyboard shortcuts: `+` / `-` to zoom, Space to pause, `H` to return to Earth, `F` for fullscreen, `I` to hide the interface, and `?` for help.
@@ -46,9 +49,23 @@ Universe exploration and EarthSense share the same detailed Earth maps, finer ge
 
 ## Implementation
 
-ORBIT uses Three.js r185 and includes Earth day/night shading, city lights, an independent cloud layer, an atmospheric rim, 32 satellites, a simplified International Space Station, the Moon, the Sun, all eight planets, transparent Saturn rings, Solar System orbits, a procedurally generated spiral galaxy, logarithmic depth buffering, bloom post-processing, and a responsive interface.
+ORBIT uses Three.js r185 and includes Earth day/night shading, city lights, an independent cloud layer, an atmospheric rim, 32 satellites, a simplified International Space Station, the Moon, the Sun, all eight planets, transparent Saturn rings, and Solar System orbits. Deep-space exploration adds three procedural spiral galaxies, two irregular dwarf galaxies, independent stellar systems, procedural star and giant-planet surfaces, and lighting directed toward each planet’s host star. Bodies and orbits appear according to viewing distance. The renderer uses logarithmic depth buffering, bloom post-processing, and a responsive interface.
 
-This is an interactive visualization. Body sizes, distances, orbital positions, and speeds are adjusted for visual presentation rather than real-time astronomical accuracy. The satellite and space-station models are intentionally enlarged, and the galaxy is illustrative. Close-range HUD distances are converted from visual units and are intended for demonstration.
+This is an interactive visualization. Body sizes, distances, orbital positions, and speeds are adjusted for visual presentation rather than real-time astronomical accuracy. The satellite and space-station models are intentionally enlarged, and all five galaxies are illustrative. Five is the number of available destinations, not the total membership of the Local Group. Close-range HUD distances are converted from visual units and are intended for demonstration.
+
+## Debugging Interface
+
+After the page loads, call `ORBIT.destinations()` in the browser console to inspect the five galaxies and 16 additional bodies. Entries provide IDs, names, kinds, galaxy membership, host stars, and model status. Existing Solar System destinations retain their original navigation IDs.
+
+```js
+console.table(ORBIT.destinations());
+ORBIT.goTo('local-group'); // Local Group overview
+ORBIT.goTo('andromeda');   // Fly to Andromeda
+ORBIT.goTo('hr8799-b');    // Fly to a confirmed giant planet
+ORBIT.getState();          // Includes activeGalaxyId, activeSystemId, and the current scale
+```
+
+In the new catalog, `modelStatus: 'confirmed'` identifies real objects, while `'illustration'` identifies fictional destinations. Surface artwork, scene proportions, and orbital animation remain illustrative for confirmed objects too.
 
 ## Files
 
@@ -56,13 +73,13 @@ This is an interactive visualization. Body sizes, distances, orbital positions, 
 - `src/style.css`: interface styling and mobile layouts.
 - `src/universe.js`: compatibility entry only; `src/app.js` assembles the application.
 - `src/core/`: renderer, camera flights, scene assembly, textures.
-- `src/universe/`: planets, orbits, satellites, simulation, and galaxy.
+- `src/universe/`: body catalogs, planets, orbits, satellites, simulation, the Local Group, and independent deep-space stellar systems.
 - `src/earth/`: day/night shading, atmosphere, clouds, geographic coordinates, and on-demand detailed textures.
 - `src/earthsense/`: the current weather, lightning, and cyclone overlays, feed state, mode restoration, and illustrative weather effects in `effects/`.
 - `src/data/`: Open-Meteo, NASA EONET, and GDACS adapters, wind-unit conversion, and shared requests; `cyclone-track.js` loads official cyclone tracks on demand.
 - `src/ui/`: original controls, labels, EarthSense panel and event details.
-- `tests/`: navigation, picking, restoration, caching, cancellation, adapter tests.
-- `docs/`: validation and source documentation.
+- `tests/`: navigation, deep-space catalogs and orbital tracking, picking, restoration, caching, cancellation, and adapter tests.
+- `docs/`: validation, public data documentation, and deep-space sources.
 - `assets/`: original textures, attribution, and licenses.
 - `build.mjs`: bundles the engine, scene code, and textures into one HTML file.
 - `index.html`: self-contained build output.
@@ -71,4 +88,4 @@ This is an interactive visualization. Body sizes, distances, orbital positions, 
 
 Run `npm install`, `npm test`, and `npm run build` to install, validate, and rebuild. The generated `index.html` is written to the project root and uses only dependencies included in this repository.
 
-Planet textures come from [Solar System Scope](https://www.solarsystemscope.com/textures/) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) and are displayed with real-time lighting and shaders. See `assets/CREDITS.md` for the full attribution list. Three.js is distributed under the MIT License; see `assets/THREE-LICENSE.txt`.
+Solar System textures come from [Solar System Scope](https://www.solarsystemscope.com/textures/) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) and are displayed with real-time lighting and shaders. The additional deep-space bodies use procedural artistic surfaces. See `assets/CREDITS.md` for the full attribution list. Three.js is distributed under the MIT License; see `assets/THREE-LICENSE.txt`.

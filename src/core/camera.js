@@ -4,8 +4,10 @@ import { clamp, smooth, mobile, reducedMotion } from './math.js';
 import { snapshotCamera, restoreCamera, snapshotFlight, restoreFlight } from './camera-state.js';
 import { earthSurfaceDirection } from './geographic-focus.js';
 
+const MAX_DISTANCE = 2000000;
+
 export function createCamera(renderer) {
-  const camera = new THREE.PerspectiveCamera(43, innerWidth / innerHeight, .001, 350000);
+  const camera = new THREE.PerspectiveCamera(43, innerWidth / innerHeight, .001, 4000000);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = .07;
@@ -13,7 +15,7 @@ export function createCamera(renderer) {
   controls.zoomSpeed = 1.65;
   controls.rotateSpeed = .5;
   controls.minDistance = 1.13;
-  controls.maxDistance = 180000;
+  controls.maxDistance = MAX_DISTANCE;
   controls.maxPolarAngle = Math.PI - .02;
   controls.minPolarAngle = .02;
   return { camera, controls };
@@ -26,16 +28,30 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   const galaxyCenter = getPosition('galaxy');
   const temp = new THREE.Vector3(), collisionOffset = new THREE.Vector3();
   let selected = 'earth', focusBody = 'earth', displayedId = 'earth';
+  let activeGalaxyId = 'galaxy', activeSystemId = 'solar';
   let flight = null, lastMode = 'earth';
 
   function destinationDistance(id) {
+    const destination = getData(id);
+    if (destination.kind === 'group') return destination.viewDistance * (mobile() ? 1.65 : 1);
+    if (destination.kind === 'galaxy') return destination.viewDistance * (mobile() ? 1.25 : 1);
     if (id === 'galaxy') return 68000;
     if (id === 'solar') return 650;
     if (id === 'iss') return .88;
-    return getData(id).r * (id === 'saturn' ? 8.6 : id === 'sun' ? 5.5 : 4.65) * (mobile() ? 1.19 : 1);
+    const screenFit = mobile() ? (destination.parentGalaxy ? 1.7 : 1.19) : 1;
+    return destination.r * (id === 'saturn' ? 8.6 : id === 'sun' || destination.kind === 'star' ? 5.5 : 4.65) * screenFit;
   }
 
   function destinationDirection(id, night = false) {
+    const destination = getData(id);
+    if (destination.kind === 'group') return new THREE.Vector3(.12, .8, 1.65).normalize();
+    if (destination.kind === 'galaxy') return new THREE.Vector3(.16, 1.3, 1.7).normalize();
+    if (destination.parentStarId) {
+      const towardStar = getPosition(destination.parentStarId).sub(getPosition(id)).normalize();
+      const tangent = new THREE.Vector3().crossVectors(towardStar, new THREE.Vector3(0, 1, 0));
+      return towardStar.addScaledVector(tangent, .5).add(new THREE.Vector3(0, .42, 0)).normalize();
+    }
+    if (destination.parentGalaxy) return new THREE.Vector3(.45, .38, 1).normalize();
     if (id === 'galaxy') return new THREE.Vector3(.14, 1.2, 1.55).normalize();
     if (id === 'solar') return new THREE.Vector3(.18, 1.15, 1.45).normalize();
     if (id === 'iss') {
@@ -56,15 +72,29 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   }
 
   function flyTo(id, { night = false, immediate = false, earthFocus = null, distance } = {}) {
-    if (!getData(id)) return;
+    const destination = getData(id);
+    if (!destination) return;
     selected = id;
-    if (bodies.has(id) || id === 'iss') focusBody = id;
+    if (id === 'galaxy' || id === 'solar') {
+      if (activeGalaxyId !== 'galaxy' || activeSystemId !== 'solar') focusBody = 'earth';
+      activeGalaxyId = 'galaxy';
+      activeSystemId = 'solar';
+    } else if (destination.kind === 'galaxy') {
+      activeGalaxyId = id;
+      const firstStar = [...bodies.values()].find(body => body.parentGalaxy === id && body.kind === 'star');
+      if (firstStar) focusBody = activeSystemId = firstStar.id;
+    } else if (bodies.has(id) || id === 'iss') {
+      focusBody = id;
+      activeGalaxyId = destination.parentGalaxy || 'galaxy';
+      activeSystemId = destination.parentStarId || (destination.kind === 'star' ? id : 'solar');
+    }
     updateInfo(id);
     controls.minDistance = focusBody === 'iss' ? .20 : getData(focusBody).r * 1.13;
-    controls.maxDistance = 180000;
+    controls.maxDistance = MAX_DISTANCE;
     const startOffset = camera.position.clone().sub(controls.target);
     flight = {
-      id, night, start: performance.now(), duration: immediate || reducedMotion ? 1 : id === 'galaxy' ? 2600 : 1800,
+      id, night, start: performance.now(), duration: immediate || reducedMotion ? 1
+        : id === 'galaxy' ? 2600 : destination.kind === 'group' || destination.kind === 'galaxy' ? 3200 : 1800,
       startTarget: controls.target.clone(), startDir: startOffset.clone().normalize(), startDist: startOffset.length(),
       endDist: distance ?? destinationDistance(id),
       endDir: earthFocus ? earthSurfaceDirection(earth, earthFocus) : destinationDirection(id, night), earthFocus,
@@ -108,8 +138,11 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   function trackingCenter(distance) {
     const body = getData(focusBody), target = getPosition(focusBody);
     const leave = smooth(Math.max(body.r * 9, 8), Math.max(body.r * 25, 75), distance);
-    target.lerp(zero, leave);
-    return target.lerp(galaxyCenter, smooth(1800, 30000, distance));
+    target.lerp(activeSystemId === 'solar' ? zero : getPosition(activeSystemId), leave);
+    const galaxyBlendEnd = Math.min(30000, (getData(activeGalaxyId).viewDistance || 68000) * .7);
+    target.lerp(activeGalaxyId === 'galaxy' ? galaxyCenter : getPosition(activeGalaxyId), smooth(1800, galaxyBlendEnd, distance));
+    if (getData('local-group')) target.lerp(getPosition('local-group'), smooth(150000, 500000, distance));
+    return target;
   }
 
   function updateTracking(dt) {
@@ -137,6 +170,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
 
   function stage() {
     const distance = camera.position.distanceTo(controls.target);
+    if (getData('local-group') && distance > 200000) return 'local-group';
     return distance > 2600 ? 'galaxy' : distance > Math.max(28, getData(focusBody).r * 10) ? 'solar' : 'earth';
   }
 
@@ -145,10 +179,12 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     if (mode !== lastMode) {
       lastMode = mode;
       onStage(mode);
-      if (mode === 'galaxy') toast('进入银河尺度 · 继续放大可返回太阳系');
+      if (mode === 'galaxy') toast(`进入${getData(activeGalaxyId).cn} · 继续缩小可探索星系群`);
+      if (mode === 'local-group') toast('进入本星系群 · 点击星系继续远行');
     }
     if (!flight) {
-      const infoId = mode === 'earth' ? focusBody : mode;
+      const infoId = mode === 'earth' ? focusBody : mode === 'solar' ? activeSystemId
+        : mode === 'galaxy' ? activeGalaxyId : 'local-group';
       if (displayedId !== infoId) updateInfo(infoId);
       selected = infoId;
     }
@@ -182,6 +218,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   function snapshot() {
     return {
       selected, focusBody, displayedId, lastMode,
+      activeGalaxyId, activeSystemId,
       camera: snapshotCamera(camera, controls), flight: snapshotFlight(flight, performance.now()),
     };
   }
@@ -191,6 +228,8 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     focusBody = saved.focusBody;
     displayedId = saved.displayedId;
     lastMode = saved.lastMode;
+    activeGalaxyId = saved.activeGalaxyId || 'galaxy';
+    activeSystemId = saved.activeSystemId || 'solar';
     flight = restoreFlight(saved.flight, performance.now());
     restoreCamera(camera, controls, saved.camera);
     onInfo(displayedId);
@@ -199,6 +238,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
 
   return {
     initialize, flyTo, zoom, cancelFlight, trackingCenter, stage, update, updateStage, focusEarth, snapshot, restore,
-    getState: () => ({ selected, focusBody, displayedId, flight: !!flight, stage: stage(), distance: camera.position.distanceTo(controls.target) }),
+    getState: () => ({ selected, focusBody, displayedId, activeGalaxyId, activeSystemId,
+      flight: !!flight, stage: stage(), distance: camera.position.distanceTo(controls.target) }),
   };
 }

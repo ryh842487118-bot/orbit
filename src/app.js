@@ -71,7 +71,7 @@ export async function startOrbit() {
       world.flybys.update(dt, camera, {
         paused: settings.paused, enabled: !earthsense.active, navigating,
       });
-      updateWorldVisibility(world, camera, controls, settings.orbitsVisible);
+      updateWorldVisibility(world, camera, controls, settings.orbitsVisible, navigation.getState());
       navigation.updateStage();
       earthsense.update(now / 1000, { scaleFactor: THREE.MathUtils.clamp(
         (camera.position.distanceTo(world.earth.position) - 1) / 3.65, .06, 1,
@@ -87,8 +87,8 @@ export async function startOrbit() {
         world.earthOrbitGroup.visible = false;
         world.orbitGroup.visible = false;
       }
-      if (++uiTick % 2 === 0) labels.update({ ...settings,
-        labelsVisible: settings.labelsVisible && !earthsense.visible, selected: navigation.getState().selected,
+      if (++uiTick % 2 === 0) labels.update({ ...settings, ...navigation.getState(),
+        labelsVisible: settings.labelsVisible && !earthsense.visible,
       });
       if (uiTick % 10 === 0) {
         ui.updateHud();
@@ -96,7 +96,8 @@ export async function startOrbit() {
           const detail = earthDetail.getState();
           document.getElementById('view-caption').textContent = detail.status === 'ready'
             ? `EARTHSENSE · ${detail.textureWidth / 1024}K 地表` : 'EARTHSENSE · 地表观测';
-        } else if (navigation.getState().focusBody === 'earth' && earthDetail.getState().status === 'ready') {
+        } else if (navigation.getState().focusBody === 'earth' && navigation.getState().stage === 'earth'
+          && earthDetail.getState().status === 'ready') {
           document.getElementById('view-caption').textContent += ` · ${earthDetail.getState().textureWidth / 1024}K 地表`;
         }
       }
@@ -109,12 +110,13 @@ export async function startOrbit() {
     });
     requestAnimationFrame(animate);
     window.ORBIT = {
-      version: '1.4.0',
+      version: '1.5.0',
       getState: () => ({
         ...navigation.getState(), ...ui.getState(),
         planetCount: data.filter(d => d.orbit && d.id !== 'moon').length,
         satelliteCount: world.satellites.length,
         galaxyStars: world.galaxy.geometry.attributes.position.count,
+        galaxyCount: world.galaxyDefinitions.length, deepSpaceBodyCount: world.deepSpace.bodies.size,
         flybys: world.flybys.getState(),
         drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
         mode: earthsense.active ? 'earthsense' : 'universe',
@@ -123,6 +125,10 @@ export async function startOrbit() {
       goTo: navigation.flyTo, zoom: navigation.zoom, setPaused: ui.setPaused,
       setMode: earthsense.setMode,
       earthsense: { getState: earthsense.diagnostics, setLayer: earthsense.toggleLayer },
+      destinations: () => [...world.galaxyDefinitions, ...world.deepSpace.bodies.values()].map(body => ({
+        id: body.id, name: body.cn, kind: body.kind, parentGalaxy: body.parentGalaxy,
+        parentStarId: body.parentStarId, modelStatus: body.modelStatus,
+      })),
     };
   } catch (error) {
     console.error(error);

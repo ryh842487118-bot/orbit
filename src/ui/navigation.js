@@ -1,11 +1,12 @@
 import { reducedMotion } from '../core/math.js';
-import { data } from '../universe/catalog.js';
 import { bindBodyPicking } from './picking.js';
+import { createDestinations } from './destinations.js';
 
 export function bindNavigationUI({ renderer, camera, world, navigation, assets, toast, onPick }) {
   const $ = id => document.getElementById(id);
   const { flyTo, zoom } = navigation;
   let paused = reducedMotion, speed = 1, orbitsVisible = true, labelsVisible = true;
+  let destinations;
 
   function setPaused(value) {
     paused = value;
@@ -17,7 +18,14 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
   }
 
   function updateStage(mode) {
-    document.querySelectorAll('[data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === mode));
+    const { activeGalaxyId, activeSystemId } = navigation.getState();
+    document.querySelectorAll('[data-view]').forEach(button => {
+      const active = button.dataset.view === mode && (mode === 'local-group'
+        || (activeGalaxyId === 'galaxy' && (mode === 'galaxy' || activeSystemId === 'solar')));
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    destinations?.update();
   }
 
   function restoreState(settings) {
@@ -31,16 +39,25 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
   }
 
   function updateHud() {
-    const { stage, focusBody } = navigation.getState();
-    if (stage === 'galaxy') {
-      $('view-caption').textContent = '银河系全景';
-      $('view-distance').textContent = '旋臂与恒星盘';
+    const { stage, focusBody, activeGalaxyId, activeSystemId } = navigation.getState();
+    updateStage(stage);
+    if (stage === 'local-group') {
+      $('view-caption').textContent = '本星系群';
+      $('view-distance').textContent = '5 座星系 · 点击开始星际航行';
+    } else if (stage === 'galaxy') {
+      $('view-caption').textContent = world.getData(activeGalaxyId).cn + '全景';
+      $('view-distance').textContent = '选择恒星 · 继续缩小前往星系群';
     } else if (stage === 'solar') {
-      $('view-caption').textContent = '太阳系全景';
-      $('view-distance').textContent = '八大行星运行轨道';
+      $('view-caption').textContent = activeSystemId === 'solar' ? '太阳系全景' : world.getData(activeSystemId).cn + '系统';
+      $('view-distance').textContent = activeSystemId === 'solar' ? '八大行星运行轨道' : '母星与行星 · 轨道为示意';
     } else {
       const body = world.getData(focusBody);
       $('view-caption').textContent = focusBody === 'earth' ? '地球近轨' : body.cn + (focusBody === 'iss' ? '近景' : '观测');
+      if (body.parentGalaxy) {
+        $('view-distance').textContent = body.kind === 'star' ? '恒星表面与日冕示意'
+          : body.modelStatus === 'illustration' ? '创作示意 · 未确认存在' : '已确认行星 · 表面示意';
+        return;
+      }
       const surface = Math.max(0, camera.position.distanceTo(world.getPosition(focusBody)) - (body.r || 1));
       const kilometers = Math.round(surface / Math.max(.001, body.r) * Number((body.diameter || '12742').replaceAll(',', '')) / 2);
       $('view-distance').textContent = focusBody === 'iss' ? '地球低轨道' : `距表面约 ${kilometers.toLocaleString('zh-CN')} km`;
@@ -57,24 +74,9 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
     }
   }
 
-  for (const body of data) {
-    const button = document.createElement('button');
-    button.className = 'planet-button' + (body.id === 'earth' ? ' active' : '');
-    button.dataset.id = body.id;
-    button.title = '前往' + body.cn;
-    button.setAttribute('aria-pressed', String(body.id === 'earth'));
-    const image = document.createElement('img');
-    image.src = assets[body.texture];
-    image.alt = '';
-    const span = document.createElement('span');
-    span.textContent = body.cn;
-    button.append(image, span);
-    button.onclick = () => flyTo(body.id);
-    $('planet-list').append(button);
-  }
+  destinations = createDestinations({ world, navigation, assets });
   document.querySelectorAll('[data-view]').forEach(button => button.onclick = () => flyTo(button.dataset.view));
   $('home').onclick = event => { event.preventDefault(); flyTo('earth'); };
-  $('overview').onclick = () => flyTo('solar');
   $('night-view').onclick = () => flyTo('earth', { night: true });
   $('station-view').onclick = () => flyTo('iss');
   $('zoom-in').onclick = () => zoom(.72);
