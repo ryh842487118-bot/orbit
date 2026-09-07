@@ -3,6 +3,7 @@ import { latLonToVector } from '../../earth/coordinates.js';
 
 const thunderCodes = new Set([95, 96, 99]);
 const rainCodes = new Set([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82]);
+const lightRainCodes = new Set([51, 56, 61, 66, 80]);
 const snowCodes = new Set([71, 73, 75, 77, 85, 86]);
 const clamp = THREE.MathUtils.clamp;
 
@@ -52,7 +53,9 @@ export function weatherAppearance(event, simulatedStorm = false) {
     darkness: thunder ? .9 : raining ? .65 : density > .8 ? .35 : .03,
     radius,
     altitude: thunder ? WEATHER_EFFECTS.stormAltitude : WEATHER_EFFECTS.cloudAltitude,
-    puffs: density ? simulatedStorm ? WEATHER_EFFECTS.stormPuffs : Math.ceil(3 + density * (WEATHER_EFFECTS.maxWeatherPuffs - 3)) : 0,
+    // Light rain keeps its rain trails without covering every sample point in clouds.
+    puffs: density && !lightRainCodes.has(weather.code)
+      ? simulatedStorm ? WEATHER_EFFECTS.stormPuffs : Math.ceil(3 + density * (WEATHER_EFFECTS.maxWeatherPuffs - 3)) : 0,
     drops: raining ? Math.min(WEATHER_EFFECTS.maxRainDrops, Math.ceil(3 + rainIntensity * (WEATHER_EFFECTS.maxRainDrops - 3))) : 0,
   };
 }
