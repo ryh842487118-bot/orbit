@@ -32,6 +32,7 @@
 .deep-space-actions button+button{margin-left:6px}
 .deep-space-info .object-en{font-size:12px;letter-spacing:4px;line-height:1.6;overflow-wrap:anywhere}
 .info-panel h1.long-name{font-size:clamp(28px,3vw,43px);letter-spacing:1px;overflow-wrap:anywhere}
+.object-index{flex-shrink:0;white-space:nowrap}
 .deep-space-info .description{font-size:12px;line-height:1.85;margin-block:17px}
 .deep-space-info .stats strong{font-size:18px}
 .scale-control{top:30%}

@@ -8,7 +8,8 @@ export function createInfoPanel({ getData }) {
     $('info-category').textContent = data.type;
     $('info-en').textContent = data.en;
     $('info-panel').classList.toggle('deep-space-info', Boolean(data.kind || data.parentGalaxy));
-    $('info-name').classList.toggle('long-name', data.cn.length >= 5 || id === 'trajectory');
+    $('info-name').classList.toggle('long-name', data.cn.length >= 5
+      || (data.cn.length >= 4 && Boolean(data.kind || data.parentGalaxy)));
     $('info-name').textContent = data.cn;
     const index = document.createElement('span');
     index.className = 'object-index';

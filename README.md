@@ -16,7 +16,19 @@
 
 **[查看演示视频](demo.mp4)** · [下载 MP4](https://github.com/ryh842487118-bot/orbit/raw/refs/heads/main/demo.mp4)
 
-58 秒，1440 × 900，30 FPS。实际网页录制，依次展示地球夜景、国际空间站、月球、木星、土星环、太阳系轨道与银河，最后返回地球。
+25 秒，1920 × 1080，25 FPS。实际网页连续录制，依次展示银河参照运动轨迹、地球、感知地球、太阳、大麦哲伦星云中的巨行星示意，最后停留在本星系群全景。
+
+## 新功能预览
+
+以下为 v1.6.0 的实际页面截图，点击图片可查看原图。河外巨行星场景保留「创作示意」标记。
+
+| 银河参照运动轨迹 | 太阳参照运动轨迹 |
+| --- | --- |
+| ![太阳与八大行星向前延伸的彩色运动轨迹](docs/previews/motion-galactic.jpg) | ![太阳参照下八大行星围绕太阳的运行轨迹](docs/previews/motion-solar.jpg) |
+| **感知地球 · 天气与雷暴图层** | **大质量恒星 · R136a1** |
+| ![EarthSense 高清地球与天气、闪电、台风图层](docs/previews/earthsense.jpg) | ![大麦哲伦星云中的真实恒星 R136a1 艺术化近景](docs/previews/massive-star.jpg) |
+| **河外巨行星 · 创作示意** | **本星系群 · 五座星系** |
+| ![大麦哲伦星云巨行星的艺术化表面，界面明确标注创作示意](docs/previews/extragalactic-planet.jpg) | ![银河系、仙女座星系、三角座星系及大小麦哲伦星云的星系群全景](docs/previews/local-group.jpg) |
 
 ## 探索
 
@@ -97,6 +109,7 @@ ORBIT.getState();          // 包含 activeGalaxyId、activeSystemId 和当前�
 - `index.html`：单文件构建产物。
 - `demo.mp4`：网页演示视频。
 - `demo-preview.jpg`：README 视频预览图。
+- `docs/previews/`：运动轨迹、地球观测、深空天体与星系群的实景截图。
 
 安装依赖：`npm install`；运行测试：`npm test`；重新构建：`npm run build`。输出写入本目录的 `index.html`，所有依赖均来自本项目。
 

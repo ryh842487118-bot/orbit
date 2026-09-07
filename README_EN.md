@@ -14,7 +14,19 @@ Double-click **index.html** in this directory to launch ORBIT. Three.js and 15 t
 
 **[Watch the demo](demo.mp4)** · [Download MP4](https://github.com/ryh842487118-bot/orbit/raw/refs/heads/main/demo.mp4)
 
-The 58-second video is recorded from the actual website at 1440 × 900 and 30 FPS. It visits Earth's night side, the International Space Station, the Moon, Jupiter, Saturn's rings, the Solar System, and the Milky Way before returning to Earth.
+The 25-second video is continuously recorded from the actual website at 1920 × 1080 and 25 FPS. It moves from Galactic motion trails to Earth, EarthSense, the Sun, an illustrated giant planet in the Large Magellanic Cloud, and a closing Local Group overview.
+
+## New Feature Previews
+
+Actual v1.6.0 screenshots; select an image to view it at full size. The fictional extragalactic planet retains its on-screen illustration label.
+
+| Galactic motion trails | Sun-relative motion trails |
+| --- | --- |
+| ![Colored trails combining the Sun's forward motion with eight planetary orbits](docs/previews/motion-galactic.jpg) | ![Eight planetary paths around the Sun in the Sun-relative reference frame](docs/previews/motion-solar.jpg) |
+| **EarthSense · Weather and thunderstorms** | **Massive star · R136a1** |
+| ![Detailed Earth with weather, lightning, and cyclone layers in EarthSense](docs/previews/earthsense.jpg) | ![Artistic close-up of the real star R136a1 in the Large Magellanic Cloud](docs/previews/massive-star.jpg) |
+| **Extragalactic giant planet · Illustration** | **Local Group · Five galaxies** |
+| ![An illustrated giant planet in the Large Magellanic Cloud, explicitly labeled as fictional](docs/previews/extragalactic-planet.jpg) | ![Overview of the Milky Way, Andromeda, Triangulum, and the Large and Small Magellanic Clouds](docs/previews/local-group.jpg) |
 
 ## Explore
 
@@ -92,6 +104,7 @@ In the new catalog, `modelStatus: 'confirmed'` identifies real objects, while `'
 - `index.html`: self-contained build output.
 - `demo.mp4`: recorded website demo.
 - `demo-preview.jpg`: video preview used in the README.
+- `docs/previews/`: actual screenshots of motion trails, EarthSense, deep-space bodies, and the Local Group.
 
 Run `npm install`, `npm test`, and `npm run build` to install, validate, and rebuild. The generated `index.html` is written to the project root and uses only dependencies included in this repository.
 
