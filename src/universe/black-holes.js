@@ -281,6 +281,26 @@ export function createBlackHole(definition) {
     lensedArcs.quaternion.copy(photonRing.quaternion);
   }
 
+  // The portrait borrows this model without changing the exploration animation or lens orientation.
+  function renderPreview(camera, time, render) {
+    const objects = [accretionDisk, photonRing, lensedArcs];
+    const saved = objects.map(object => ({
+      quaternion: object.quaternion.clone(),
+      uniforms: Object.fromEntries(Object.entries(object.material.uniforms).map(([key, uniform]) =>
+        [key, uniform.value?.clone ? uniform.value.clone() : uniform.value])),
+    }));
+    try { update(time); updateCamera(camera); return render(); }
+    finally {
+      objects.forEach((object, index) => {
+        object.quaternion.copy(saved[index].quaternion);
+        for (const [key, value] of Object.entries(saved[index].uniforms)) {
+          const uniform = object.material.uniforms[key];
+          if (uniform.value?.copy) uniform.value.copy(value); else uniform.value = value;
+        }
+      });
+    }
+  }
+
   function dispose() {
     if (disposed) return;
     disposed = true;
@@ -295,6 +315,6 @@ export function createBlackHole(definition) {
     group, mesh, accretionDisk, photonRing, lensedArcs,
     // Billboard planes contain transparent pixels. Pick only actual surfaces.
     pickMeshes: [mesh, accretionDisk], visualRadius: radius * outerRadius,
-    update, updateCamera, dispose,
+    update, updateCamera, renderPreview, dispose,
   };
 }

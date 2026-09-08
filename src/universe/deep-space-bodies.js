@@ -215,7 +215,7 @@ export function createDeepSpaceBodies(scene, textures, definitions = []) {
       else if (definition.position) group.position.set(definition.position.x, definition.position.y, definition.position.z);
       root.add(group);
       bodies.set(definition.id, {
-        ...definition, visualRadius, position: group.position,
+        ...definition, visualRadius, renderPreview: model.renderPreview, position: group.position,
         group, mesh, accretionDisk, photonRing, lensedArcs, pickMeshes,
       });
       blackHoleModels.set(definition.id, model);

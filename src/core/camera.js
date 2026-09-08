@@ -1,3 +1,4 @@
+import { TRAJECTORY_VIEW_DIRECTION } from '../universe/trajectory-catalog.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { clamp, smooth, mobile, reducedMotion } from './math.js';
@@ -56,7 +57,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
 
   function destinationDirection(id, night = false) {
     const destination = getData(id);
-    if (destination.kind === 'trajectory') return new THREE.Vector3(.6, .45, 1).normalize();
+    if (destination.kind === 'trajectory') return new THREE.Vector3(...TRAJECTORY_VIEW_DIRECTION).normalize();
     if (destination.kind === 'group') return new THREE.Vector3(.12, .8, 1.65).normalize();
     if (destination.kind === 'galaxy') return new THREE.Vector3(.16, 1.3, 1.7).normalize();
     if (destination.kind === 'black-hole') {

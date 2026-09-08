@@ -4,7 +4,7 @@ import { bindBodyPicking } from './picking.js';
 import { createDestinations } from './destinations.js';
 import { createTrajectoryPanel } from './trajectory-panel.js';
 
-export function bindNavigationUI({ renderer, camera, world, navigation, assets, toast, onPick }) {
+export function bindNavigationUI({ renderer, camera, world, navigation, assets, toast, onPick, controls, wallpaperView, setSpaceColor }) {
   const $ = id => document.getElementById(id);
   const { flyTo, zoom } = navigation;
   let paused = reducedMotion, speed = 1, orbitsVisible = true, labelsVisible = true;
@@ -35,7 +35,6 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
   function restoreState(settings) {
     setPaused(settings.paused);
     speed = settings.speed;
-    orbitsVisible = settings.orbitsVisible;
     labelsVisible = settings.labelsVisible;
     $('speed').firstChild.textContent = speed + '×';
     $('toggle-orbits').setAttribute('aria-pressed', String(orbitsVisible));
@@ -102,15 +101,16 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
     $('speed').firstChild.textContent = speed + '×';
     toast('演示时间流速 ' + speed + '×');
   };
-  $('toggle-orbits').onclick = () => {
-    orbitsVisible = !orbitsVisible;
+  function setOrbitsVisible(value) {
+    orbitsVisible = value;
     $('toggle-orbits').setAttribute('aria-pressed', String(orbitsVisible));
-  };
+  }
+  $('toggle-orbits').onclick = () => wallpaper.configure({orbitsVisible:!orbitsVisible});
   $('toggle-labels').onclick = () => {
     labelsVisible = !labelsVisible;
     $('toggle-labels').setAttribute('aria-pressed', String(labelsVisible));
   };
-  const wallpaper = bindWallpaperMode(renderer.domElement);
+  const wallpaper = bindWallpaperMode(renderer.domElement, { world, controls, navigation, view: wallpaperView, setSpaceColor, setOrbitsVisible });
   $('fullscreen').onclick = fullscreen;
   $('help-button').onclick = () => $('help-dialog').showModal();
   $('credits-button').onclick = () => $('credits-dialog').showModal();
@@ -125,6 +125,11 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
     if (document.querySelector('dialog[open]')) return;
     const tag = event.target.tagName;
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag) || event.target.isContentEditable) return;
+    if (wallpaper.active) {
+      if (['i', 'Escape'].includes(event.key)) wallpaper.exit();
+      if (['ArrowLeft','ArrowUp','ArrowRight','ArrowDown'].includes(event.key)) { event.preventDefault(); wallpaper.next(['ArrowRight','ArrowDown'].includes(event.key) ? 1 : -1); }
+      return;
+    }
     if (['BUTTON', 'A'].includes(tag) && event.code === 'Space') return;
     if (event.code === 'Space') { event.preventDefault(); setPaused(!paused); }
     if (event.key === '+' || event.key === '=') zoom(.8);
@@ -137,8 +142,8 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
     if (event.key === 'Escape') wallpaper.exit();
     if (event.key === '?') $('help-dialog').showModal();
   });
-  bindBodyPicking({ renderer, camera, world, navigation, onPick });
+  bindBodyPicking({ renderer, camera, world, navigation, onPick, isEnabled: () => !wallpaper.active });
   setPaused(paused);
 
-  return { getState: () => ({ paused, speed, orbitsVisible, labelsVisible }), setPaused, restoreState, updateStage, updateHud };
+  return { wallpaper, getState: () => ({ paused, speed, orbitsVisible, labelsVisible }), setPaused, restoreState, updateStage, updateHud };
 }

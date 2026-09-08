@@ -1,3 +1,5 @@
+export const TRAJECTORY_VIEW_DIRECTION = Object.freeze([.6, .45, 1]);
+
 /** A separate, Sun-following demonstration, away from the exploration scene. */
 export const trajectoryAnchor = [0, 6000, 0];
 

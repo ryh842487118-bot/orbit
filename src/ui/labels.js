@@ -32,7 +32,7 @@ export function createLabels({ camera, controls, world, onSelect }) {
     return true;
   }
 
-  function update({ labelsVisible, selected, stage, activeGalaxyId, activeSystemId, galaxyViewDistance: framedGalaxyDistance }) {
+  function update({ labelsVisible, satellitesVisible = true, selected, stage, activeGalaxyId, activeSystemId, galaxyViewDistance: framedGalaxyDistance }) {
     const distance = camera.position.distanceTo(controls.target), viewW = innerWidth, viewH = innerHeight;
     const compact = mobile();
     const selectedData = getData(selected);
@@ -60,7 +60,7 @@ export function createLabels({ camera, controls, world, onSelect }) {
           && (mode === 'earth' || mode === 'solar') && item.id !== selected
           && camera.position.distanceTo(body.position) < Math.max(1400, (body.orbitRadius || 0) * 9);
       } else if (item.id === 'solar') show = show && galaxyId === 'galaxy' && mode === 'galaxy' && distance > 2800;
-      else if (item.id === 'iss') show = show && solarSystem && camera.position.distanceTo(station.position) < 11;
+      else if (item.id === 'iss') show = show && satellitesVisible && isVisible(station) && solarSystem && camera.position.distanceTo(station.position) < 11;
       else if (item.id === 'moon') show = show && solarSystem && camera.position.distanceTo(earth.position) < 55 && selected !== 'iss';
       else show = show && solarSystem && distance < 1400 && camera.position.distanceTo(body.position) < 1400 && item.id !== selected;
       if (!show) {

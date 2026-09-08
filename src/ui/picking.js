@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 /** Distinguish a click from drag or pinch before picking a scene body. */
-export function bindBodyPicking({ renderer, camera, world, navigation, onPick }) {
+export function bindBodyPicking({ renderer, camera, world, navigation, onPick, isEnabled = () => true }) {
   const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2(), touches = new Set();
   const galaxySphere = new THREE.Sphere(), galaxyCenter = new THREE.Vector3(), intersection = new THREE.Vector3();
   let press = null, multiTouch = false;
@@ -12,6 +12,7 @@ export function bindBodyPicking({ renderer, camera, world, navigation, onPick })
   }
 
   renderer.domElement.addEventListener('pointerdown', event => {
+    if (!isEnabled()) return;
     touches.add(event.pointerId);
     if (touches.size > 1) {
       multiTouch = true;
@@ -25,7 +26,7 @@ export function bindBodyPicking({ renderer, camera, world, navigation, onPick })
 
   renderer.domElement.addEventListener('pointerup', event => {
     touches.delete(event.pointerId);
-    if (event.defaultPrevented || !press || multiTouch || Math.hypot(event.clientX - press.x, event.clientY - press.y) > 5 || performance.now() - press.t > 450) return;
+    if (!isEnabled() || event.defaultPrevented || !press || multiTouch || Math.hypot(event.clientX - press.x, event.clientY - press.y) > 5 || performance.now() - press.t > 450) return;
     press = null;
     pointer.set(event.clientX / innerWidth * 2 - 1, -event.clientY / innerHeight * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
@@ -69,6 +70,6 @@ export function bindBodyPicking({ renderer, camera, world, navigation, onPick })
     press = null;
   });
   renderer.domElement.addEventListener('wheel', () => {
-    if (navigation.getState().flight) navigation.cancelFlight();
+    if (isEnabled() && navigation.getState().flight) navigation.cancelFlight();
   }, { passive: true, capture: true });
 }

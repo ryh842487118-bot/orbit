@@ -187,3 +187,24 @@ test('disposing deep-space black holes frees each owned resource once and ends u
   assert.deepEqual(animationTimes(body), [2, 2, 2]);
   for (const count of counts.values()) assert.equal(count, 1);
 });
+
+test('portrait rendering updates the lens for its own camera and restores exploration even on failure', () => {
+  const model = createBlackHole(definition);
+  const camera = new THREE.PerspectiveCamera();
+  camera.position.set(100, 70, 300); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
+  model.update(12);
+  const quaternion = model.lensedArcs.quaternion.clone();
+  const view = model.accretionDisk.material.uniforms.uViewDirection.value.clone();
+  const axis = model.lensedArcs.material.uniforms.uDiskAxis.value.clone();
+  try {
+    assert.throws(() => model.renderPreview(camera, 28, () => {
+      assert.equal(model.accretionDisk.material.uniforms.uTime.value, 28);
+      assert(!model.lensedArcs.quaternion.equals(quaternion));
+      throw new Error('render failure');
+    }), /render failure/);
+    assert.equal(model.accretionDisk.material.uniforms.uTime.value, 12);
+    assert(model.lensedArcs.quaternion.equals(quaternion));
+    assert(model.accretionDisk.material.uniforms.uViewDirection.value.equals(view));
+    assert(model.lensedArcs.material.uniforms.uDiskAxis.value.equals(axis));
+  } finally { model.dispose(); }
+});

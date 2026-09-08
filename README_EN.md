@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | [English](README_EN.md)
 
-Current version: **1.7.1**. See the [changelog](CHANGELOG.md).
+Current version: **1.8.0**. See the [changelog](CHANGELOG.md).
 
 **Live demo:** [https://ryh842487118-bot.github.io/orbit/](https://ryh842487118-bot.github.io/orbit/)
 
@@ -48,7 +48,9 @@ Actual v1.6.0 screenshots; select an image to view it at full size. The fictiona
 - Toggle orbits and labels independently. Pause celestial motion or switch between 0.25×, 1×, 5×, and 20× simulation speeds.
 - Select **运动轨迹 (Motion Trails)** beside the orbit and label controls to follow the Sun and eight planets. Switch between Galactic and Sun reference frames and short or long histories, use the existing pause and speed controls, rotate and zoom freely, or choose **返回太阳系 (Return to Solar System)**.
 - Warm meteoroids and comets with two soft tails occasionally cross the sky, one at a time at random intervals. They follow the pause control and are hidden in EarthSense and reduced-motion mode.
-- Wallpaper mode: tap the picture icon at the top right to hide controls, text, celestial labels, and interface shading for a clean mobile screenshot. Drag and pinch to compose; double-tap the view or press `I` / `Esc` to restore the interface.
+- Screen modes: Settings offers Universe Roaming (keep the current scene and controls, hide the interface), Celestial Portrait (one body or a whole galaxy), and Motion Trails (the Sun and eight planets in motion). Portraits support left/center/right framing and automatic cycling. Trail settings include only the reference frame, trail length, and left/center/right placement.
+- Gestures: drag with one finger or a mouse to rotate; pinch or scroll to zoom. In Portrait mode, triple-tap the body or galaxy to advance; arrow keys switch in either direction. Double-tap or press `I` / `Esc` to restore the interface. Portrait and Motion Trails double-taps have a short delay to distinguish triple-taps. Triple-tapping Motion Trails cycles Galactic long, Galactic short, Solar long, and Solar short; the default direction matches the main Motion Trails view.
+- Deep-space color, background stars, artificial satellites/ISS, and orbit visibility apply to exploration and every screen mode. The orbit switch stays synchronized with the home control and also controls screen-mode trails. Portraits hide orbits locally without changing the global preference. The browser remembers the mode, subject, color, framing, and cycling. All modes adapt automatically to the current screen size and orientation, with no device or screen preset to choose.
 - Keyboard shortcuts: `+` / `-` to zoom, Space to pause, `H` to return to Earth, `F` for fullscreen, `I` to hide the interface, and `?` for help.
 
 ## Solar System Motion Trails
@@ -119,3 +121,5 @@ In the new catalog, `modelStatus: 'confirmed'` identifies real objects, while `'
 Run `npm install`, `npm test`, and `npm run build` to install, validate, and rebuild. The generated `index.html` is written to the project root and uses only dependencies included in this repository.
 
 Solar System textures come from [Solar System Scope](https://www.solarsystemscope.com/textures/) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) and are displayed with real-time lighting and shaders. The additional deep-space bodies use procedural artistic surfaces. See `assets/CREDITS.md` for the full attribution list. Three.js is distributed under the MIT License; see `assets/THREE-LICENSE.txt`.
+
+Small windows automatically collapse the default interface into Body Details and Explore & Controls sheets. Destination selection dismisses the sheet; larger viewports restore the full layout.

@@ -1,3 +1,5 @@
+import { bindCompactUI } from './ui/compact.js';
+import { createWallpaperRenderer } from './ui/wallpaper-renderer.js';
 import * as THREE from 'three';
 import { createRenderer, createPipeline } from './core/renderer.js';
 import { createCamera, createNavigation } from './core/camera.js';
@@ -40,12 +42,19 @@ export async function startOrbit() {
       onStage: mode => ui?.updateStage(mode),
     });
     const labels = createLabels({ camera, controls, world, onSelect: navigation.flyTo });
-    ui = bindNavigationUI({ renderer, camera, world, navigation, assets, toast,
+    ui = bindNavigationUI({ renderer, camera, world, navigation, assets, toast, controls,
+      wallpaperView: createWallpaperRenderer({ renderer, composer, scene, world, textures, mainCamera: camera, resizeMain: () => resize(world) }),
+      setSpaceColor: color => {
+        scene.background = new THREE.Color(color);
+        renderer.setClearColor(color);
+        document.documentElement.style.setProperty('--space-color', color);
+      },
       onPick: (raycaster, event) => earthsense?.pick(raycaster, event) || false,
     });
     world.update(0, ui.getState());
     navigation.initialize();
     earthsense = createEarthSense({ world, camera, controls, navigation, ui });
+    bindCompactUI();
     resize(world);
     document.getElementById('load-progress').style.width = '100%';
     document.getElementById('load-text').textContent = '欢迎回到地球';
@@ -62,6 +71,7 @@ export async function startOrbit() {
       const dt = Math.min((now - lastFrameTime) / 1000, .05);
       lastFrameTime = now;
       if (hidden) return;
+      if (ui.wallpaper.active && ui.wallpaper.isolated) { ui.wallpaper.update(dt); return; }
       const settings = ui.getState();
       const navigationState = navigation.getState();
       const navigating = navigationState.flight;
@@ -79,10 +89,19 @@ export async function startOrbit() {
         paused: settings.paused || navigating || earthsense.active || !inTrajectories,
       });
       world.backgroundStars.position.copy(camera.position);
+      world.backgroundStars.visible = ui.wallpaper.starsVisible;
       world.flybys.update(dt, camera, {
         paused: settings.paused, enabled: !earthsense.active && !trajectoriesVisible, navigating,
       });
       updateWorldVisibility(world, camera, controls, settings.orbitsVisible, navigation.getState());
+      if (!ui.wallpaper.satellitesVisible) {
+        world.earthSatellites.visible = false;
+        world.station.visible = false;
+        world.earthOrbitGroup.visible = false;
+      }
+      world.motionTrajectories.group.traverse(object => {
+        if (object.name.startsWith('trajectory-trail-')) object.visible = settings.orbitsVisible && (object.material.uniforms.uGalactic.value > 0 || object.material.uniforms.uRadius.value > 0);
+      });
       navigation.updateStage();
       earthsense.update(now / 1000, { scaleFactor: THREE.MathUtils.clamp(
         (camera.position.distanceTo(world.earth.position) - 1) / 3.65, .06, 1,
@@ -99,6 +118,7 @@ export async function startOrbit() {
         world.orbitGroup.visible = false;
       }
       if (++uiTick % 2 === 0) labels.update({ ...settings, ...navigation.getState(),
+        satellitesVisible: ui.wallpaper.satellitesVisible,
         labelsVisible: settings.labelsVisible && !earthsense.visible && !trajectoriesVisible,
       });
       if (uiTick % 10 === 0) {
@@ -112,16 +132,18 @@ export async function startOrbit() {
           document.getElementById('view-caption').textContent += ` · ${earthDetail.getState().textureWidth / 1024}K 地表`;
         }
       }
-      composer.render();
+      if (ui.wallpaper.active) ui.wallpaper.update(dt);
+      else composer.render();
     }
-    addEventListener('resize', () => resize(world));
+    addEventListener('resize', () => ui.wallpaper.active ? ui.wallpaper.resize() : resize(world));
     document.addEventListener('visibilitychange', () => {
       hidden = document.hidden;
       lastFrameTime = performance.now();
     });
     requestAnimationFrame(animate);
     window.ORBIT = {
-      version: '1.7.1',
+      version: '1.8.0',
+      wallpaper: ui.wallpaper,
       getState: () => ({
         ...navigation.getState(), ...ui.getState(),
         planetCount: data.filter(d => d.orbit && d.id !== 'moon').length,
