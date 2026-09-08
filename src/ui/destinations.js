@@ -8,8 +8,10 @@ export function destinationContext(state, world) {
       overviewId: 'galaxy', overviewLabel: '回银河系' };
   }
   if (state.activeGalaxyId !== 'galaxy') {
+    const galaxy = world.getData(state.activeGalaxyId);
+    const members = [...world.bodies.values()].filter(body => body.parentGalaxy === state.activeGalaxyId);
     return { key: state.activeGalaxyId, title: world.getData(state.activeGalaxyId).cn,
-      items: [...world.bodies.values()].filter(body => body.parentGalaxy === state.activeGalaxyId),
+      items: members.length ? members : [galaxy],
       overviewId: state.activeGalaxyId, overviewLabel: '星系全景' };
   }
   if (state.stage === 'galaxy' || state.activeSystemId !== 'solar') {
@@ -31,7 +33,7 @@ function thumbnail(body, assets) {
   image.className = 'destination-art ' + (body.kind || (body.id === 'solar' ? 'star' : 'galaxy'));
   image.setAttribute('aria-hidden', 'true');
   image.style.setProperty('--body-color', '#' + (body.color ?? 0x9fd9ee).toString(16).padStart(6, '0'));
-  if (body.shape === 'irregular') image.classList.add('irregular');
+  if (body.shape === 'irregular' || body.shape === 'elliptical') image.classList.add(body.shape);
   return image;
 }
 
@@ -46,6 +48,7 @@ export function createDestinations({ world, navigation, assets }) {
     const { activeSystemId } = navigation.getState();
     if (activeSystemId === 'solar') return navigation.flyTo('solar');
     const host = world.getData(activeSystemId);
+    if (host?.kind !== 'star') return;
     const orbits = [...world.bodies.values()].filter(body => body.parentStarId === activeSystemId);
     const extent = Math.max(host.r * 9, ...orbits.map(body => body.orbitRadius + body.r));
     navigation.flyTo(activeSystemId, { distance: extent * 3.3 });
@@ -90,7 +93,9 @@ export function createDestinations({ world, navigation, assets }) {
     $('deep-space-actions').hidden = !deep || state.stage === 'local-group';
     $('galaxy-return').hidden = state.stage === 'galaxy';
     $('galaxy-return').textContent = '↖ ' + world.getData(state.activeGalaxyId).cn;
-    $('system-overview').hidden = state.stage === 'galaxy' || state.activeSystemId === 'solar';
+    $('system-overview').hidden = state.stage === 'galaxy'
+      || world.getData(state.activeSystemId)?.kind !== 'star'
+      || ![...world.bodies.values()].some(body => body.parentStarId === state.activeSystemId);
   }
   update();
   return { update };

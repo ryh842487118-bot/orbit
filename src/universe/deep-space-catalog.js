@@ -1,4 +1,4 @@
-// Research notes: docs/deep-space-sources.md (reviewed 2026-09-07).
+// Research notes: docs/deep-space-sources.md (reviewed 2026-09-08).
 // Positions, radii, orbit speeds and surface patterns are composed for exploration.
 // modelStatus describes the object, never the scientific accuracy of its artwork.
 const galaxyDefinitions = [
@@ -50,17 +50,57 @@ const galaxyDefinitions = [
     sourceLabel: 'NASA · 小麦哲伦星云', modelStatus: 'confirmed',
     appearance: '淡紫疏散星群与不对称羽翼',
   },
+  {
+    id: 'm32', kind: 'galaxy', cn: 'M32 星系', en: 'MESSIER 32 · NGC 221', index: 'M32',
+    type: '本星系群 / 紧凑椭圆星系', parentId: 'local-group', r: 1,
+    position: [284000, 16000, -151000], radius: 7000, viewDistance: 18200,
+    shape: 'elliptical', profile: 'compact', axisRatio: 0.76,
+    tilt: [0.2, -0.15, 0.42], arms: 0, color: 0xffdcb4,
+    diameter: '约 250 万', stat1: '距地球', unit1: '光年',
+    stat2: '邻近主星系', value2: '仙女座', unit2: '',
+    desc: '仙女座旁的一座紧凑椭圆星系，密集的恒星形成平滑而明亮的核心。它没有螺旋星系那样的旋臂，中央藏着一颗数百万太阳质量量级的黑洞。',
+    sourceUrl: 'https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-32/',
+    sourceLabel: 'NASA Hubble · M32', modelStatus: 'confirmed',
+    appearance: '紧凑暖金核球与平滑椭圆星光',
+  },
+  {
+    id: 'm110', kind: 'galaxy', cn: 'M110 星系', en: 'MESSIER 110 · NGC 205', index: 'M110',
+    type: '本星系群 / 矮椭圆星系', parentId: 'local-group', r: 1,
+    position: [203000, 76000, -220000], radius: 10000, viewDistance: 26000,
+    shape: 'elliptical', profile: 'diffuse', axisRatio: 0.55,
+    tilt: [-0.22, 0.3, -0.48], arms: 0, color: 0xe7d5b9,
+    diameter: '约 270 万', stat1: '距地球', unit1: '光年',
+    stat2: '另一编号', value2: 'NGC 205', unit2: '',
+    desc: '也称 NGC 205，是仙女座星系的卫星星系。柔和、拉长的椭圆轮廓中分布着古老恒星和球状星团，中心也发现了年轻蓝星的踪迹。',
+    sourceUrl: 'https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-110/',
+    sourceLabel: 'NASA Hubble · M110', modelStatus: 'confirmed',
+    appearance: '舒展的浅金椭圆星群与淡白核心',
+  },
+  {
+    id: 'ngc6822', kind: 'galaxy', cn: '巴纳德星系', en: 'BARNARD’S GALAXY · NGC 6822', index: 'NGC 6822',
+    type: '本星系群 / 不规则矮星系', parentId: 'local-group', r: 1,
+    position: [-90000, 65000, 155000], radius: 9000, viewDistance: 23400,
+    shape: 'irregular', tilt: [0.28, -0.5, -0.12], arms: 0, color: 0x9ed8c6,
+    diameter: '约 160 万', stat1: '距地球', unit1: '光年',
+    stat2: '星系编号', value2: 'NGC 6822', unit2: '',
+    desc: '一座距离银河较近的不规则矮星系，也是本星系群成员。松散的星群与恒星诞生区交织，较低的重元素含量让它成为研究早期星系演化的邻近窗口。',
+    sourceUrl: 'https://www.esa.int/Science_Exploration/Space_Science/Euclid/Euclid_s_view_of_irregular_galaxy_NGC_6822',
+    sourceLabel: 'ESA Euclid · NGC 6822', modelStatus: 'confirmed',
+    appearance: '青白松散星团与不规则气体云',
+  },
 ];
+
+const localGroupGalaxyCount = galaxyDefinitions.length + 1;
 
 const localGroupDefinition = {
   id: 'local-group', kind: 'group', cn: '本星系群', en: 'THE LOCAL GROUP', index: 'LG',
   type: '宇宙邻里 / 星系群', r: 1, position: [50000, -50000, 30000], viewDistance: 820000,
-  color: 0xb7c8ee, diameter: '5', stat1: '开放探索', unit1: '座星系',
+  color: 0xb7c8ee, diameter: String(localGroupGalaxyCount), stat1: '开放探索', unit1: '座星系',
   stat2: '所在星系', value2: '银河系', unit2: '',
-  desc: '把银河放回更辽阔的宇宙邻里。这里开放银河、仙女座、三角座和大小麦哲伦星云五座星系；星系间距与天体尺寸经过压缩，便于自由漫游。',
+  desc: `把银河放回更辽阔的宇宙邻里。这里开放银河、${galaxyDefinitions.map((galaxy) => galaxy.cn).join('、')}，共 ${localGroupGalaxyCount} 座星系；星系间距与天体尺寸经过压缩，便于自由漫游。`,
   sourceUrl: 'https://imagine.gsfc.nasa.gov/features/cosmic/local_group_info.html',
   sourceLabel: 'NASA · 本星系群', modelStatus: 'confirmed',
-  appearance: '五座可抵达的星系散布于深空',
+  appearance: `${localGroupGalaxyCount} 座可抵达的星系散布于深空`,
 };
 
 function star(definition) {
@@ -72,6 +112,86 @@ function star(definition) {
 }
 
 const stars = [
+  star({
+    id: 'proxima-centauri', cn: '比邻星', en: 'PROXIMA CENTAURI', index: 'α CEN C',
+    type: '银河系 / 红矮星', parentGalaxy: 'galaxy',
+    position: [-3100, -120, 1800], r: 6, surfaceStyle: 'red-star', color: 0xff7752,
+    diameter: '约 4.25', stat1: '距地球', unit1: '光年',
+    stat2: '所属系统', value2: '南门二三星',
+    desc: '除太阳外，离我们最近的恒星是一颗暗淡的红矮星。它是南门二三星系统的远方成员，体积虽小却常有强烈耀斑；这里以温暖红光表现它的星面。',
+    sourceUrl: 'https://science.nasa.gov/exoplanets/other-stars-other-worlds/our-nearest-celestial-neighbor-an-exotic-3-star-system/',
+    sourceLabel: 'NASA · 比邻星与南门二系统', appearance: '小巧的橙红星面与柔和外晕',
+  }),
+  star({
+    id: 'alpha-centauri-a', cn: '南门二 A', en: 'ALPHA CENTAURI A', index: 'α CEN A',
+    type: '银河系 / 类太阳恒星', parentGalaxy: 'galaxy',
+    position: [-3600, 90, 2100], r: 10, surfaceStyle: 'gold-star', color: 0xffe5b2,
+    diameter: '南门二', stat1: '所属系统',
+    stat2: '恒星特征', value2: '类似太阳',
+    desc: '南门二系统中较明亮的成员，许多性质都与太阳相近。它和南门二 B 互相绕行，比邻星则在更远处相伴；画面拉开了成员间距，方便分别抵达。',
+    sourceUrl: 'https://www.nasa.gov/image-article/alpha-centauri-triple-star-system-about-4-light-years-from-earth/',
+    sourceLabel: 'NASA Chandra · 南门二三星系统', appearance: '温暖金白光球与细密表面颗粒',
+  }),
+  star({
+    id: 'alpha-centauri-b', cn: '南门二 B', en: 'ALPHA CENTAURI B', index: 'α CEN B',
+    type: '银河系 / 橙色恒星', parentGalaxy: 'galaxy',
+    position: [-3820, 105, 2160], r: 8.5, surfaceStyle: 'gold-star', color: 0xffbe81,
+    diameter: '南门二', stat1: '所属系统',
+    stat2: '恒星特征', value2: '比太阳稍冷',
+    desc: '与南门二 A 相伴的一颗橙色恒星，比太阳稍冷、质量稍小。天文学家能通过星面的微小振动研究其内部，像聆听一颗恒星的回声。',
+    sourceUrl: 'https://www.hq.eso.org/public/news/eso0542/',
+    sourceLabel: 'ESO · 南门二 B 星震观测', appearance: '柔和橙金星面与淡暖光晕',
+  }),
+  star({
+    id: 'sirius-a', cn: '天狼星 A', en: 'SIRIUS A', index: 'α CMA A',
+    type: '银河系 / 蓝白恒星', parentGalaxy: 'galaxy',
+    position: [3600, -140, 2800], r: 12, surfaceStyle: 'blue-star', color: 0xc9e5ff,
+    diameter: '约 8.6', stat1: '距地球', unit1: '光年',
+    stat2: '所属星座', value2: '大犬座',
+    desc: '地球夜空中最亮的恒星，闪耀着蓝白色光芒。天狼星 A 与一颗暗淡白矮星组成双星，彼此绕行的周期约为 50 年。',
+    sourceUrl: 'https://science.nasa.gov/asset/hubble/the-dog-star-sirius-and-its-tiny-companion/',
+    sourceLabel: 'NASA Hubble · 天狼星双星', appearance: '明亮白色星面与冰蓝外缘',
+  }),
+  star({
+    id: 'sirius-b', cn: '天狼星 B', en: 'SIRIUS B', index: 'α CMA B',
+    type: '银河系 / 白矮星', parentGalaxy: 'galaxy',
+    position: [3770, -122, 2910], r: 4.5, surfaceStyle: 'blue-star', color: 0xe5efff,
+    diameter: '约 8.6', stat1: '距地球', unit1: '光年',
+    stat2: '演化阶段', value2: '白矮星',
+    desc: '天狼星 A 旁边的小型致密伴星，是恒星演化留下的白矮星。它体积接近地球却拥有近一个太阳的质量；显示大小和两星间距经过放大，便于近距离观察。',
+    sourceUrl: 'https://science.nasa.gov/missions/hubble/measuring-a-white-dwarf-star/',
+    sourceLabel: 'NASA Hubble · 天狼星 B 测量', appearance: '紧凑冷白光球与浅蓝细晕',
+  }),
+  star({
+    id: 'vega', cn: '织女星', en: 'VEGA', index: 'α LYR',
+    type: '银河系 / 蓝白恒星', parentGalaxy: 'galaxy',
+    position: [-4200, 420, -6500], r: 13, surfaceStyle: 'blue-star', color: 0xb8d9ff,
+    diameter: '约 25', stat1: '距地球', unit1: '光年',
+    stat2: '所属星座', value2: '天琴座',
+    desc: '天琴座的明亮恒星，也是夏季大三角的一角。它周围的尘埃盘曾被哈勃与韦布望远镜细致观测，为研究恒星周围的碎屑提供了线索。',
+    sourceUrl: 'https://science.nasa.gov/asset/hubble/hubble-and-webb-observations-of-vega-circumstellar-disk/',
+    sourceLabel: 'NASA Hubble / Webb · 织女星尘埃盘', appearance: '清亮蓝白星面与轻盈辉光',
+  }),
+  star({
+    id: 'pollux', cn: '北河三', en: 'POLLUX', index: 'β GEM',
+    type: '银河系 / 橙色巨星', parentGalaxy: 'galaxy',
+    position: [5300, 190, -3900], r: 19, surfaceStyle: 'gold-star', color: 0xffb978,
+    diameter: '约 34', stat1: '距地球', unit1: '光年',
+    stat2: '所属星座', value2: '双子座',
+    desc: '双子座两颗头部亮星中更明亮的一颗，是已经演化成巨星的恒星。暖橙色的星光与附近蓝白恒星形成对比；它与北河二只是天空中相邻，并不构成双星。',
+    sourceUrl: 'https://science.nasa.gov/solar-system/skywatching/night-sky-network/gemini-constellation/',
+    sourceLabel: 'NASA · 双子座与北河三', appearance: '金橙色大光球与缓慢翻涌的斑纹',
+  }),
+  star({
+    id: 'rigel', cn: '参宿七', en: 'RIGEL', index: 'β ORI',
+    type: '银河系 / 蓝超巨星', parentGalaxy: 'galaxy',
+    position: [-19900, -200, 5600], r: 27, surfaceStyle: 'blue-star', color: 0x9dcbff,
+    diameter: '蓝超巨星', stat1: '恒星类型',
+    stat2: '所属星座', value2: '猎户座',
+    desc: '位于猎户座脚部的蓝白色超巨星，与肩部橙红的参宿四遥相呼应。它是一颗炽热的大质量恒星，展示了与红超巨星截然不同的明亮外观。',
+    sourceUrl: 'https://science.nasa.gov/universe/stories/quick-reads/the-lives-times-and-deaths-of-stars/',
+    sourceLabel: 'NASA · 恒星演化与参宿七', appearance: '宽阔的蓝白星面与强烈冷色光晕',
+  }),
   star({
     id: 'betelgeuse', cn: '参宿四', en: 'BETELGEUSE', index: 'α ORI',
     type: '银河系 / 红超巨星', parentGalaxy: 'galaxy',
@@ -146,6 +266,80 @@ const stars = [
     desc: 'NGC 346 附近的著名大质量多星系统，包含沃尔夫–拉叶型恒星，并曾经历显著爆发。此处用一个发光天体代表整个系统，方便探索；不是各成员的真实空间结构。',
     sourceUrl: 'https://ntrs.nasa.gov/citations/19950037141',
     sourceLabel: 'NASA NTRS · HD 5980 多星系统研究', appearance: '蓝紫边缘与强烈白色辉光',
+  }),
+];
+
+function blackHole(definition) {
+  const diskOuterRadius = definition.diskOuterRadius ?? 4.5;
+  return {
+    kind: 'black-hole', modelStatus: 'confirmed', unit1: '太阳质量', unit2: '',
+    parentId: definition.parentGalaxy,
+    diskOuterRadius,
+    visualRadius: definition.r * diskOuterRadius,
+    viewDistance: definition.r * 14,
+    ...definition,
+  };
+}
+
+// Central black holes share their host's scene centre. M33 X-7 and LMC X-1
+// are stellar-mass binary members placed away from the galactic nucleus.
+const blackHoles = [
+  blackHole({
+    id: 'sagittarius-a', cn: '人马座 A*', en: 'SAGITTARIUS A*', index: 'SGR A*',
+    type: '银河系 / 中央超大质量黑洞', parentGalaxy: 'galaxy',
+    position: [-18000, 0, 0], r: 36, color: 0xffa35e, diskTilt: [0.28, -0.18, -0.35],
+    diameter: '约 400 万', stat1: '质量估计',
+    stat2: '所在位置', value2: '银河中心',
+    desc: '位于银河系中心的超大质量黑洞，质量约为太阳的 400 万倍。事件视界望远镜在 2022 年公布了其周围发光气体勾勒的阴影；这里的吸积盘与光环是艺术演示。',
+    sourceUrl: 'https://www.hq.eso.org/public/news/eso2208-eht-mw/',
+    sourceLabel: 'ESO / EHT · 人马座 A* 首张图像',
+    appearance: '深黑阴影、琥珀吸积盘与弯曲亮环',
+  }),
+  blackHole({
+    id: 'm31-black-hole', cn: '仙女座中央黑洞', en: 'ANDROMEDA CENTRAL BLACK HOLE', index: 'M31*',
+    type: '仙女座星系 / 中央超大质量黑洞', parentGalaxy: 'andromeda',
+    position: [...galaxyDefinitions.find((galaxy) => galaxy.id === 'andromeda').position],
+    r: 45, color: 0xffcb82, diskTilt: [0.38, 0.12, -0.28],
+    diameter: '约 1.4 亿', stat1: '质量估计',
+    stat2: '所在位置', value2: 'M31 中心',
+    desc: '仙女座星系的中央黑洞远比银河中心的黑洞更重，哈勃研究给出的质量估计约为 1.4 亿个太阳。附近恒星的运动揭示了它的引力；金色盘面并非实拍外观。',
+    sourceUrl: 'https://science.nasa.gov/asset/hubble/our-neighboring-galaxys-unusual-core/',
+    sourceLabel: 'NASA Hubble · 仙女座核心与黑洞',
+    appearance: '宽阔金色吸积盘、白热内缘与漆黑中心',
+  }),
+  blackHole({
+    id: 'm32-black-hole', cn: 'M32 中央黑洞', en: 'M32 CENTRAL BLACK HOLE', index: 'M32*',
+    type: 'M32 星系 / 中央超大质量黑洞', parentGalaxy: 'm32',
+    position: [...galaxyDefinitions.find((galaxy) => galaxy.id === 'm32').position],
+    r: 31, color: 0xffb38c, diskTilt: [-0.16, 0.24, 0.44],
+    diameter: '逾 200 万', stat1: '质量量级',
+    stat2: '所在位置', value2: 'M32 中心',
+    desc: '这座小型椭圆星系的密集核心中，有一颗数百万太阳质量量级的黑洞。天文学家通过中心恒星的分布与运动研究它；暖色光盘表现吸积环境的概念外观。',
+    sourceUrl: 'https://svs.gsfc.nasa.gov/vis/a010000/a014300/a014335/14335_Supermassive_Black_Hole_Scale_Comparison_HTML_Transcript.html',
+    sourceLabel: 'NASA SVS · 超大质量黑洞尺度比较',
+    appearance: '紧凑橙金吸积盘与柔白弯曲光环',
+  }),
+  blackHole({
+    id: 'm33-x7', cn: 'M33 X-7 黑洞', en: 'M33 X-7', index: 'X-7',
+    type: '三角座星系 / 恒星级黑洞', parentGalaxy: 'triangulum',
+    position: [-203300, -17700, -214200], r: 20, color: 0x97d8ff, diskTilt: [0.18, 0.48, -0.38],
+    diameter: '约 16', stat1: '质量估计',
+    stat2: '系统类型', value2: 'X 射线双星',
+    desc: '三角座星系中的恒星级黑洞，与一颗大质量恒星组成食双星。观测研究估计黑洞质量约为 16 个太阳；它位于星盘中的双星系统，并不是三角座的中央黑洞。',
+    sourceUrl: 'https://arxiv.org/abs/0710.3165',
+    sourceLabel: 'Orosz 等 · M33 X-7 动力学质量研究',
+    appearance: '小型冰蓝吸积盘与明亮内圈',
+  }),
+  blackHole({
+    id: 'lmc-x1', cn: 'LMC X-1 黑洞', en: 'LMC X-1', index: 'X-1',
+    type: '大麦哲伦星云 / 恒星级黑洞', parentGalaxy: 'lmc',
+    position: [102800, -65400, 84600], r: 18, color: 0xc2b6ff, diskTilt: [-0.3, 0.22, 0.34],
+    diameter: '约 11', stat1: '质量估计',
+    stat2: '系统类型', value2: 'X 射线双星',
+    desc: '位于大麦哲伦星云的一颗恒星级黑洞，与高质量伴星构成明亮的 X 射线双星。动力学模型给出约 11 个太阳质量；它是星系内的双星成员，并非星系中心黑洞。',
+    sourceUrl: 'https://arxiv.org/abs/0810.3447',
+    sourceLabel: 'Orosz 等 · LMC X-1 动力学模型',
+    appearance: '紫白吸积盘、炽白内缘与黑色阴影',
   }),
 ];
 
@@ -249,6 +443,6 @@ const illustrativePlanets = [
   }),
 ];
 
-const deepSpaceBodyDefinitions = [...stars, ...confirmedPlanets, ...illustrativePlanets];
+const deepSpaceBodyDefinitions = [...stars, ...blackHoles, ...confirmedPlanets, ...illustrativePlanets];
 
 export { galaxyDefinitions, localGroupDefinition, deepSpaceBodyDefinitions };

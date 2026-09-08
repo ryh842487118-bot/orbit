@@ -36,11 +36,21 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     const destination = getData(id);
     if (destination.kind === 'trajectory') return destination.viewDistance * (mobile() ? 1.7 : 1);
     if (destination.kind === 'group') return destination.viewDistance * (mobile() ? 1.65 : 1);
-    if (destination.kind === 'galaxy') return destination.viewDistance * (mobile() ? 1.25 : 1);
+    if (destination.kind === 'galaxy') {
+      if (!mobile()) return destination.viewDistance;
+      const fit = destination.radius * 1.12
+        / (Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.min(1, camera.aspect));
+      return Math.max(destination.viewDistance * 1.25, fit);
+    }
     if (id === 'galaxy') return 68000;
     if (id === 'solar') return 650;
     if (id === 'iss') return .88;
     const screenFit = mobile() ? (destination.parentGalaxy ? 1.7 : 1.19) : 1;
+    if (destination.kind === 'black-hole') {
+      const radius = destination.visualRadius || destination.r * (destination.diskOuterRadius || 4.5);
+      const fit = radius * 1.12 / (Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.min(1, camera.aspect));
+      return Math.max((destination.viewDistance || radius * 3.3) * screenFit, fit);
+    }
     return destination.r * (id === 'saturn' ? 8.6 : id === 'sun' || destination.kind === 'star' ? 5.5 : 4.65) * screenFit;
   }
 
@@ -49,6 +59,13 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     if (destination.kind === 'trajectory') return new THREE.Vector3(.6, .45, 1).normalize();
     if (destination.kind === 'group') return new THREE.Vector3(.12, .8, 1.65).normalize();
     if (destination.kind === 'galaxy') return new THREE.Vector3(.16, 1.3, 1.7).normalize();
+    if (destination.kind === 'black-hole') {
+      // Approach just above the disk plane so its depth and central shadow
+      // remain readable together, whatever orientation this disk has in space.
+      return new THREE.Vector3(.45, .26, 1).applyEuler(
+        new THREE.Euler(...(destination.diskTilt || [0.12, 0, -0.22])),
+      ).normalize();
+    }
     if (destination.parentStarId) {
       const towardStar = getPosition(destination.parentStarId).sub(getPosition(id)).normalize();
       const tangent = new THREE.Vector3().crossVectors(towardStar, new THREE.Vector3(0, 1, 0));
@@ -91,11 +108,15 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     } else if (destination.kind === 'galaxy') {
       activeGalaxyId = id;
       const firstStar = [...bodies.values()].find(body => body.parentGalaxy === id && body.kind === 'star');
-      if (firstStar) focusBody = activeSystemId = firstStar.id;
+      const firstBody = firstStar || [...bodies.values()].find(body => body.parentGalaxy === id);
+      // Galaxies without individually catalogued stars still own their focus.
+      // Otherwise zooming in would drift back to the previously visited system.
+      focusBody = activeSystemId = firstBody?.id || id;
     } else if (bodies.has(id) || id === 'iss') {
       focusBody = id;
       activeGalaxyId = destination.parentGalaxy || 'galaxy';
-      activeSystemId = destination.parentStarId || (destination.kind === 'star' ? id : 'solar');
+      activeSystemId = destination.parentStarId
+        || (destination.kind === 'star' || destination.kind === 'black-hole' ? id : 'solar');
     }
     updateInfo(id);
     // Destination limits apply after arrival; applying them now would clamp the
@@ -163,6 +184,12 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     if (t >= 1) restore(current.saved);
   }
 
+  function groupTransitionStart() {
+    // A portrait panorama needs more camera distance. Keep its full galaxy
+    // framed before starting the next transition out to the Local Group.
+    return Math.max(150000, mobile() ? destinationDistance(activeGalaxyId) * 1.2 : 0);
+  }
+
   function trackingCenter(distance) {
     if (trajectoryView) return getPosition('trajectory');
     const body = getData(focusBody), target = getPosition(focusBody);
@@ -170,7 +197,10 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     target.lerp(activeSystemId === 'solar' ? zero : getPosition(activeSystemId), leave);
     const galaxyBlendEnd = Math.min(30000, (getData(activeGalaxyId).viewDistance || 68000) * .7);
     target.lerp(activeGalaxyId === 'galaxy' ? galaxyCenter : getPosition(activeGalaxyId), smooth(1800, galaxyBlendEnd, distance));
-    if (getData('local-group')) target.lerp(getPosition('local-group'), smooth(150000, 500000, distance));
+    if (getData('local-group')) {
+      const start = groupTransitionStart();
+      target.lerp(getPosition('local-group'), smooth(start, Math.max(500000, start * 2.4), distance));
+    }
     return target;
   }
 
@@ -179,7 +209,8 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     temp.copy(trackingCenter(distance)).sub(controls.target).multiplyScalar(1 - Math.exp(-dt * 8));
     controls.target.add(temp);
     camera.position.add(temp);
-    controls.minDistance = trajectoryView ? 60 : focusBody === 'iss' ? .20 : body.r * 1.13;
+    controls.minDistance = trajectoryView ? 60 : focusBody === 'iss' ? .20
+      : body.r * (body.kind === 'black-hole' ? 2.8 : 1.13);
     controls.maxDistance = trajectoryView ? 2400 : MAX_DISTANCE;
     controls.update();
     keepOutsideBodies();
@@ -189,7 +220,9 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     flight = null;
     returnFlight = null;
     controls.enabled = true;
-    controls.minDistance = trajectoryView ? 60 : focusBody === 'iss' ? .20 : getData(focusBody).r * 1.13;
+    const body = getData(focusBody);
+    controls.minDistance = trajectoryView ? 60 : focusBody === 'iss' ? .20
+      : body.r * (body.kind === 'black-hole' ? 2.8 : 1.13);
     controls.maxDistance = trajectoryView ? 2400 : MAX_DISTANCE;
   }
 
@@ -204,7 +237,10 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
   function stage() {
     if (trajectoryView) return 'trajectory';
     const distance = camera.position.distanceTo(controls.target);
-    if (getData('local-group') && distance > 200000) return 'local-group';
+    if (getData('local-group') && distance > groupTransitionStart() * 4 / 3) return 'local-group';
+    const focus = getData(focusBody);
+    if (focus.kind === 'galaxy') return 'galaxy';
+    if (focus.kind === 'black-hole') return distance > 2600 ? 'galaxy' : 'earth';
     return distance > 2600 ? 'galaxy' : distance > Math.max(28, getData(focusBody).r * 10) ? 'solar' : 'earth';
   }
 
@@ -299,6 +335,7 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     initialize, flyTo, zoom, cancelFlight, trackingCenter, stage, update, updateStage, focusEarth, snapshot, restore,
     getState: () => ({ selected, focusBody, displayedId, activeGalaxyId, activeSystemId, trajectoryView,
       flight: !!flight || !!returnFlight, returning: !!returnFlight,
-      stage: stage(), distance: camera.position.distanceTo(controls.target) }),
+      stage: stage(), distance: camera.position.distanceTo(controls.target),
+      galaxyViewDistance: destinationDistance(activeGalaxyId) }),
   };
 }

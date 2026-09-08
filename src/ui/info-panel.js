@@ -8,6 +8,7 @@ export function createInfoPanel({ getData }) {
     $('info-category').textContent = data.type;
     $('info-en').textContent = data.en;
     $('info-panel').classList.toggle('deep-space-info', Boolean(data.kind || data.parentGalaxy));
+    $('info-panel').classList.toggle('black-hole-info', data.kind === 'black-hole');
     $('info-name').classList.toggle('long-name', data.cn.length >= 5
       || (data.cn.length >= 4 && Boolean(data.kind || data.parentGalaxy)));
     $('info-name').textContent = data.cn;
@@ -28,6 +29,7 @@ export function createInfoPanel({ getData }) {
     $('stat-value-2').append(unit2);
     $('earth-actions').style.display = id === 'earth' || id === 'iss' ? '' : 'none';
     $('observation-text').textContent = data.kind === 'galaxy' || data.kind === 'group' ? '星系结构与距离为示意'
+      : data.kind === 'black-hole' ? '黑洞阴影、吸积盘与光环为艺术示意'
       : id === 'trajectory' ? '参照系、距离与时间均为示意'
       : id === 'solar' ? '八大行星 · 轨道运行中' : '正在追踪' + data.cn;
     const evidence = $('info-evidence');

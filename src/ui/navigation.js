@@ -50,18 +50,22 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
         ? '太阳参照 · 观察行星公转' : '银河参照 · 观察前进与公转';
     } else if (stage === 'local-group') {
       $('view-caption').textContent = '本星系群';
-      $('view-distance').textContent = '5 座星系 · 点击开始星际航行';
+      $('view-distance').textContent = `${world.galaxyDefinitions.length} 座星系 · 点击开始星际航行`;
     } else if (stage === 'galaxy') {
       $('view-caption').textContent = world.getData(activeGalaxyId).cn + '全景';
-      $('view-distance').textContent = '选择恒星 · 继续缩小前往星系群';
+      $('view-distance').textContent = '探索天体 · 继续缩小前往星系群';
     } else if (stage === 'solar') {
-      $('view-caption').textContent = activeSystemId === 'solar' ? '太阳系全景' : world.getData(activeSystemId).cn + '系统';
-      $('view-distance').textContent = activeSystemId === 'solar' ? '八大行星运行轨道' : '母星与行星 · 轨道为示意';
+      const hasPlanets = [...world.bodies.values()].some(body => body.parentStarId === activeSystemId);
+      $('view-caption').textContent = activeSystemId === 'solar' ? '太阳系全景'
+        : world.getData(activeSystemId).cn + (hasPlanets ? '系统' : '周边');
+      $('view-distance').textContent = activeSystemId === 'solar' ? '八大行星运行轨道'
+        : hasPlanets ? '母星与行星 · 轨道为示意' : '恒星周边 · 继续缩小前往星系';
     } else {
       const body = world.getData(focusBody);
       $('view-caption').textContent = focusBody === 'earth' ? '地球近轨' : body.cn + (focusBody === 'iss' ? '近景' : '观测');
       if (body.parentGalaxy) {
-        $('view-distance').textContent = body.kind === 'star' ? '恒星表面与日冕示意'
+        $('view-distance').textContent = body.kind === 'black-hole' ? '黑洞阴影与吸积盘 · 艺术示意'
+          : body.kind === 'star' ? '恒星表面与日冕示意'
           : body.modelStatus === 'illustration' ? '创作示意 · 未确认存在' : '已确认行星 · 表面示意';
         return;
       }

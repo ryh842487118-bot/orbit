@@ -5,6 +5,7 @@ import { data, specials } from '../src/universe/catalog.js';
 import { galaxyDefinitions, localGroupDefinition, deepSpaceBodyDefinitions } from '../src/universe/deep-space-catalog.js';
 import { createDeepSpaceBodies } from '../src/universe/deep-space-bodies.js';
 import { createEarthSession } from '../src/earthsense/session.js';
+import { destinationContext } from '../src/ui/destinations.js';
 
 globalThis.matchMedia = () => ({ matches: false });
 globalThis.innerWidth = 1440;
@@ -117,7 +118,10 @@ test('deep-space catalog has unique identities, complete parent chains and hones
       assert.match(planet.sourceLabel, /虚构示意/);
     }
   }
-  for (const galaxy of galaxies) {
+  assert.equal(Number(localGroupDefinition.diameter), galaxies.length);
+  // Retain the original stellar systems; a newly added galaxy does not need
+  // an invented star or planet to serve as an independently explorable place.
+  for (const galaxy of galaxies.filter(galaxy => ['galaxy', 'andromeda', 'triangulum', 'lmc', 'smc'].includes(galaxy.id))) {
     assert.ok(deepSpaceBodyDefinitions.some(body => body.kind === 'star' && body.parentGalaxy === galaxy.id));
     assert.ok(planets.some(body => body.parentGalaxy === galaxy.id));
   }
@@ -129,7 +133,7 @@ test('every new destination completes a flight at its real scene position and ex
       const { navigation, controls, world, info, arrive } = fixture(t);
       arrive(definition.id);
       const state = navigation.getState();
-      const distance = definition.kind === 'group' || definition.kind === 'galaxy'
+      const distance = definition.kind === 'group' || definition.kind === 'galaxy' || definition.kind === 'black-hole'
         ? definition.viewDistance : definition.r * (definition.kind === 'star' ? 5.5 : 4.65);
       near(state.distance, distance, 'arrival distance');
       near(controls.target.distanceTo(world.getPosition(definition.id)), 0, 'arrival target');
@@ -145,7 +149,7 @@ test('every new destination completes a flight at its real scene position and ex
       } else {
         assert.equal(state.activeGalaxyId, definition.parentGalaxy);
         assert.equal(state.activeSystemId,
-          definition.kind === 'star' ? definition.id : definition.parentStarId);
+          definition.kind === 'star' || definition.kind === 'black-hole' ? definition.id : definition.parentStarId);
         assert.equal(state.focusBody, definition.id);
       }
     });
@@ -166,6 +170,97 @@ test('foreign galaxy overviews stay centered while their independent planetary s
       near(camera.position.distanceTo(originalCamera), 0, 'overview camera remains fixed');
       assert.equal(navigation.getState().displayedId, galaxy.id);
     });
+  }
+});
+
+test('galaxies without catalogued bodies retain their center when entering from another system', context => {
+  const { navigation, controls, world, arrive, setDistance } = fixture(context);
+  const emptyGalaxies = galaxyDefinitions.filter(galaxy => !deepSpaceBodyDefinitions.some(body => body.parentGalaxy === galaxy.id));
+  assert.ok(emptyGalaxies.length > 0);
+  for (const galaxy of emptyGalaxies) {
+    arrive('smc-giant-demo');
+    arrive(galaxy.id);
+    setDistance(600);
+    const state = navigation.getState();
+    assert.equal(state.focusBody, galaxy.id);
+    assert.equal(state.activeGalaxyId, galaxy.id);
+    assert.equal(state.displayedId, galaxy.id);
+    assert.equal(state.stage, 'galaxy');
+    near(controls.target.distanceTo(world.getPosition(galaxy.id)), 0, `${galaxy.id} remains centered`);
+    assert.deepEqual(destinationContext(state, world).items.map(body => body.id), [galaxy.id]);
+  }
+});
+
+test('black-hole views frame the disk and stay focused before returning to their own galaxy', context => {
+  const { navigation, camera, controls, world, arrive, setDistance } = fixture(context);
+  const blackHoles = deepSpaceBodyDefinitions.filter(body => body.kind === 'black-hole');
+  assert.equal(blackHoles.length, 5);
+  for (const definition of blackHoles) {
+    arrive(definition.id);
+    for (let frame = 0; frame < 90; frame++) {
+      navigation.update(1 / 60, performance.now() + frame, dt => world.deepSpace.update(dt, { speed: 20 }));
+      navigation.updateStage();
+    }
+    const state = navigation.getState();
+    assert.equal(state.stage, 'earth');
+    assert.equal(state.displayedId, definition.id);
+    assert.equal(state.activeSystemId, definition.id);
+    near(controls.target.distanceTo(world.getPosition(definition.id)), 0, 'black-hole focus does not drift toward the Sun');
+    const halfHeight = camera.position.distanceTo(controls.target) * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    assert.ok(halfHeight > definition.r * definition.diskOuterRadius, 'the full accretion disk fits the initial view');
+    const diskNormal = new THREE.Vector3(0, 1, 0).applyEuler(new THREE.Euler(...definition.diskTilt));
+    const inclination = Math.abs(camera.position.clone().sub(controls.target).normalize().dot(diskNormal));
+    assert.ok(inclination > .15 && inclination < .4, 'arrival shows the shadow above an inclined disk');
+    assert.ok(destinationContext(state, world).items.some(body => body.id === definition.id));
+    navigation.zoom(0.000001);
+    near(navigation.getState().distance, definition.r * 2.8, 'zoom keeps the shadow and photon ring observable');
+    setDistance(40000);
+    assert.equal(navigation.getState().displayedId, definition.parentGalaxy);
+    arrive(definition.id);
+    arrive('earth');
+    assert.equal(navigation.getState().activeSystemId, 'solar');
+    assert.equal(navigation.getState().displayedId, 'earth');
+  }
+});
+
+test('black-hole arrival fits the full disk in a narrow phone viewport', context => {
+  const { navigation, camera, arrive } = fixture(context);
+  const previousWidth = globalThis.innerWidth;
+  context.after(() => { globalThis.innerWidth = previousWidth; });
+  globalThis.innerWidth = 320;
+  camera.aspect = 320 / 844;
+  camera.updateProjectionMatrix();
+  for (const body of deepSpaceBodyDefinitions.filter(body => body.kind === 'black-hole')) {
+    arrive(body.id);
+    const state = navigation.getState();
+    const halfWidth = state.distance * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
+    assert.ok(halfWidth > body.r * body.diskOuterRadius, `${body.id} disk fits horizontally`);
+    assert.equal(state.displayedId, body.id);
+  }
+});
+
+test('phone galaxy panoramas fit horizontally and keep their galaxy context without drifting', context => {
+  const { navigation, camera, controls, world, arrive } = fixture(context);
+  const previousWidth = globalThis.innerWidth;
+  context.after(() => { globalThis.innerWidth = previousWidth; });
+  globalThis.innerWidth = 320;
+  camera.aspect = 320 / 844;
+  camera.updateProjectionMatrix();
+  for (const galaxy of galaxies) {
+    arrive(galaxy.id);
+    const halfWidth = navigation.getState().distance * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
+    assert.ok(halfWidth > galaxy.radius, `${galaxy.id} fits horizontally`);
+    for (let frame = 0; frame < 90; frame++) {
+      navigation.update(1 / 60, performance.now() + frame, dt => world.deepSpace.update(dt, { speed: 20 }));
+      navigation.updateStage();
+    }
+    const state = navigation.getState();
+    assert.equal(state.stage, 'galaxy', `${galaxy.id} still shows a galaxy panorama`);
+    assert.equal(state.displayedId, galaxy.id);
+    near(controls.target.distanceTo(world.getPosition(galaxy.id)), 0, `${galaxy.id} stays centered`);
+    arrive('local-group');
+    assert.equal(navigation.getState().stage, 'local-group');
+    assert.equal(navigation.getState().displayedId, 'local-group');
   }
 });
 
@@ -354,16 +449,16 @@ test('pause freezes deep-space orbit, rotation and surface animation together', 
   world.deepSpace.update(1, { speed: 20 });
   const before = [...world.deepSpace.bodies.values()].map(body => ({
     id: body.id, position: body.position.toArray(), rotation: body.mesh.rotation.toArray(),
-    surfaceTime: body.mesh.material.uniforms.uTime.value,
-    atmosphereTime: body.atmosphere.material.uniforms.uTime.value,
+    surfaceTime: body.mesh.material.uniforms?.uTime?.value,
+    atmosphereTime: body.atmosphere?.material.uniforms.uTime.value,
   }));
   world.deepSpace.update(5, { paused: true, speed: 20 });
   for (const saved of before) {
     const body = world.bodies.get(saved.id);
     assert.deepEqual(body.position.toArray(), saved.position);
     assert.deepEqual(body.mesh.rotation.toArray(), saved.rotation);
-    assert.equal(body.mesh.material.uniforms.uTime.value, saved.surfaceTime);
-    assert.equal(body.atmosphere.material.uniforms.uTime.value, saved.atmosphereTime);
+    assert.equal(body.mesh.material.uniforms?.uTime?.value, saved.surfaceTime);
+    assert.equal(body.atmosphere?.material.uniforms.uTime.value, saved.atmosphereTime);
   }
 });
 

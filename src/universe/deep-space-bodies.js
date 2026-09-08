@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createBlackHole } from './black-holes.js';
 
 const TAU = Math.PI * 2;
 
@@ -194,7 +195,7 @@ export function createDeepSpaceBodies(scene, textures, definitions = []) {
   void textures;
   const root = new THREE.Group();
   root.name = 'deep-space-bodies';
-  const bodies = new Map(), orbitLines = [], systems = [];
+  const bodies = new Map(), orbitLines = [], systems = [], blackHoleModels = new Map();
   const sphere = new THREE.SphereGeometry(1, 80, 48), haloMap = haloTexture();
   const ringPoints = Array.from({ length: 160 }, (_, index) => {
     const angle = index / 160 * TAU;
@@ -202,10 +203,24 @@ export function createDeepSpaceBodies(scene, textures, definitions = []) {
   });
   const orbitGeometry = new THREE.BufferGeometry().setFromPoints(ringPoints);
   const motionPreference = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
-  let time = 0;
+  let time = 0, disposed = false;
   scene.add(root);
 
   for (const definition of definitions) {
+    if (definition.kind === 'black-hole') {
+      const model = createBlackHole(definition);
+      const { group, mesh, accretionDisk, photonRing, lensedArcs, pickMeshes, visualRadius } = model;
+      if (Array.isArray(definition.position)) group.position.fromArray(definition.position);
+      else if (definition.position?.isVector3) group.position.copy(definition.position);
+      else if (definition.position) group.position.set(definition.position.x, definition.position.y, definition.position.z);
+      root.add(group);
+      bodies.set(definition.id, {
+        ...definition, visualRadius, position: group.position,
+        group, mesh, accretionDisk, photonRing, lensedArcs, pickMeshes,
+      });
+      blackHoleModels.set(definition.id, model);
+      continue;
+    }
     if (definition.kind !== 'star' && definition.kind !== 'planet') continue;
     const seed = seedFromId(definition.id), group = new THREE.Group();
     group.name = definition.id;
@@ -295,10 +310,15 @@ export function createDeepSpaceBodies(scene, textures, definitions = []) {
   }
 
   function update(dt, { paused = false, speed = 1 } = {}) {
+    if (disposed) return;
     const step = !paused && !motionPreference?.matches && Number.isFinite(dt) && Number.isFinite(speed)
       ? Math.max(0, dt) * Math.max(0, speed) : 0;
     time += step;
     for (const body of bodies.values()) {
+      if (body.kind === 'black-hole') {
+        blackHoleModels.get(body.id).update(time);
+        continue;
+      }
       if (step > 0) body.mesh.rotation.y += step * (body.kind === 'star' ? 0.012 : 0.036);
       body.mesh.material.uniforms.uTime.value = time;
       body.atmosphere.material.uniforms.uTime.value = time;
@@ -307,6 +327,7 @@ export function createDeepSpaceBodies(scene, textures, definitions = []) {
   }
 
   function updateVisibility(camera, { focusBody = null, activeGalaxyId = null, stage = null, orbitsVisible = true } = {}) {
+    if (disposed) return;
     const focus = typeof focusBody === 'string' ? bodies.get(focusBody) : focusBody;
     const focusId = focus?.id ?? (typeof focusBody === 'string' ? focusBody : null);
     const focusedHost = focus?.kind === 'planet' ? focus.parentStarId ?? focus.parentId : focusId;
@@ -315,9 +336,13 @@ export function createDeepSpaceBodies(scene, textures, definitions = []) {
       const distance = camera.position.distanceTo(body.position);
       const inSystem = body.id === focusedHost || (body.parentStarId ?? body.parentId) === focusedHost;
       const inGalaxy = !activeGalaxyId || body.parentGalaxy === activeGalaxyId;
-      const threshold = body.r * (body.kind === 'star' ? 900 : 260);
+      const threshold = body.r * (body.kind === 'black-hole' ? 1200 : body.kind === 'star' ? 900 : 260);
       const visible = body.id === focusId || (distance < threshold && (inGalaxy || inSystem));
       body.group.visible = body.mesh.visible = visible;
+      if (body.kind === 'black-hole') {
+        if (visible) blackHoleModels.get(body.id).updateCamera(camera);
+        continue;
+      }
       body.atmosphere.visible = visible && distance < body.r * 95;
       if (body.halo) {
         body.halo.material.opacity = (overview ? 0.14 : 0.22)
@@ -334,7 +359,10 @@ export function createDeepSpaceBodies(scene, textures, definitions = []) {
   }
 
   function dispose() {
+    if (disposed) return;
+    disposed = true;
     root.removeFromParent();
+    for (const model of blackHoleModels.values()) model.dispose();
     sphere.dispose();
     orbitGeometry.dispose();
     haloMap.dispose();

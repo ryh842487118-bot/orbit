@@ -34,8 +34,9 @@ export function bindBodyPicking({ renderer, camera, world, navigation, onPick })
     // never destinations, including while the arrival flight is in progress.
     if (navigation.getState().stage === 'trajectory') return;
     // THREE.Raycaster does not respect visibility, including hidden ancestors.
-    const meshes = [...world.bodies.values()].filter(body => body.mesh
-      && isVisible(body.mesh) && isVisible(body.group)).map(body => body.mesh);
+    const meshes = [...world.bodies.values()].filter(body => isVisible(body.group))
+      .flatMap(body => body.pickMeshes || (body.mesh ? [body.mesh] : []))
+      .filter(mesh => isVisible(mesh));
     const hits = raycaster.intersectObjects(meshes, false);
     let destination = hits[0]?.object.userData.bodyId;
     let nearest = hits[0]?.distance ?? Infinity;
@@ -50,7 +51,7 @@ export function bindBodyPicking({ renderer, camera, world, navigation, onPick })
         // Leave the galaxy's interior available for its stars and systems.
         if (cameraDistance < definition.radius * 1.1
           || (definition.id === state.activeGalaxyId && state.stage === 'galaxy'
-            && focusDistance < definition.viewDistance * 1.7)) continue;
+            && focusDistance < (state.galaxyViewDistance || definition.viewDistance) * 1.7)) continue;
         galaxySphere.set(galaxyCenter, definition.radius * .75);
         if (!raycaster.ray.intersectSphere(galaxySphere, intersection)) continue;
         const hitDistance = camera.position.distanceTo(intersection);

@@ -32,7 +32,7 @@ export function createLabels({ camera, controls, world, onSelect }) {
     return true;
   }
 
-  function update({ labelsVisible, selected, stage, activeGalaxyId, activeSystemId }) {
+  function update({ labelsVisible, selected, stage, activeGalaxyId, activeSystemId, galaxyViewDistance: framedGalaxyDistance }) {
     const distance = camera.position.distanceTo(controls.target), viewW = innerWidth, viewH = innerHeight;
     const compact = mobile();
     const selectedData = getData(selected);
@@ -42,7 +42,7 @@ export function createLabels({ camera, controls, world, onSelect }) {
       || (selectedData?.kind === 'star' ? selected : 'solar');
     const mode = stage || (distance > 200000 ? 'local-group' : distance > 2600 ? 'galaxy' : distance > 28 ? 'solar' : 'earth');
     const solarSystem = galaxyId === 'galaxy' && systemId === 'solar' && mode !== 'local-group';
-    const galaxyViewDistance = galaxies.get(galaxyId)?.viewDistance || 68000;
+    const galaxyViewDistance = framedGalaxyDistance || galaxies.get(galaxyId)?.viewDistance || 68000;
     occupied.length = 0;
     for (const item of labels) {
       const body = getData(item.id);
@@ -50,7 +50,7 @@ export function createLabels({ camera, controls, world, onSelect }) {
       const deepLabel = item.type === 'galaxy' || Boolean(body?.parentGalaxy);
       if (item.type === 'galaxy') {
         show = show && (mode === 'local-group' || (mode === 'galaxy' && distance > 90000 && item.id !== galaxyId));
-      } else if (body?.parentGalaxy && body.kind === 'star') {
+      } else if (body?.parentGalaxy && (body.kind === 'star' || body.kind === 'black-hole')) {
         const inGalaxy = mode === 'galaxy' && distance < galaxyViewDistance * 1.7;
         const inSystem = mode !== 'local-group' && item.id === systemId
           && camera.position.distanceTo(body.position) < Math.max(1200, body.r * 100);
