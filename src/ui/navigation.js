@@ -1,3 +1,4 @@
+import { bindWallpaperMode } from './wallpaper.js';
 import { reducedMotion } from '../core/math.js';
 import { bindBodyPicking } from './picking.js';
 import { createDestinations } from './destinations.js';
@@ -109,6 +110,7 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
     labelsVisible = !labelsVisible;
     $('toggle-labels').setAttribute('aria-pressed', String(labelsVisible));
   };
+  const wallpaper = bindWallpaperMode(renderer.domElement);
   $('fullscreen').onclick = fullscreen;
   $('help-button').onclick = () => $('help-dialog').showModal();
   $('credits-button').onclick = () => $('credits-dialog').showModal();
@@ -130,9 +132,9 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
     if (event.key.toLowerCase() === 'h') flyTo('earth');
     if (event.key.toLowerCase() === 'f') fullscreen();
     if (event.key.toLowerCase() === 'i') {
-      document.body.classList.toggle('immersive');
-      toast(document.body.classList.contains('immersive') ? '沉浸模式 · 按 I 恢复界面' : '已恢复界面');
+      wallpaper.toggle();
     }
+    if (event.key === 'Escape') wallpaper.exit();
     if (event.key === '?') $('help-dialog').showModal();
   });
   bindBodyPicking({ renderer, camera, world, navigation, onPick });

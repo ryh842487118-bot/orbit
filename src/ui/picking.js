@@ -25,7 +25,7 @@ export function bindBodyPicking({ renderer, camera, world, navigation, onPick })
 
   renderer.domElement.addEventListener('pointerup', event => {
     touches.delete(event.pointerId);
-    if (!press || multiTouch || Math.hypot(event.clientX - press.x, event.clientY - press.y) > 5 || performance.now() - press.t > 450) return;
+    if (event.defaultPrevented || !press || multiTouch || Math.hypot(event.clientX - press.x, event.clientY - press.y) > 5 || performance.now() - press.t > 450) return;
     press = null;
     pointer.set(event.clientX / innerWidth * 2 - 1, -event.clientY / innerHeight * 2 + 1);
     raycaster.setFromCamera(pointer, camera);

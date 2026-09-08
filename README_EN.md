@@ -48,6 +48,7 @@ Actual v1.6.0 screenshots; select an image to view it at full size. The fictiona
 - Toggle orbits and labels independently. Pause celestial motion or switch between 0.25×, 1×, 5×, and 20× simulation speeds.
 - Select **运动轨迹 (Motion Trails)** beside the orbit and label controls to follow the Sun and eight planets. Switch between Galactic and Sun reference frames and short or long histories, use the existing pause and speed controls, rotate and zoom freely, or choose **返回太阳系 (Return to Solar System)**.
 - Warm meteoroids and comets with two soft tails occasionally cross the sky, one at a time at random intervals. They follow the pause control and are hidden in EarthSense and reduced-motion mode.
+- Wallpaper mode: tap the picture icon at the top right to hide controls, text, celestial labels, and interface shading for a clean mobile screenshot. Drag and pinch to compose; double-tap the view or press `I` / `Esc` to restore the interface.
 - Keyboard shortcuts: `+` / `-` to zoom, Space to pause, `H` to return to Earth, `F` for fullscreen, `I` to hide the interface, and `?` for help.
 
 ## Solar System Motion Trails

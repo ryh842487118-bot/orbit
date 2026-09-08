@@ -76,3 +76,9 @@
   #view-caption,#view-distance{overflow:hidden;text-overflow:ellipsis}
   .deep-space-info+.scale-control{top:44%}
 }
+
+/* Keep the wallpaper canvas fully clear, including labels and transient messages. */
+body.immersive > :not(#universe):not(#error):not(script):not(style),
+body.immersive > :not(#universe):not(#error):not(script):not(style) *{visibility:hidden!important;pointer-events:none!important}
+body.immersive #universe{outline:none;cursor:grab}
+@media(max-width:600px){.header-right #fullscreen{display:none}#wallpaper{min-width:36px}}
