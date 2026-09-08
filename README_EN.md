@@ -32,12 +32,7 @@ Actual v1.6.0 screenshots; select an image to view it at full size. The fictiona
 
 [Watch the ORBIT demo on Douyin](https://v.douyin.com/fs-xgwuET1g), a Chinese short-video platform. The screenshot shows **4,319 likes, 1,292 favorites, 304 comments, and 920 shares**, reflecting interest in the project beyond GitHub. These figures come from the screenshot archived on September 8, 2026.
 
-<details>
-<summary>View the demo and engagement screenshot</summary>
-
 [![ORBIT demo on Douyin showing 4,319 likes, 1,292 favorites, 304 comments, and 920 shares](docs/previews/douyin-demo.png)](docs/previews/douyin-demo.png)
-
-</details>
 
 ## Explore
 

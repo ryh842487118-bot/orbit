@@ -34,12 +34,7 @@
 
 [观看 ORBIT 抖音演示](https://v.douyin.com/fs-xgwuET1g)。所附截图显示 **4,319 次点赞、1,292 次收藏、304 条评论和 920 次分享**，记录了项目在 GitHub 之外获得的关注。数据以截图为准，收录日期为 2026-09-08。
 
-<details>
-<summary>查看视频与互动数据截图</summary>
-
 [![ORBIT 抖音演示截图：4,319 次点赞、1,292 次收藏、304 条评论、920 次分享](docs/previews/douyin-demo.png)](docs/previews/douyin-demo.png)
-
-</details>
 
 ## 探索
 
