@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 
-// An explorable illustration: the shadow and disk have real 3D geometry; the
-// photon ring and faint bent-light arcs suggest lensing without ray tracing.
+// An explorable illustration, not a relativistic ray tracer. A continuous
+// lens field joins the bent disk above/below the shadow to its thin side wings.
+// The underlying sphere and disk retain real geometry for orbiting and picking.
 const vertexShader = `
   varying vec3 vLocal;
   #include <common>
@@ -52,7 +53,12 @@ const diskFragment = `
     float edge = smoothstep(1.24, 1.39, radius)
       * (1.0 - smoothstep(uOuterRadius * 0.79, uOuterRadius, radius));
     float alpha = edge * (0.52 + heat * 0.43);
-    gl_FragColor = vec4(color * brightness * (0.72 + heat * 1.05), alpha);
+    // Near the disk plane, the lens field below renders the whole visible disk
+    // together. Rendering the physical front half too would fill the shadow
+    // with a broad orange ellipse. Steeper views reveal the physical disk.
+    float physicalDisk = smoothstep(0.16, 0.55, abs(uViewDirection.y));
+    gl_FragColor = vec4(min(color * brightness * (0.62 + heat * 0.62), vec3(1.1)),
+      alpha * physicalDisk);
     #include <logdepthbuf_fragment>
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
@@ -61,22 +67,24 @@ const diskFragment = `
 
 const photonFragment = `
   uniform vec3 uColor;
-  uniform float uTime;
+  uniform vec2 uDiskAxis;
+  uniform float uTime, uInclination;
   varying vec3 vLocal;
   #include <common>
   #include <logdepthbuf_pars_fragment>
   void main() {
-    float radius = length(vLocal.xy);
-    float core = exp(-pow((radius - 1.065) / 0.018, 2.0));
-    float glow = exp(-pow((radius - 1.075) / 0.065, 2.0)) * 0.32;
-    // Keep the shadow entirely black; the light lives outside its silhouette.
-    float mask = smoothstep(1.005, 1.025, radius);
-    float angle = atan(vLocal.y, vLocal.x);
-    float uneven = 0.85 + 0.15 * sin(angle - uTime * 0.045);
-    float alpha = (core * 0.93 + glow) * mask * uneven;
+    vec2 p = vec2(dot(vLocal.xy, uDiskAxis),
+      dot(vLocal.xy, vec2(-uDiskAxis.y, uDiskAxis.x)));
+    // Only this hairline foreground image is allowed across the dark center.
+    // Its width stays sub-percent of the shadow, with pixel antialiasing.
+    float width = max(0.005, fwidth(p.y) * 0.48);
+    float line = exp(-pow(p.y / width, 2.0));
+    float ends = 1.0 - smoothstep(1.025, 1.15, abs(p.x));
+    float lensStrength = 1.0 - smoothstep(0.16, 0.38, 1.0 - uInclination);
+    float detail = 0.88 + 0.12 * sin(p.x * 21.0 - uTime * 0.1);
+    float alpha = line * ends * lensStrength * detail * 0.83;
     if (alpha < 0.002) discard;
-    vec3 color = mix(uColor, vec3(1.0, 0.94, 0.82), core * 0.78);
-    gl_FragColor = vec4(color * (1.15 + core * 0.8), alpha);
+    gl_FragColor = vec4(mix(uColor, vec3(1.0, 0.83, 0.58), 0.85), alpha);
     #include <logdepthbuf_fragment>
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
@@ -85,23 +93,94 @@ const photonFragment = `
 
 const lensFragment = `
   uniform vec3 uColor;
-  uniform float uTime, uInclination;
+  uniform vec2 uDiskAxis;
+  uniform float uTime, uInclination, uOuterRadius, uSeed;
   varying vec3 vLocal;
   #include <common>
   #include <logdepthbuf_pars_fragment>
+  float hash(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+  }
+  float noise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x),
+      mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+  }
+  float smoothUnion(float a, float b, float softness) {
+    float h = clamp(0.5 + 0.5 * (b - a) / softness, 0.0, 1.0);
+    return mix(b, a, h) - softness * h * (1.0 - h);
+  }
   void main() {
-    vec2 p = vLocal.xy;
-    float ellipse = length(vec2(p.x, p.y * 1.45));
-    float arc = exp(-pow((ellipse - 1.79) / 0.035, 2.0));
-    float haze = exp(-pow((ellipse - 1.81) / 0.13, 2.0)) * 0.19;
-    float upper = smoothstep(0.08, 0.62, p.y);
-    float lower = smoothstep(0.08, 0.52, -p.y) * 0.22;
+    vec2 p = vec2(dot(vLocal.xy, uDiskAxis),
+      dot(vLocal.xy, vec2(-uDiskAxis.y, uDiskAxis.x)));
+    float radius = length(p);
+    // No transparent orange wash or procedural glow is drawn inside the
+    // shadow. The separate, very thin foreground disk is its only crossing.
+    if (radius < 1.005) discard;
+    float faceOn = 1.0 - uInclination;
+    float lensStrength = 1.0 - smoothstep(0.22, 0.55, faceOn);
+    if (lensStrength < 0.002 || abs(p.x) > uOuterRadius * 0.98) discard;
+    float opening = max(0.009, faceOn * mix(0.22, 1.0, smoothstep(0.12, 0.55, faceOn)));
+    vec2 axes = vec2(uOuterRadius, max(0.035, uOuterRadius * opening));
+    float ellipseRadius = length(p / axes);
+    float ellipseGradient = length(p / (axes * axes));
+    float diskDistance = ellipseRadius * (ellipseRadius - 1.0) / max(ellipseGradient, 0.001);
+    float shadowDistance = radius - 1.065;
+    // One smooth signed field produces both the upper/lower bending and the
+    // narrow wings. The necks are continuous rather than overlapping circles.
+    float field = smoothUnion(shadowDistance, diskDistance, 0.22);
+    // Most of the enclosing camera plane is empty sky; skip its noise work.
+    if (field > 0.72) discard;
+    float width = mix(0.170, 0.023, smoothstep(0.85, 1.85, abs(p.x)));
+    float layer = field / width;
     float angle = atan(p.y, p.x);
-    float streams = 0.75 + 0.25 * sin(angle * 13.0 - uTime * 0.1);
-    float alpha = (arc + haze) * (upper + lower) * streams * uInclination * 0.27;
-    // A face-on disk needs almost no lens arc; edge-on views reveal more.
+    float flow = angle - uTime * 0.08 / max(1.0, radius) + uSeed;
+    vec2 advected = vec2(cos(flow), sin(flow)) * radius;
+    float turbulence = noise(advected * 5.0) * 0.52 + noise(advected * 17.0) * 0.32
+      + noise(advected * 43.0) * 0.16;
+    float warpedLayer = layer + (turbulence - 0.5) * 0.28
+      + sin(flow * 3.0 + layer * 1.8) * 0.085;
+    float stream = pow(0.5 + 0.5 * sin(warpedLayer * 18.0
+      + turbulence * 5.0 + sin(flow * 7.0) * 0.8), 0.72);
+    float fine = 0.5 + 0.5 * sin(warpedLayer * 43.0 + turbulence * 8.0);
+    float envelope = exp(-pow((layer - 0.32) / 1.03, 2.0));
+    float layers = envelope * (0.52 + stream * 0.36 + fine * 0.12);
+
+    // Uncompress the wings into disk coordinates: their interior shows
+    // differential rotation and curled filaments, not two parallel outlines.
+    vec2 diskPoint = vec2(p.x, p.y / opening);
+    float diskRadius = max(1.0, length(diskPoint));
+    float diskFlow = atan(diskPoint.y, diskPoint.x)
+      - uTime * 0.32 / pow(diskRadius, 1.5) + uSeed;
+    vec2 diskAdvection = vec2(cos(diskFlow), sin(diskFlow)) * diskRadius;
+    float diskNoise = noise(diskAdvection * 5.0) * 0.65 + noise(diskAdvection * 19.0) * 0.35;
+    float diskFilaments = 0.5 + 0.5 * sin(diskRadius * 25.0
+      + diskNoise * 7.0 + sin(diskFlow * 5.0) * 1.4);
+    float diskInterior = (1.0 - smoothstep(0.95, 1.01, ellipseRadius))
+      * smoothstep(1.08, 1.50, abs(p.x)) * (0.18 + diskFilaments * 0.39 + diskNoise * 0.12);
+    float haloWidth = mix(0.25, 0.045, smoothstep(0.85, 1.90, abs(p.x)));
+    float halo = exp(-pow(max(field, 0.0) / haloWidth, 2.0))
+      * smoothstep(0.1, 0.65, layer) * 0.15;
+    float outerFade = 1.0 - smoothstep(uOuterRadius * 0.70, uOuterRadius * 0.98, abs(p.x));
+    float shadowMask = smoothstep(1.005, 1.035, radius);
+    float asymmetry = mix(0.77, 1.0, smoothstep(-0.3, 0.3, p.y))
+      * (0.93 + 0.07 * sin(flow));
+    float bandAlpha = min(0.98, layers + diskInterior) * asymmetry;
+    float alpha = min(0.99, bandAlpha + halo) * lensStrength * outerFade * shadowMask;
     if (alpha < 0.002) discard;
-    gl_FragColor = vec4(mix(uColor, vec3(1.0, 0.77, 0.43), 0.35) * 1.3, alpha);
+    float heat = clamp(1.0 - (layer + 0.25) / 2.5, 0.0, 1.0);
+    vec3 orange = mix(vec3(0.39, 0.072, 0.012), vec3(1.08, 0.56, 0.18), heat);
+    float hotStrand = pow(clamp(heat * 0.55 + stream * 0.45, 0.0, 1.0), 1.3);
+    vec3 color = mix(orange, vec3(1.12, 0.98, 0.77), hotStrand * 0.81);
+    color = mix(color, color * mix(vec3(1.0), uColor, 0.25), 0.25);
+    color = (color * bandAlpha + vec3(0.85, 0.28, 0.065) * halo)
+      / max(bandAlpha + halo, 0.001);
+    // Local soft edges provide the glow. Bounded energy keeps postprocessing
+    // bloom from bleaching the layered filaments or washing the shadow brown.
+    gl_FragColor = vec4(color, alpha);
     #include <logdepthbuf_fragment>
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
@@ -146,15 +225,19 @@ export function createBlackHole(definition) {
   const photonRing = new THREE.Mesh(new THREE.PlaneGeometry(2.5, 2.5),
     illustrationMaterial(photonFragment, {
       uTime: { value: 0 }, uColor: { value: color.clone() },
+      uDiskAxis: { value: new THREE.Vector2(1, 0) }, uInclination: { value: 0.94 },
     }));
-  photonRing.name = `${definition.id}-photon-ring`;
+  photonRing.name = `${definition.id}-foreground-photon-image`;
   photonRing.scale.setScalar(radius);
-  photonRing.renderOrder = 2;
+  photonRing.material.depthTest = false;
+  photonRing.renderOrder = 3;
   group.add(photonRing);
 
-  const lensedArcs = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 4.4),
+  const lensedArcs = new THREE.Mesh(new THREE.PlaneGeometry((outerRadius + 0.4) * 2, (outerRadius + 0.4) * 2),
     illustrationMaterial(lensFragment, {
-      uTime: { value: 0 }, uColor: { value: color.clone() }, uInclination: { value: 0.6 },
+      uTime: { value: 0 }, uColor: { value: color.clone() }, uInclination: { value: 0.94 },
+      uDiskAxis: { value: new THREE.Vector2(1, 0) }, uOuterRadius: { value: outerRadius },
+      uSeed: { value: seed / 4294967296 * Math.PI * 2 },
     }));
   lensedArcs.name = `${definition.id}-lensed-light-illustration`;
   lensedArcs.scale.setScalar(radius);
@@ -164,6 +247,7 @@ export function createBlackHole(definition) {
 
   const inverseDisk = new THREE.Matrix4(), worldCamera = new THREE.Vector3();
   const cameraQuaternion = new THREE.Quaternion(), parentQuaternion = new THREE.Quaternion();
+  const cameraInverse = new THREE.Quaternion(), diskNormal = new THREE.Vector3();
   let disposed = false;
 
   function update(time) {
@@ -181,7 +265,17 @@ export function createBlackHole(definition) {
     const direction = accretionDisk.material.uniforms.uViewDirection.value;
     direction.copy(worldCamera).applyMatrix4(inverseDisk).normalize();
     lensedArcs.material.uniforms.uInclination.value = 1 - Math.abs(direction.y);
+    photonRing.material.uniforms.uInclination.value = 1 - Math.abs(direction.y);
     camera.getWorldQuaternion(cameraQuaternion);
+    cameraInverse.copy(cameraQuaternion).invert();
+    diskNormal.set(0, 1, 0).transformDirection(accretionDisk.matrixWorld).applyQuaternion(cameraInverse);
+    const axis = lensedArcs.material.uniforms.uDiskAxis.value;
+    // The intersection of the disk and image planes is the projected major
+    // axis. Keep a stable axis at the pole, where the view becomes circular.
+    if (Math.hypot(diskNormal.x, diskNormal.y) > 0.0001) {
+      axis.set(diskNormal.y, -diskNormal.x).normalize();
+    }
+    photonRing.material.uniforms.uDiskAxis.value.copy(axis);
     group.getWorldQuaternion(parentQuaternion).invert();
     photonRing.quaternion.copy(parentQuaternion).multiply(cameraQuaternion);
     lensedArcs.quaternion.copy(photonRing.quaternion);

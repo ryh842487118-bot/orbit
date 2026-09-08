@@ -60,9 +60,9 @@ export function createNavigation({ camera, controls, world, onInfo, onStage, toa
     if (destination.kind === 'group') return new THREE.Vector3(.12, .8, 1.65).normalize();
     if (destination.kind === 'galaxy') return new THREE.Vector3(.16, 1.3, 1.7).normalize();
     if (destination.kind === 'black-hole') {
-      // Approach just above the disk plane so its depth and central shadow
-      // remain readable together, whatever orientation this disk has in space.
-      return new THREE.Vector3(.45, .26, 1).applyEuler(
+      // A nearly edge-on approach reveals the thin foreground disk and the
+      // upper/lower bands of bent light around the central shadow.
+      return new THREE.Vector3(.45, .065, 1).applyEuler(
         new THREE.Euler(...(destination.diskTilt || [0.12, 0, -0.22])),
       ).normalize();
     }

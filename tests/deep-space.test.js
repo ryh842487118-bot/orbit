@@ -210,7 +210,7 @@ test('black-hole views frame the disk and stay focused before returning to their
     assert.ok(halfHeight > definition.r * definition.diskOuterRadius, 'the full accretion disk fits the initial view');
     const diskNormal = new THREE.Vector3(0, 1, 0).applyEuler(new THREE.Euler(...definition.diskTilt));
     const inclination = Math.abs(camera.position.clone().sub(controls.target).normalize().dot(diskNormal));
-    assert.ok(inclination > .15 && inclination < .4, 'arrival shows the shadow above an inclined disk');
+    assert.ok(inclination > .035 && inclination < .085, 'arrival shows a nearly edge-on disk around the shadow');
     assert.ok(destinationContext(state, world).items.some(body => body.id === definition.id));
     navigation.zoom(0.000001);
     near(navigation.getState().distance, definition.r * 2.8, 'zoom keeps the shadow and photon ring observable');

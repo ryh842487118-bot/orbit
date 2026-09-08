@@ -129,6 +129,42 @@ test('black-hole billboards remain camera-aligned under a transformed parent', c
   assert.ok(model.photonRing.getWorldQuaternion(new THREE.Quaternion()).angleTo(rotation) < 1e-7);
 });
 
+test('lensed bands follow the projected disk axis while orbiting above, below and along the disk', context => {
+  const model = createBlackHole(definition);
+  context.after(() => model.dispose());
+  const parent = new THREE.Group();
+  parent.position.set(120, -30, 250);
+  parent.rotation.set(.3, -.45, .18);
+  parent.add(model.group);
+  parent.updateMatrixWorld(true);
+  const center = model.group.getWorldPosition(new THREE.Vector3());
+  const orientation = model.accretionDisk.getWorldQuaternion(new THREE.Quaternion());
+  const normal = new THREE.Vector3(0, 1, 0).applyQuaternion(orientation);
+  const camera = new THREE.PerspectiveCamera(43, 1.6, .01, 4000000);
+  for (const view of [[.45, .065, 1], [-1, -.04, .5], [0, 1, 0], [1, 0, 0]]) {
+    const direction = new THREE.Vector3(...view).normalize().applyQuaternion(orientation);
+    camera.position.copy(center).addScaledVector(direction, definition.r * 14);
+    camera.lookAt(center);
+    model.updateCamera(camera);
+    const axis = model.lensedArcs.material.uniforms.uDiskAxis.value;
+    assert.ok(axis.toArray().every(Number.isFinite), 'projection stays finite at a face-on view');
+    assert.ok(Math.abs(axis.length() - 1) < 1e-7, 'the projected disk axis remains normalized');
+    assert.ok(axis.distanceTo(model.photonRing.material.uniforms.uDiskAxis.value) < 1e-7,
+      'the thin foreground edge stays aligned with the lensed wings');
+    const tangent = new THREE.Vector3().crossVectors(normal, direction);
+    if (tangent.lengthSq() > 1e-8) {
+      tangent.normalize();
+      const cameraRotation = camera.getWorldQuaternion(new THREE.Quaternion());
+      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(cameraRotation);
+      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(cameraRotation);
+      const expected = new THREE.Vector2(tangent.dot(right), tangent.dot(up)).normalize();
+      assert.ok(Math.abs(expected.dot(axis)) > .999999, 'lensed wings follow the real disk orientation');
+    }
+    const inclination = model.lensedArcs.material.uniforms.uInclination.value;
+    assert.ok(Math.abs(inclination - (1 - Math.abs(direction.dot(normal)))) < 1e-7);
+  }
+});
+
 test('disposing deep-space black holes frees each owned resource once and ends updates', () => {
   const scene = new THREE.Scene();
   const rendering = createDeepSpaceBodies(scene, null, [definition]);
