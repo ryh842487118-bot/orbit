@@ -30,6 +30,17 @@
 | **河外巨行星 · 创作示意** | **本星系群 · 全景** |
 | ![大麦哲伦星云巨行星的艺术化表面，界面明确标注创作示意](docs/previews/extragalactic-planet.jpg) | ![银河系、仙女座星系、三角座星系及大小麦哲伦星云的星系群全景](docs/previews/local-group.jpg) |
 
+## 演示与反馈
+
+[观看 ORBIT 抖音演示](https://v.douyin.com/fs-xgwuET1g)。所附截图显示 **4,319 次点赞、1,292 次收藏、304 条评论和 920 次分享**，记录了项目在 GitHub 之外获得的关注。数据以截图为准，收录日期为 2026-09-08。
+
+<details>
+<summary>查看视频与互动数据截图</summary>
+
+[![ORBIT 抖音演示截图：4,319 次点赞、1,292 次收藏、304 条评论、920 次分享](docs/previews/douyin-demo.png)](docs/previews/douyin-demo.png)
+
+</details>
+
 ## 探索
 
 - 鼠标拖动旋转视角；滚轮缩放；触屏单指旋转、双指捏合缩放。

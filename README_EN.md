@@ -28,6 +28,17 @@ Actual v1.6.0 screenshots; select an image to view it at full size. The fictiona
 | **Extragalactic giant planet · Illustration** | **Local Group · Five galaxies** |
 | ![An illustrated giant planet in the Large Magellanic Cloud, explicitly labeled as fictional](docs/previews/extragalactic-planet.jpg) | ![Overview of the Milky Way, Andromeda, Triangulum, and the Large and Small Magellanic Clouds](docs/previews/local-group.jpg) |
 
+## Demo & Community Response
+
+[Watch the ORBIT demo on Douyin](https://v.douyin.com/fs-xgwuET1g), a Chinese short-video platform. The screenshot shows **4,319 likes, 1,292 favorites, 304 comments, and 920 shares**, reflecting interest in the project beyond GitHub. These figures come from the screenshot archived on September 8, 2026.
+
+<details>
+<summary>View the demo and engagement screenshot</summary>
+
+[![ORBIT demo on Douyin showing 4,319 likes, 1,292 favorites, 304 comments, and 920 shares](docs/previews/douyin-demo.png)](docs/previews/douyin-demo.png)
+
+</details>
+
 ## Explore
 
 - Drag to rotate the camera and use the mouse wheel to zoom. On touchscreens, drag with one finger to rotate and pinch with two fingers to zoom.
