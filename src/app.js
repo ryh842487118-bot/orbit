@@ -121,7 +121,7 @@ export async function startOrbit() {
     });
     requestAnimationFrame(animate);
     window.ORBIT = {
-      version: '1.7.0',
+      version: '1.7.1',
       getState: () => ({
         ...navigation.getState(), ...ui.getState(),
         planetCount: data.filter(d => d.orbit && d.id !== 'moon').length,

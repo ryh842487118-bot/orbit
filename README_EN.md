@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | [English](README_EN.md)
 
-Current version: **1.7.0**. See the [changelog](CHANGELOG.md).
+Current version: **1.7.1**. See the [changelog](CHANGELOG.md).
 
 **Live demo:** [https://ryh842487118-bot.github.io/orbit/](https://ryh842487118-bot.github.io/orbit/)
 

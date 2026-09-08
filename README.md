@@ -4,7 +4,7 @@
 
 **Explore the Universe. Sense the Earth.**
 
-当前版本：**1.7.0**。查看[更新日志](CHANGELOG.md)。
+当前版本：**1.7.1**。查看[更新日志](CHANGELOG.md)。
 
 **线上体验：** [https://ryh842487118-bot.github.io/orbit/](https://ryh842487118-bot.github.io/orbit/)
 
