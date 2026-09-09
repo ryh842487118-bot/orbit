@@ -16,3 +16,6 @@ body.compact-ui .compact-sheet .trajectory-panel{display:none;position:static;he
   #settings-dialog .primary,#settings-dialog .settings-reset{min-height:44px}
 }
 body.compact-ui .compact-sheet .layer-toggles{max-width:100%;flex:0 1 100%}
+@media(min-width:701px) and (min-height:601px) and (max-height:900px){
+  body:not(.compact-ui) .info-panel{max-height:var(--info-available-height);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#637783 transparent;pointer-events:auto;padding-right:8px}
+}

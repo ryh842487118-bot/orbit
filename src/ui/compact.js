@@ -1,6 +1,20 @@
 /** Move existing controls into small-screen sheets, preserving their handlers and state. */
 export function bindCompactUI() {
   const query=matchMedia('(max-width: 700px), (max-height: 600px)');
+  const infoPanel=document.getElementById('info-panel');
+  const bottomUI=document.querySelector('.bottom-ui');
+  function fitDetails() {
+    if(query.matches || innerHeight>900){
+      infoPanel.style.removeProperty('--info-available-height');
+      return;
+    }
+    const available=bottomUI.getBoundingClientRect().top-infoPanel.getBoundingClientRect().top-16;
+    infoPanel.style.setProperty('--info-available-height',`${Math.max(0,available)}px`);
+  }
+  const layoutObserver=new ResizeObserver(fitDetails);
+  layoutObserver.observe(bottomUI);
+  layoutObserver.observe(infoPanel);
+  addEventListener('resize',fitDetails);
   const bar=document.createElement('div');bar.className='compact-bar ui';
   const infoButton=document.createElement('button');infoButton.id='compact-info';infoButton.setAttribute('aria-haspopup','dialog');
   const exploreButton=document.createElement('button');exploreButton.id='compact-explore';exploreButton.textContent='探索与控制 ⌃';exploreButton.setAttribute('aria-haspopup','dialog');
@@ -34,6 +48,7 @@ export function bindCompactUI() {
       for(const {node,marker} of placements){marker.replaceWith(node);}placements.length=0;
     }
     document.body.classList.toggle('compact-ui',query.matches);
+    fitDetails();
   }
   controls.addEventListener('click',event=>{
     if(event.target.closest('.planet-button,[data-view],#overview,.trajectory-back,#night-view,#station-view'))controls.close();
