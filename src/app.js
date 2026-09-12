@@ -142,7 +142,7 @@ export async function startOrbit() {
     });
     requestAnimationFrame(animate);
     window.ORBIT = {
-      version: '1.8.0',
+      version: '1.9.0',
       wallpaper: ui.wallpaper,
       getState: () => ({
         ...navigation.getState(), ...ui.getState(),

@@ -211,7 +211,7 @@ test('choosing any ordinary destination exits the trajectory view without a clic
       assert.equal(navigation.getState().displayedId, id);
       assert.notEqual(navigation.getState().stage, 'trajectory');
       near(controls.target.distanceTo(world.getPosition(id)), 0, 'ordinary arrival target');
-      assert.equal(controls.maxDistance, 2000000);
+      assert.equal(controls.maxDistance, 3000000);
       if (id === 'solar') near(navigation.getState().distance, 650, 'solar overview');
       if (id === 'earth') near(navigation.getState().distance, 4.65, 'Earth view');
     });

@@ -1,4 +1,8 @@
-// Research notes: docs/deep-space-sources.md (reviewed 2026-09-08).
+import { observedGalaxyDefinitions } from './observed-galaxies.js';
+import { observedStarDefinitions } from './observed-stars.js';
+
+// Research notes: docs/deep-space-sources.md, docs/milky-way-sources.md,
+// docs/observed-galaxies-sources.md and docs/observed-stars-sources.md.
 // Positions, radii, orbit speeds and surface patterns are composed for exploration.
 // modelStatus describes the object, never the scientific accuracy of its artwork.
 const galaxyDefinitions = [
@@ -90,16 +94,19 @@ const galaxyDefinitions = [
   },
 ];
 
+galaxyDefinitions.push(...observedGalaxyDefinitions);
 const localGroupGalaxyCount = galaxyDefinitions.length + 1;
 
+// Retain the saved navigation ID. This container is now an atlas spanning
+// several physical galaxy groups; each member's type describes its identity.
 const localGroupDefinition = {
-  id: 'local-group', kind: 'group', cn: '本星系群', en: 'THE LOCAL GROUP', index: 'LG',
-  type: '宇宙邻里 / 星系群', r: 1, position: [50000, -50000, 30000], viewDistance: 820000,
+  id: 'local-group', kind: 'group', cn: '星系图鉴', en: 'GALAXY ATLAS', index: 'ATLAS',
+  type: '观测图鉴 / 近邻星系', r: 1, position: [50000, -50000, 30000], viewDistance: 1000000,
   color: 0xb7c8ee, diameter: String(localGroupGalaxyCount), stat1: '开放探索', unit1: '座星系',
   stat2: '所在星系', value2: '银河系', unit2: '',
-  desc: `把银河放回更辽阔的宇宙邻里。这里开放银河、${galaxyDefinitions.map((galaxy) => galaxy.cn).join('、')}，共 ${localGroupGalaxyCount} 座星系；星系间距与天体尺寸经过压缩，便于自由漫游。`,
-  sourceUrl: 'https://imagine.gsfc.nasa.gov/features/cosmic/local_group_info.html',
-  sourceLabel: 'NASA · 本星系群', modelStatus: 'confirmed',
+  desc: `从银河与仙女座出发，探访旋涡、草帽、半人马座 A 和 M87 等已被观测的星系。图鉴开放 ${localGroupGalaxyCount} 座星系，横跨本星系群及更远的邻近宇宙；位置与大小经过压缩，并不表示它们同属一个星系群。`,
+  sourceUrl: 'https://science.nasa.gov/universe/galaxies/',
+  sourceLabel: 'NASA · 星系与宇宙结构', modelStatus: 'confirmed',
   appearance: `${localGroupGalaxyCount} 座可抵达的星系散布于深空`,
 };
 
@@ -203,6 +210,36 @@ const stars = [
     sourceLabel: 'ESA · 参宿四', appearance: '橙红对流斑与宽阔柔光',
   }),
   star({
+    id: 'trappist-1', cn: 'TRAPPIST-1', en: 'TRAPPIST-1', index: 'T-1',
+    type: '银河系 / 超冷红矮星', parentGalaxy: 'galaxy',
+    position: [4800, -330, -7000], r: 5.5, surfaceStyle: 'red-star', color: 0xff845e,
+    diameter: '7', stat1: '已确认行星', unit1: '颗',
+    stat2: '本次可探索', value2: 'e / f / g',
+    desc: '一颗拥有七颗地球大小行星的超冷红矮星，整个行星家族都紧靠母星。这里开放 e、f、g 三个世界，并拉开轨道方便漫游；行星表面与气候尚不能由这些画面确定。',
+    sourceUrl: 'https://science.nasa.gov/exoplanets/trappist1/',
+    sourceLabel: 'NASA · TRAPPIST-1 行星系统', appearance: '小巧橙红星面与三层可探索轨道',
+  }),
+  star({
+    id: 'kepler-186', cn: '开普勒-186', en: 'KEPLER-186', index: 'K186',
+    type: '银河系 / 红矮星', parentGalaxy: 'galaxy',
+    position: [-9000, 920, 9200], r: 7, surfaceStyle: 'red-star', color: 0xffa378,
+    diameter: 'M 型', stat1: '恒星光谱',
+    stat2: '探索行星', value2: '开普勒-186 f',
+    desc: '天鹅座方向的一颗红矮星，开普勒望远镜通过行星经过星面时造成的微弱变暗研究这个系统。飞向开普勒-186 f，探索这颗恒星旁已确认的近地球大小世界。',
+    sourceUrl: 'https://www.nasa.gov/news-release/nasas-kepler-telescope-discovers-first-earth-size-planet-in-habitable-zone/',
+    sourceLabel: 'NASA · 开普勒-186 系统发现', appearance: '柔和橙红星面与细密对流颗粒',
+  }),
+  star({
+    id: 'kepler-22', cn: '开普勒-22', en: 'KEPLER-22', index: 'K22',
+    type: '银河系 / 类太阳恒星', parentGalaxy: 'galaxy',
+    position: [-7200, 650, 10200], r: 9.5, surfaceStyle: 'gold-star', color: 0xffdfad,
+    diameter: 'G 型', stat1: '恒星光谱',
+    stat2: '探索行星', value2: '开普勒-22 b',
+    desc: '与太阳同属 G 型的一颗恒星，比太阳略小、略冷。开普勒-22 b 环绕它运行，是开普勒任务首颗确认位于恒星宜居带的行星；宜居带的位置并不等于已确认适宜生命。',
+    sourceUrl: 'https://www.jpl.nasa.gov/news/nasas-kepler-confirms-its-first-planet-in-habitable-zone/',
+    sourceLabel: 'NASA / JPL · 开普勒-22 系统', appearance: '暖金光球与柔白外晕',
+  }),
+  star({
     id: 'hr8799', cn: 'HR 8799', en: 'HR 8799', index: 'HR',
     type: '银河系 / 巨行星系统宿主', parentGalaxy: 'galaxy',
     position: [-11000, 750, -4300], r: 9, surfaceStyle: 'gold-star', color: 0xffe4b9,
@@ -268,6 +305,8 @@ const stars = [
     sourceLabel: 'NASA NTRS · HD 5980 多星系统研究', appearance: '蓝紫边缘与强烈白色辉光',
   }),
 ];
+
+stars.push(...observedStarDefinitions);
 
 function blackHole(definition) {
   const diskOuterRadius = definition.diskOuterRadius ?? 4.5;
@@ -359,6 +398,66 @@ function planet(definition) {
 }
 
 const confirmedPlanets = [
+  planet({
+    id: 'proxima-centauri-b', parentStarId: 'proxima-centauri', cn: '比邻星 b', en: 'PROXIMA CENTAURI b', index: 'b',
+    type: '银河系 / 已确认系外行星', modelStatus: 'confirmed',
+    r: 2.6, orbitRadius: 46, orbitalPeriod: 55, phase: 1.1, color: 0xb99479, surfaceStyle: 'rocky-world',
+    diameter: '11.2', stat1: '公转周期', unit1: '天',
+    stat2: '发现年份', value2: '2016', unit2: '年',
+    desc: '环绕比邻星运行的已确认行星，通过母星受到引力牵动产生的径向速度变化被发现，一年只有约 11.2 天。褐色岩面、薄雾与演示轨道均为艺术示意，不代表已经观测到地貌或大气。',
+    sourceUrl: 'https://science.nasa.gov/exoplanet-catalog/proxima-centauri-b/',
+    sourceLabel: 'NASA 系外行星目录 · 比邻星 b', appearance: '艺术示意：铜褐岩面、深色盆地与淡暖薄雾',
+  }),
+  planet({
+    id: 'trappist-1-e', parentStarId: 'trappist-1', cn: 'TRAPPIST-1 e', en: 'TRAPPIST-1 e', index: 'e',
+    type: '银河系 / 已确认类地行星', modelStatus: 'confirmed',
+    r: 2.4, orbitRadius: 52, orbitalPeriod: 58, phase: 0.65, color: 0x7ca4aa, surfaceStyle: 'temperate-world',
+    diameter: '0.92', stat1: '半径', unit1: '地球半径',
+    stat2: '公转周期', value2: '6.1', unit2: '天',
+    desc: 'TRAPPIST-1 家族中一颗略小于地球的行星，每约 6.1 天环绕红矮星一周。青蓝色斑块、浅色地形与云层是艺术示意；它是否具有大气、海洋或生命，仍不能由这些图案作出判断。',
+    sourceUrl: 'https://science.nasa.gov/exoplanet-catalog/trappist-1-e/',
+    sourceLabel: 'NASA 系外行星目录 · TRAPPIST-1 e', appearance: '艺术示意：青蓝深色区域、浅褐地形与轻云',
+  }),
+  planet({
+    id: 'trappist-1-f', parentStarId: 'trappist-1', cn: 'TRAPPIST-1 f', en: 'TRAPPIST-1 f', index: 'f',
+    type: '银河系 / 已确认系外行星', modelStatus: 'confirmed',
+    r: 2.65, orbitRadius: 72, orbitalPeriod: 82, phase: 2.8, color: 0xa8c4cb, surfaceStyle: 'ice-world',
+    diameter: '约 1.05', stat1: '半径', unit1: '地球半径',
+    stat2: '公转周期', value2: '9.2', unit2: '天',
+    desc: '比 TRAPPIST-1 e 更靠外的一颗行星，大小与地球接近，公转周期约 9.2 天。这里用霜白纹理和蓝灰裂隙想象它的外观；冰层、云雾与地表颜色均为艺术示意，不是已确认的表面环境。',
+    sourceUrl: 'https://science.nasa.gov/exoplanet-catalog/trappist-1-f/',
+    sourceLabel: 'NASA 系外行星目录 · TRAPPIST-1 f', appearance: '艺术示意：蓝灰裂隙、霜白纹理与浅青薄雾',
+  }),
+  planet({
+    id: 'trappist-1-g', parentStarId: 'trappist-1', cn: 'TRAPPIST-1 g', en: 'TRAPPIST-1 g', index: 'g',
+    type: '银河系 / 已确认系外行星', modelStatus: 'confirmed',
+    r: 2.8, orbitRadius: 96, orbitalPeriod: 106, phase: 4.6, color: 0xc3c5df, surfaceStyle: 'ice-world',
+    diameter: '约 1.13', stat1: '半径', unit1: '地球半径',
+    stat2: '公转周期', value2: '12.4', unit2: '天',
+    desc: '沿着 TRAPPIST-1 的轨道继续向外，是半径略大于地球的 g 行星，它约每 12.4 天绕母星一周。淡紫冰纹和柔白云雾为艺术示意，不代表已探测到冰盖、大气或海洋。',
+    sourceUrl: 'https://science.nasa.gov/exoplanet-catalog/trappist-1-g/',
+    sourceLabel: 'NASA 系外行星目录 · TRAPPIST-1 g', appearance: '艺术示意：淡紫裂纹、银白斑块与冷色边缘',
+  }),
+  planet({
+    id: 'kepler-186-f', parentStarId: 'kepler-186', cn: '开普勒-186 f', en: 'KEPLER-186 f', index: 'f',
+    type: '银河系 / 已确认系外行星', modelStatus: 'confirmed',
+    r: 2.8, orbitRadius: 65, orbitalPeriod: 120, phase: 1.85, color: 0xba8675, surfaceStyle: 'rocky-world',
+    diameter: '1.17', stat1: '半径', unit1: '地球半径',
+    stat2: '公转周期', value2: '129.9', unit2: '天',
+    desc: '2014 年公布发现的近地球大小行星，绕一颗 M 型红矮星运行，是开普勒探索宜居带世界的重要发现。暖红岩面和浅色高地为艺术示意；真实地貌、大气与生命情况仍未确认。',
+    sourceUrl: 'https://science.nasa.gov/exoplanet-catalog/kepler-186-f/',
+    sourceLabel: 'NASA 系外行星目录 · 开普勒-186 f', appearance: '艺术示意：赭红岩面、浅色高地与暗色盆地',
+  }),
+  planet({
+    id: 'kepler-22-b', parentStarId: 'kepler-22', cn: '开普勒-22 b', en: 'KEPLER-22 b', index: 'b',
+    type: '银河系 / 已确认超级地球', modelStatus: 'confirmed',
+    r: 3.8, orbitRadius: 90, orbitalPeriod: 150, phase: 3.9, color: 0x70a9ba, surfaceStyle: 'temperate-world',
+    diameter: '2.1', stat1: '半径', unit1: '地球半径',
+    stat2: '公转周期', value2: '289.9', unit2: '天',
+    desc: '2011 年公布确认的超级地球，环绕类太阳恒星开普勒-22，一年约 289.9 天。它的真实组成与表面环境仍不确定；蓝色区域和白色云层是艺术示意，不意味着已经确认存在海洋或生命。',
+    sourceUrl: 'https://science.nasa.gov/exoplanet-catalog/kepler-22b/',
+    sourceLabel: 'NASA 系外行星目录 · 开普勒-22 b', appearance: '艺术示意：深青斑块、淡金沙色地形与柔白云层',
+  }),
   planet({
     id: 'hr8799-b', parentStarId: 'hr8799', cn: 'HR 8799 b', en: 'HR 8799 b', index: 'b',
     type: '银河系 / 已确认气态巨行星', modelStatus: 'confirmed',

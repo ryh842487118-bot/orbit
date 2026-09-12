@@ -27,8 +27,11 @@ export function createInfoPanel({ getData }) {
     const unit2 = document.createElement('small');
     unit2.textContent = ' ' + data.unit2;
     $('stat-value-2').append(unit2);
+    $('jwst-actions').hidden = id !== 'jwst';
+    $('info-panel').classList.toggle('jwst-info', id === 'jwst');
     $('earth-actions').style.display = id === 'earth' || id === 'iss' ? '' : 'none';
-    $('observation-text').textContent = data.kind === 'galaxy' || data.kind === 'group' ? '星系结构与距离为示意'
+    $('observation-text').textContent = data.kind === 'spacecraft' ? '位置、姿态与航迹为示意'
+      : data.kind === 'galaxy' || data.kind === 'group' ? '星系结构与距离为示意'
       : data.kind === 'black-hole' ? '黑洞阴影、吸积盘与光环为艺术示意'
       : id === 'trajectory' ? '参照系、距离与时间均为示意'
       : id === 'solar' ? '八大行星 · 轨道运行中' : '正在追踪' + data.cn;
@@ -37,6 +40,7 @@ export function createInfoPanel({ getData }) {
     evidence.dataset.status = data.modelStatus || '';
     evidence.textContent = data.modelStatus === 'illustration' ? '创作示意 · 未确认存在'
       : data.modelStatus === 'candidate' ? '候选天体 · 等待确认'
+      : data.kind === 'spacecraft' ? '真实探测器 · 模型示意'
       : data.kind === 'galaxy' || data.kind === 'group' ? '真实星系 · 结构示意' : '已知天体 · 外观示意';
     const source = $('info-source');
     source.hidden = !data.sourceUrl;

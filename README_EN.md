@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | [English](README_EN.md)
 
-Current version: **1.8.0**. See the [changelog](CHANGELOG.md).
+Current version: **1.9.0**. See the [changelog](CHANGELOG.md).
 
 **Live demo:** [https://ryh842487118-bot.github.io/orbit/](https://ryh842487118-bot.github.io/orbit/)
 
@@ -37,14 +37,16 @@ Actual v1.6.0 screenshots; select an image to view it at full size. The fictiona
 ## Explore
 
 - Drag to rotate the camera and use the mouse wheel to zoom. On touchscreens, drag with one finger to rotate and pinch with two fingers to zoom.
-- Keep zooming out from Earth to move through the Solar System, the Milky Way, and the Local Group. Zoom back in to return to the tracked body.
-- Select a body from the bottom dock, the 3D scene, or a label to fly smoothly to it.
-- Explore **eight galaxies: the Milky Way, Andromeda, Triangulum, the Large and Small Magellanic Clouds, M32, M110, and NGC 6822**. Selecting a galaxy fills the bottom dock with its catalogued stars, planets, and black holes. Use the galaxy, stellar-system overview, and Local Group controls to move back through the navigation hierarchy.
-- Visit **16 real stellar targets beyond the Sun**: Betelgeuse, HR 8799, AF And, AE And, Romano’s Star, R136a1, WOH G64, HD 5980, Proxima Centauri, Alpha Centauri A/B, Sirius A/B, Vega, Pollux, and Rigel. HD 5980 is a multiple-star system represented by one luminous object.
+- Keep zooming out from Earth to move through the Solar System, the Milky Way, and the Galaxy Atlas. Zoom back in to return to the tracked body.
+- Select a body from the bottom dock, the 3D scene, or a label to fly smoothly to it. Search the dock by Chinese or English name or catalog number.
+- Explore **14 galaxies**: the Milky Way, Andromeda, Triangulum, the Large and Small Magellanic Clouds, M32, M110, NGC 6822, Whirlpool M51, Bode’s M81, Cigar M82, Sombrero M104, Centaurus A, and M87. Selecting a galaxy opens its catalogued stars, planets, and black holes. Galaxy, stellar-system overview, and Galaxy Atlas controls return to wider views. The atlas spans multiple physical galaxy groups; see [new galaxy sources](docs/observed-galaxies-sources.md).
+- Visit **27 real stellar targets beyond the Sun**. This release adds the host stars TRAPPIST-1, Kepler-186, and Kepler-22, plus Polaris A, Altair, Arcturus, Aldebaran, Deneb, Canopus, Antares A, and Barnard’s Star. HD 5980 remains a multiple-star system represented by one luminous object. See [new star sources](docs/observed-stars-sources.md).
 - Visit **five black holes**: Sagittarius A*, the central black holes of M31 and M32, and the stellar-mass black holes M33 X-7 and LMC X-1. Shadows, photon rings, and animated accretion disks are artistic illustrations.
-- Explore **four confirmed giant planets, HR 8799 b, c, d, and e**, plus **four explicitly fictional extragalactic giant-planet illustrations**. The fictional planets and their placement beside real stars are demonstrations, not discoveries or measured orbits. All exoplanet surfaces are artistic. See [deep-space catalog and sources](docs/deep-space-sources.md).
+- Explore **10 confirmed exoplanets**: HR 8799 b/c/d/e, Proxima Centauri b, TRAPPIST-1 e/f/g, Kepler-186 f, and Kepler-22 b, plus **four explicitly fictional extragalactic giant-planet illustrations**. Fictional pairings and orbits are demonstrations, and every exoplanet surface is artistic. See the [deep-space catalog](docs/deep-space-sources.md) and [new planet sources](docs/milky-way-sources.md).
+- Visit the **JWST exterior model**, featuring 18 mirror segments and five sunshield layers, with reversible deployment playback and normal rotation and zoom. Deployment is an educational illustration.
+- Visit **Voyager 1** from the Solar System or Milky Way dock to inspect its antenna, booms, instrument body, and Golden Record. The orbit switch controls its illustrative trail. See [model and sources](docs/voyager-sources.md).
 - Use **City Lights** and **Visit the Space Station** from the Earth panel.
-- Jump between **Near-Earth Orbit**, **Solar System**, **Milky Way**, and **Local Group** using the navigation at the top.
+- Jump between **Near-Earth Orbit**, **Solar System**, **Milky Way**, and **Galaxy Atlas** using the navigation at the top.
 - Toggle orbits and labels independently. Pause celestial motion or switch between 0.25×, 1×, 5×, and 20× simulation speeds.
 - Select **运动轨迹 (Motion Trails)** beside the orbit and label controls to follow the Sun and eight planets. Switch between Galactic and Sun reference frames and short or long histories, use the existing pause and speed controls, rotate and zoom freely, or choose **返回太阳系 (Return to Solar System)**.
 - Warm meteoroids and comets with two soft tails occasionally cross the sky, one at a time at random intervals. They follow the pause control and are hidden in EarthSense and reduced-motion mode.
@@ -78,19 +80,19 @@ Universe exploration and EarthSense share the same detailed Earth maps, finer ge
 
 ## Implementation
 
-ORBIT uses Three.js r185 and includes Earth day/night shading, city lights, an independent cloud layer, an atmospheric rim, 32 satellites, a simplified International Space Station, the Moon, the Sun, all eight planets, transparent Saturn rings, and Solar System orbits. Deep-space exploration adds three procedural spiral galaxies, three irregular dwarf galaxies, two elliptical galaxies, five black-hole models, independent stellar systems, procedural star and giant-planet surfaces, and lighting directed toward each planet’s host star. Bodies and orbits appear according to viewing distance. The renderer uses logarithmic depth buffering, bloom post-processing, and a responsive interface.
+ORBIT uses Three.js r185 and includes Earth day/night shading, city lights, an independent cloud layer, an atmospheric rim, 32 satellites, a simplified International Space Station, the Moon, the Sun, all eight planets, transparent Saturn rings, and Solar System orbits. Deep-space exploration adds 14 procedural galaxies with spiral arms, elliptical halos, irregular star fields, and dust lanes, five black-hole models, independent stellar systems, JWST and Voyager 1 models, procedural star, rocky, icy, and gas-giant surfaces, and lighting directed toward each planet’s host star. Bodies and orbits appear according to viewing distance. The renderer uses logarithmic depth buffering, bloom post-processing, and a responsive interface.
 
-This is an interactive visualization. Body sizes, distances, orbital positions, and speeds are adjusted for visual presentation rather than real-time astronomical accuracy. The satellite and space-station models are intentionally enlarged, and all eight galaxies are illustrative. Eight is the number of available destinations, not the total membership of the Local Group. Close-range HUD distances are converted from visual units and are intended for demonstration.
+This is an interactive visualization. Body sizes, distances, orbital positions, and speeds are adjusted for visual presentation rather than real-time astronomical accuracy. Satellite, station, and spacecraft models use display proportions. All 14 galaxies are illustrative; this destination count is not the complete membership of a physical galaxy group. Close-range HUD distances are converted from visual units for demonstration.
 
 ## Debugging Interface
 
-After the page loads, call `ORBIT.destinations()` in the browser console to inspect the eight galaxies and 29 bodies beyond the Solar System. Entries provide IDs, names, kinds, galaxy membership, host stars, and model status. Existing Solar System destinations retain their original navigation IDs.
+After the page loads, call `ORBIT.destinations()` in the browser console to inspect 14 galaxies and 46 bodies beyond the Solar System. Entries provide IDs, names, kinds, galaxy membership, host stars, and model status. Visit spacecraft directly with `ORBIT.goTo('voyager-1')` or `ORBIT.goTo('jwst')`. Existing navigation IDs remain compatible.
 
 ```js
 console.table(ORBIT.destinations());
 ORBIT.goTo('sagittarius-a'); // Explore the Milky Way’s central black hole
 ORBIT.goTo('m32');          // Fly to M32
-ORBIT.goTo('local-group'); // Local Group overview
+ORBIT.goTo('local-group'); // Galaxy Atlas overview
 ORBIT.goTo('andromeda');   // Fly to Andromeda
 ORBIT.goTo('hr8799-b');    // Fly to a confirmed giant planet
 ORBIT.getState();          // Includes activeGalaxyId, activeSystemId, and the current scale
@@ -104,7 +106,7 @@ In the new catalog, `modelStatus: 'confirmed'` identifies real objects, while `'
 - `src/style.css`: interface styling and mobile layouts.
 - `src/universe.js`: compatibility entry only; `src/app.js` assembles the application.
 - `src/core/`: renderer, camera flights, scene assembly, textures.
-- `src/universe/`: body catalogs, planets, orbits, satellites, simulation, the Local Group, independent deep-space stellar systems, and illustrative motion trails.
+- `src/universe/`: body catalogs, planets, orbits, satellites, simulation, spacecraft, the Galaxy Atlas, independent deep-space stellar systems, and illustrative motion trails.
 - `src/earth/`: day/night shading, atmosphere, clouds, geographic coordinates, and on-demand detailed textures.
 - `src/earthsense/`: the current weather, lightning, and cyclone overlays, feed state, mode restoration, and illustrative weather effects in `effects/`.
 - `src/data/`: Open-Meteo, NASA EONET, and GDACS adapters, wind-unit conversion, and shared requests; `cyclone-track.js` loads official cyclone tracks on demand.

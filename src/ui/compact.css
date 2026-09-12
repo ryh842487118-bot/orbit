@@ -16,6 +16,11 @@ body.compact-ui .compact-sheet .trajectory-panel{display:none;position:static;he
   #settings-dialog .primary,#settings-dialog .settings-reset{min-height:44px}
 }
 body.compact-ui .compact-sheet .layer-toggles{max-width:100%;flex:0 1 100%}
+body.compact-ui .compact-sheet .planet-dock{height:auto;flex-wrap:wrap;gap:8px;padding:10px}
+body.compact-ui .compact-sheet .destination-search{width:100%;flex:1 0 100%;flex-direction:row;align-items:center;gap:10px;padding:0}
+body.compact-ui .compact-sheet .destination-search span{white-space:nowrap}
+body.compact-ui .compact-sheet .destination-search input{height:44px;flex:1;font-size:13px}
+body.compact-ui .compact-sheet .planet-list{flex-basis:100%;min-height:78px}
 @media(min-width:701px) and (min-height:601px) and (max-height:900px){
   body:not(.compact-ui) .info-panel{max-height:var(--info-available-height);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#637783 transparent;pointer-events:auto;padding-right:8px}
 }

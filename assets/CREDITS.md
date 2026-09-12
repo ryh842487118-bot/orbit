@@ -30,3 +30,7 @@ The standard-resolution sphere maps are 2048 × 1024 JPEG. Saturn rings are a 20
 | earth-night-8k.jpg | [8k_earth_nightmap.jpg](https://www.solarsystemscope.com/textures/download/8k_earth_nightmap.jpg) |
 
 The 8K Earth files use the same Solar System Scope attribution and CC BY 4.0 license above. No image editing, upscaling, resizing, or recompression was performed. Their original file sizes, dimensions, and SHA-256 checksums are recorded in `manifest.json`; the existing 2K maps remain unchanged.
+
+## Webb display model
+
+The telescope is a custom schematic model based on [NASA’s telescope overview](https://science.nasa.gov/mission/webb/science-overview/science-explainers/telescope-overview/) and [unfolding sequence](https://science.nasa.gov/asset/webb/webbs-unfolding-sequence/). Its reversible, compressed deployment animation is an educational replay, not an in-orbit operation or engineering simulation.

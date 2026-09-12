@@ -42,6 +42,13 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
   }
 
   function updateHud() {
+    const deployment = world.jwst.getState();
+    $('jwst-deploy').textContent = deployment.targetExpanded ? '收拢模型 ↙' : '展开模型 ↗';
+    $('jwst-deploy').setAttribute('aria-pressed', String(deployment.targetExpanded));
+    $('jwst-deployment-status').textContent = deployment.animating
+      ? `${deployment.targetExpanded ? '正在展开' : '正在收拢'} · ${deployment.phase} · 部署动画为压缩示意`
+      : deployment.progress === 1 ? '十八片曲面镜 · 五层薄膜 · 收拢仅作部署演示' : '模型已收拢 · 简化部署回放，非在轨操作';
+
     const { stage, focusBody, activeGalaxyId, activeSystemId } = navigation.getState();
     updateStage(stage);
     if (stage === 'trajectory') {
@@ -49,11 +56,11 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
       $('view-distance').textContent = world.motionTrajectories.getState().referenceFrame === 'solar'
         ? '太阳参照 · 观察行星公转' : '银河参照 · 观察前进与公转';
     } else if (stage === 'local-group') {
-      $('view-caption').textContent = '本星系群';
+      $('view-caption').textContent = world.getData('local-group').cn;
       $('view-distance').textContent = `${world.galaxyDefinitions.length} 座星系 · 点击开始星际航行`;
     } else if (stage === 'galaxy') {
       $('view-caption').textContent = world.getData(activeGalaxyId).cn + '全景';
-      $('view-distance').textContent = '探索天体 · 继续缩小前往星系群';
+      $('view-distance').textContent = '探索天体 · 继续缩小打开星系图鉴';
     } else if (stage === 'solar') {
       const hasPlanets = [...world.bodies.values()].some(body => body.parentStarId === activeSystemId);
       $('view-caption').textContent = activeSystemId === 'solar' ? '太阳系全景'
@@ -63,6 +70,14 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
     } else {
       const body = world.getData(focusBody);
       $('view-caption').textContent = focusBody === 'earth' ? '地球近轨' : body.cn + (focusBody === 'iss' ? '近景' : '观测');
+      if (focusBody === 'jwst') {
+        $('view-distance').textContent = '日地 L2 附近 · 姿态、轨道与比例示意';
+        return;
+      }
+      if (body.kind === 'spacecraft') {
+        $('view-distance').textContent = '星际空间探测器 · 位置与航迹示意';
+        return;
+      }
       if (body.parentGalaxy) {
         $('view-distance').textContent = body.kind === 'black-hole' ? '黑洞阴影与吸积盘 · 艺术示意'
           : body.kind === 'star' ? '恒星表面与日冕示意'
@@ -92,6 +107,8 @@ export function bindNavigationUI({ renderer, camera, world, navigation, assets, 
   $('home').onclick = event => { event.preventDefault(); flyTo('earth'); };
   $('night-view').onclick = () => flyTo('earth', { night: true });
   $('station-view').onclick = () => flyTo('iss');
+  $('jwst-visit').onclick = () => flyTo('jwst');
+  $('jwst-deploy').onclick = () => world.jwst.setDeployment(!world.jwst.getState().targetExpanded, { immediate: reducedMotion });
   $('zoom-in').onclick = () => zoom(.72);
   $('zoom-out').onclick = () => zoom(1.45);
   $('pause').onclick = () => setPaused(!paused);

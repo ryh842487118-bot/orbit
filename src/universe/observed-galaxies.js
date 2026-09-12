@@ -1,0 +1,88 @@
+// Verified facts and distance choices: docs/observed-galaxies-sources.md.
+// These objects are outside the Local Group. parentId is the legacy atlas
+// container ID, not a claim about physical group membership.
+// Positions, visual radii, tilts and profiles are composed for exploration.
+const observedGalaxyDefinitions = [
+  {
+    id: 'whirlpool', kind: 'galaxy', cn: '旋涡星系', en: 'WHIRLPOOL GALAXY · M51', index: 'M51',
+    type: '猎犬座方向 / 螺旋星系', parentId: 'local-group', r: 1,
+    position: [-285000, 145000, 65000], radius: 24000, viewDistance: 62400,
+    shape: 'spiral', tilt: [0.12, 0.4, -0.18], arms: 2, color: 0x92c4ff,
+    armTwist: 1.25, armSpread: 0.12, bulgeFraction: 0.10,
+    diameter: '约 3100 万', stat1: '距地球', unit1: '光年',
+    stat2: '星系编号', value2: 'M51', unit2: '',
+    desc: '猎犬座方向的一座螺旋星系，位于本星系群之外。清晰的旋臂中交织着尘埃、气体和年轻星团；它与邻近星系 NGC 5195 的相互作用，可能帮助塑造了醒目的旋臂。',
+    sourceUrl: 'https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-51/',
+    sourceLabel: 'NASA Hubble · 旋涡星系 M51', modelStatus: 'confirmed',
+    appearance: '蓝白双旋臂、细长尘带与粉色恒星诞生区',
+  },
+  {
+    id: 'bode', kind: 'galaxy', cn: '波德星系', en: 'BODE’S GALAXY · M81', index: 'M81',
+    type: '大熊座方向 / 螺旋星系', parentId: 'local-group', r: 1,
+    position: [-175000, -85000, 305000], radius: 30000, viewDistance: 78000,
+    shape: 'spiral', tilt: [0.38, -0.25, 0.22], arms: 2, color: 0xacc6e5,
+    armTwist: 2.2, armSpread: 0.14, bulgeFraction: 0.27,
+    diameter: '约 1160 万', stat1: '距地球', unit1: '光年',
+    stat2: '所属星座', value2: '大熊座', unit2: '',
+    desc: 'M81 是大熊座方向明亮的螺旋星系，与雪茄星系 M82 相邻。宽阔核球里聚集着较老、偏红的恒星，年轻蓝星勾勒出旋臂，细密尘带一直延伸向中心。',
+    sourceUrl: 'https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-81/',
+    sourceLabel: 'NASA Hubble · 波德星系 M81', modelStatus: 'confirmed',
+    appearance: '暖金宽核球、舒展蓝白旋臂与细密尘带',
+  },
+  {
+    id: 'cigar', kind: 'galaxy', cn: '雪茄星系', en: 'CIGAR GALAXY · M82', index: 'M82',
+    type: '大熊座方向 / 星暴星系', parentId: 'local-group', r: 1,
+    position: [-230000, -45000, 355000], radius: 14000, viewDistance: 39200,
+    // NASA classifies M82 as a spiral galaxy; irregular selects its disturbed
+    // visual distribution, while the cigar profile renders the elongated disk.
+    shape: 'irregular', profile: 'cigar', axisRatio: 0.24,
+    tilt: [0.65, 0.1, 0.28], arms: 0, color: 0xf1bca5,
+    diameter: '约 1200 万', stat1: '距地球', unit1: '光年',
+    stat2: '观测特征', value2: '剧烈恒星形成', unit2: '',
+    desc: '这座侧向展开的螺旋星系因狭长外观得名，正经历剧烈的恒星形成，因而被称为星暴星系。它与 M81 的引力相互作用扰动了气体，年轻恒星驱动的星系风向星盘外扩散。',
+    sourceUrl: 'https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-82/',
+    sourceLabel: 'NASA Hubble · 雪茄星系 M82', modelStatus: 'confirmed',
+    appearance: '狭长暖白星盘、破碎尘带与红色外流光云',
+  },
+  {
+    id: 'sombrero', kind: 'galaxy', cn: '草帽星系', en: 'SOMBRERO GALAXY · M104', index: 'M104',
+    type: '室女座方向 / 近侧视螺旋星系', parentId: 'local-group', r: 1,
+    position: [280000, 110000, 235000], radius: 25000, viewDistance: 70000,
+    shape: 'spiral', profile: 'lenticular', axisRatio: 0.2,
+    tilt: [1.3, 0.12, -0.24], arms: 2, color: 0xe8d4b0,
+    diameter: '约 3000 万', stat1: '距地球', unit1: '光年',
+    stat2: '星系编号', value2: 'M104', unit2: '',
+    desc: '我们几乎从侧面观看这座螺旋星系。明亮隆起的核球与环绕星盘的深色尘带组成草帽般的轮廓；哈勃与韦布在不同波段下，揭示了恒星光芒和尘埃的不同面貌。',
+    sourceUrl: 'https://science.nasa.gov/missions/webb/nasas-webb-rounds-out-picture-of-sombrero-galaxys-disk/',
+    sourceLabel: 'NASA Webb · 草帽星系星盘', modelStatus: 'confirmed',
+    appearance: '乳金隆起核球、薄圆盘与环状深色尘带',
+  },
+  {
+    id: 'centaurus-a', kind: 'galaxy', cn: '半人马座 A', en: 'CENTAURUS A · NGC 5128', index: 'NGC 5128',
+    type: '半人马座方向 / 特殊椭圆星系', parentId: 'local-group', r: 1,
+    position: [35000, -165000, -325000], radius: 28000, viewDistance: 78400,
+    shape: 'elliptical', profile: 'dust-lane', axisRatio: 0.82,
+    tilt: [0.32, -0.22, -0.48], arms: 0, color: 0xe6ccb0,
+    diameter: '约 1200 万', stat1: '距地球', unit1: '光年',
+    stat2: '观测特征', value2: '强射电辐射', unit2: '',
+    desc: '本星系群外的一座特殊椭圆星系，也是著名射电源。宽阔而斑驳的尘带横穿古老恒星的柔光，气体、尘埃与年轻星团的分布为过去的星系合并提供了证据。',
+    sourceUrl: 'https://www.hq.eso.org/public/news/eso1221/',
+    sourceLabel: 'ESO · 半人马座 A 深度观测', modelStatus: 'confirmed',
+    appearance: '暖白椭圆星光、横贯核心的宽尘带与淡红云团',
+  },
+  {
+    id: 'm87', kind: 'galaxy', cn: 'M87 星系', en: 'MESSIER 87 · VIRGO A', index: 'M87',
+    type: '室女座星系团 / 巨椭圆星系', parentId: 'local-group', r: 1,
+    position: [385000, -45000, 55000], radius: 36000, viewDistance: 100800,
+    shape: 'elliptical', profile: 'giant', axisRatio: 0.9,
+    tilt: [-0.2, 0.35, 0.12], arms: 0, color: 0xf0d5ad,
+    diameter: '约 5400 万', stat1: '距地球', unit1: '光年',
+    stat2: '所在星系团', value2: '室女座', unit2: '',
+    desc: '室女座星系团中的巨大椭圆星系，平滑星光外分布着数量众多的球状星团。中央超大质量黑洞周围的活动驱动一束高速喷流，哈勃观测到了它伸向星系外侧的蓝色光芒。',
+    sourceUrl: 'https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/messier-87/',
+    sourceLabel: 'NASA Hubble · M87 与中央喷流', modelStatus: 'confirmed',
+    appearance: '宽阔金白椭圆星晕与明亮核心；本模型未单独绘制喷流',
+  },
+];
+
+export { observedGalaxyDefinitions };

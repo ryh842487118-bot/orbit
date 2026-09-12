@@ -104,12 +104,17 @@ test('deep-space catalog has unique identities, complete parent chains and hones
   }
   const planets = deepSpaceBodyDefinitions.filter(body => body.kind === 'planet');
   assert.deepEqual(planets.filter(body => body.modelStatus === 'confirmed').map(body => body.id).sort(),
-    ['hr8799-b', 'hr8799-c', 'hr8799-d', 'hr8799-e']);
+    ['hr8799-b', 'hr8799-c', 'hr8799-d', 'hr8799-e', 'kepler-186-f', 'kepler-22-b',
+      'proxima-centauri-b', 'trappist-1-e', 'trappist-1-f', 'trappist-1-g']);
   for (const planet of planets) {
     const host = lookup.get(planet.parentStarId);
     assert.equal(host.kind, 'star');
     assert.equal(planet.parentId, host.id);
     assert.equal(planet.parentGalaxy, host.parentGalaxy);
+    assert.ok(planet.orbitRadius > host.r + planet.r, `${planet.id} clears its host`);
+    assert.ok(planet.orbitalPeriod > 0, `${planet.id} has a valid animation period`);
+    near(new THREE.Vector3(...planet.position).distanceTo(new THREE.Vector3(...host.position)),
+      planet.orbitRadius, `${planet.id} starts on its host orbit`);
     if (planet.parentGalaxy !== 'galaxy') {
       assert.equal(planet.modelStatus, 'illustration');
       assert.match(planet.cn, /示意/);
@@ -264,8 +269,8 @@ test('phone galaxy panoramas fit horizontally and keep their galaxy context with
   }
 });
 
-test('close views follow each moving foreign planet without slipping at 1× and 20×', async context => {
-  const planets = deepSpaceBodyDefinitions.filter(body => body.kind === 'planet' && body.parentGalaxy !== 'galaxy');
+test('close views follow each moving deep-space planet without slipping at 1× and 20×', async context => {
+  const planets = deepSpaceBodyDefinitions.filter(body => body.kind === 'planet');
   for (const planet of planets) {
     for (const speed of [1, 20]) {
       await context.test(`${planet.id} at ${speed}×`, t => {
@@ -358,7 +363,7 @@ test('returning from a Milky Way star to the Solar System makes zooming in focus
   }
 });
 
-test('every new giant planet opens on its host-lit hemisphere at opposite orbital phases', async context => {
+test('every deep-space planet opens on its host-lit hemisphere at opposite orbital phases', async context => {
   for (const definition of deepSpaceBodyDefinitions.filter(body => body.kind === 'planet')) {
     await context.test(definition.id, t => {
       const { camera, world, arrive } = fixture(t);

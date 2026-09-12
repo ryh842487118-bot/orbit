@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { createJWST } from '../universe/jwst.js';
+import { createVoyager } from '../universe/voyager.js';
 import { clamp, smooth } from './math.js';
 import { specials } from '../universe/catalog.js';
 import { createPlanets } from '../universe/planets.js';
@@ -27,6 +29,10 @@ export function createWorld(scene, textures, pixels) {
   // Keep the original solar orbits isolated from the independent distant systems.
   world.solarBodies = new Map(world.bodies);
   const simulateSolar = createSimulation({ ...world, bodies: world.solarBodies });
+  world.jwst = createJWST(scene, world.earth);
+  world.bodies.set('jwst', world.jwst.body);
+  world.voyager = createVoyager(scene);
+  world.bodies.set(world.voyager.body.id, world.voyager.body);
   world.motionTrajectories = createMotionTrajectories(scene, textures, pixels);
   world.motionTrajectories.group.position.fromArray(trajectoryAnchor);
   world.nearbyGalaxies = createNearbyGalaxies(scene, pixels, galaxyDefinitions);
@@ -50,6 +56,8 @@ export function createWorld(scene, textures, pixels) {
   };
   world.update = (dt, settings) => {
     simulateSolar(dt, settings);
+    world.jwst.update(dt, settings);
+    world.voyager.update(dt, settings);
     world.deepSpace.update(dt, settings);
   };
   return world;
@@ -60,6 +68,8 @@ export function updateWorldVisibility(world, camera, controls, orbitsVisible, na
   const dist = camera.position.distanceTo(controls.target);
   const trajectory = navigationState.stage === 'trajectory';
   const showSolar = !trajectory || navigationState.flight;
+  world.jwst.body.group.visible = showSolar;
+  world.voyager.updateVisibility(camera, { ...navigationState, orbitsVisible });
   for (const body of world.solarBodies.values()) body.group.visible = showSolar;
   const galFade = smooth(1400, 18000, dist);
   galaxy.material.uniforms.uOpacity.value = galFade * .85 * (1 - smooth(120000, 600000, dist) * .55);

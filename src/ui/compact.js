@@ -51,7 +51,7 @@ export function bindCompactUI() {
     fitDetails();
   }
   controls.addEventListener('click',event=>{
-    if(event.target.closest('.planet-button,[data-view],#overview,.trajectory-back,#night-view,#station-view'))controls.close();
+    if(event.target.closest('.planet-button,[data-view],#overview,.trajectory-back,#night-view,#station-view,#jwst-visit'))controls.close();
   });
   details.addEventListener('click',event=>{if(event.target.closest('button:not(.compact-sheet-header button)'))details.close();});
   for(const dialog of [details,controls]) dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});

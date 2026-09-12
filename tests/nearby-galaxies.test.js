@@ -23,6 +23,15 @@ const definitions = [
   { id: 'm110', shape: 'elliptical', profile: 'diffuse', axisRatio: .55, radius: 6200, position: [16000, 0, 0] },
   { id: 'ngc6822', shape: 'irregular', radius: 4600, position: [-16000, 0, 0] },
 ];
+const observedProfiles = [
+  { id: 'test-cigar', shape: 'irregular', profile: 'cigar', radius: 5000, position: [0, 0, 0] },
+  { id: 'test-lenticular', shape: 'spiral', profile: 'lenticular', radius: 10000, position: [0, 0, 0] },
+  { id: 'test-dust-lane', shape: 'elliptical', profile: 'dust-lane', axisRatio: .83, radius: 9000, position: [0, 0, 0] },
+  { id: 'test-giant', shape: 'elliptical', profile: 'giant', axisRatio: .97, radius: 15000, position: [0, 0, 0] },
+  { id: 'test-tight-spiral', shape: 'spiral', arms: 2, armTwist: 2.6, armSpread: .1,
+    bulgeFraction: .28, radius: 11000, position: [0, 0, 0] },
+];
+const allProfiles = [...definitions, ...observedProfiles];
 
 function fixture(context, catalog = definitions) {
   const scene = new THREE.Scene();
@@ -70,13 +79,60 @@ test('elliptical galaxies have warm spheroids with distinct compact and diffuse 
   assert.ok(irregular.central < .1, 'the irregular dwarf has no dense central bar');
 });
 
+test('observed profiles distinguish a starburst cigar, dusty bulges and a giant spheroid', context => {
+  const { rendering } = fixture(context, observedProfiles);
+  const cigar = fieldStatistics(rendering.galaxies.get('test-cigar'));
+  assert.ok(cigar.axis < .55 && cigar.depth < .2, 'the cigar has a clearly elongated stellar body');
+  const giant = fieldStatistics(rendering.galaxies.get('test-giant'));
+  assert.ok(giant.depth > .9 && giant.axis > .9, 'the giant elliptical is thick and almost round');
+  assert.ok(giant.central > .3 && giant.warm === 1, 'the giant retains a bright old stellar nucleus');
+
+  for (const id of ['test-lenticular', 'test-dust-lane']) {
+    const { points, definition } = rendering.galaxies.get(id);
+    const position = points.geometry.attributes.position.array;
+    const color = points.geometry.attributes.aColor.array;
+    let lane = 0, laneCount = 0, envelope = 0, envelopeCount = 0;
+    let outerDisk = 0, outerThinDisk = 0, elevatedBulge = 0;
+    for (let index = 0; index < position.length; index += 3) {
+      const x = position[index] / definition.radius;
+      const y = position[index + 1] / definition.radius;
+      const z = position[index + 2] / definition.radius;
+      const radius = Math.hypot(x, y, z);
+      const brightness = color[index] + color[index + 1] + color[index + 2];
+      if (radius > .25 && radius < .65) {
+        if (Math.abs(y) < .008) { lane += brightness; laneCount++; }
+        if (Math.abs(y) > .09) { envelope += brightness; envelopeCount++; }
+      }
+      if (radius > .65) {
+        outerDisk++;
+        if (Math.abs(y) < .06) outerThinDisk++;
+      }
+      if (Math.abs(y) > .06 && radius < .55) elevatedBulge++;
+    }
+    assert.ok(laneCount > 50 && envelopeCount > 50, `${id} samples both sides of its dust treatment`);
+    assert.ok(lane / laneCount < envelope / envelopeCount * .16, `${id} has a dim equatorial dust band`);
+    if (id === 'test-lenticular') {
+      assert.ok(outerThinDisk / outerDisk > .99, 'the lenticular keeps its broad outer disk thin');
+      assert.ok(elevatedBulge / (position.length / 3) > .12, 'the lenticular has a substantial raised bulge');
+      assert.equal(points.parent.children.filter(child => child.isSprite).length, 1,
+        'a dusty old disk has no blue spiral-knot accents');
+    }
+  }
+  for (const { points } of rendering.galaxies.values()) {
+    for (const attribute of Object.values(points.geometry.attributes)) {
+      assert.ok(attribute.array.every(Number.isFinite), 'every generated stellar attribute is finite');
+    }
+    assert.ok(Number.isFinite(points.geometry.boundingSphere.radius));
+  }
+});
+
 test('adding galaxies and changing screen size preserve the existing seeded stellar populations', context => {
   const originalWidth = globalThis.innerWidth;
   context.after(() => { globalThis.innerWidth = originalWidth; });
   globalThis.innerWidth = 1440;
-  const full = fixture(context).rendering;
-  const reordered = fixture(context, [...definitions].reverse()).rendering;
-  for (const definition of definitions) {
+  const full = fixture(context, allProfiles).rendering;
+  const reordered = fixture(context, [...allProfiles].reverse()).rendering;
+  for (const definition of allProfiles) {
     const original = full.galaxies.get(definition.id).points.geometry.attributes;
     const other = reordered.galaxies.get(definition.id).points.geometry.attributes;
     for (const name of ['position', 'aColor', 'aSize']) {
@@ -85,8 +141,8 @@ test('adding galaxies and changing screen size preserve the existing seeded stel
     }
   }
   globalThis.innerWidth = 390;
-  const compact = fixture(context).rendering;
-  for (const definition of definitions) {
+  const compact = fixture(context, allProfiles).rendering;
+  for (const definition of allProfiles) {
     const original = full.galaxies.get(definition.id).points.geometry.attributes;
     const reduced = compact.galaxies.get(definition.id).points.geometry.attributes;
     assert.ok(reduced.position.count < original.position.count, `${definition.id} reduces mobile geometry`);
@@ -121,7 +177,7 @@ test('galaxy LOD reuses buffers and preserves the central profile while changing
 });
 
 test('disposing every morphology releases owned resources once and preserves the shared glow texture', context => {
-  const { scene, rendering } = fixture(context);
+  const { scene, rendering } = fixture(context, allProfiles);
   const resources = new Map();
   const texture = rendering.galaxies.get('m32').halo.material.map;
   let textureDisposals = 0;

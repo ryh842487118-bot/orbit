@@ -9,6 +9,10 @@
 
 /* The destination dock follows the current galaxy without expanding the chrome. */
 .dock-title b{font-weight:400;line-height:1.5}
+.destination-search{display:flex;flex:0 0 116px;flex-direction:column;gap:7px;width:116px;padding-right:12px;font-size:9px;color:#9eb4be;letter-spacing:1px}
+.destination-search input{min-width:0;width:100%;height:32px;padding:5px 8px;border:1px solid #aacbde30;border-radius:5px;background:#0a151eb3;color:#d8e9e9;font:inherit;font-size:11px;letter-spacing:0;outline-offset:3px}
+.destination-search input::placeholder{color:#81939f}.destination-search input:focus-visible{outline:1px solid #a3dbd0}
+.destination-empty{padding:10px;color:#9eb4be;font-size:11px;line-height:1.6}
 .planet-list{overflow-x:auto;scrollbar-width:thin;scrollbar-color:#34535e transparent}
 .deep-space-dock .planet-button{min-width:94px;max-width:150px;flex:1 0 94px}
 .destination-name{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -16,12 +20,23 @@
 .destination-art{position:relative;display:block;width:31px;height:31px;flex-shrink:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e4f6f4,var(--body-color) 43%,#182735 80%);box-shadow:0 0 15px #ffffff0a}
 .destination-art.star{background:radial-gradient(circle at 44% 38%,#fff3d9 0,var(--body-color) 60%,#70523f 100%);box-shadow:0 0 14px color-mix(in srgb,var(--body-color),transparent 64%)}
 .destination-art.planet{background:linear-gradient(105deg,transparent 20%,#05101bef 100%),repeating-linear-gradient(-15deg,var(--body-color) 0 3px,color-mix(in srgb,var(--body-color),#d9dfca 45%) 4px 6px,#6f778266 7px 9px)}
+.destination-art.spacecraft{border-radius:0;background:none;box-shadow:none;transform:rotate(-28deg)}
+.destination-art.spacecraft:before{content:'';position:absolute;left:3px;top:3px;width:24px;height:13px;border-radius:50%;border:1px solid #e1e5dd;background:radial-gradient(ellipse at 50% 35%,#8e9a9f,#e9e9dd 72%);box-shadow:0 1px 5px #c6d8e52b}
+.destination-art.spacecraft:after{content:'';position:absolute;left:12px;top:15px;width:8px;height:8px;background:#c8a45e;box-shadow:11px 3px 0 -2px #93a6ac,-11px 3px 0 -2px #93a6ac,0 9px 0 -3px #d6dee0}
+.destination-art.rocky-world{background:radial-gradient(ellipse at 25% 38%,#352d2466 0 12%,transparent 18%),radial-gradient(ellipse at 63% 56%,#302a3577 0 17%,transparent 25%),radial-gradient(circle at 35% 30%,#d4b4a1,var(--body-color) 47%,#111c27 90%)}
+.destination-art.temperate-world{background:radial-gradient(ellipse at 35% 28%,#d9e4dcad 0 6%,transparent 27%),radial-gradient(ellipse at 62% 62%,#827452 0 15%,transparent 33%),radial-gradient(ellipse at 30% 40%,#50675b 0 17%,transparent 30%),radial-gradient(circle at 35% 30%,var(--body-color),#142b3f 70%,#061017)}
+.destination-art.ice-world{background:linear-gradient(110deg,transparent 30%,#0c1d30db),radial-gradient(ellipse at 30% 36%,#edf5ed 0 16%,transparent 45%),radial-gradient(ellipse at 62% 73%,#afcbd0 0 15%,transparent 43%),var(--body-color)}
 .destination-art.galaxy{border-radius:50%;transform:rotate(-28deg) scaleY(.53);background:radial-gradient(ellipse,#ffe2b0 0,#f7dba6 5%,var(--body-color) 17%,#617ca680 36%,transparent 72%);box-shadow:0 0 16px color-mix(in srgb,var(--body-color),transparent 76%)}
 .destination-art.galaxy:after{content:'';position:absolute;inset:5px;border:1px solid color-mix(in srgb,var(--body-color),transparent 42%);border-radius:50%;transform:rotate(25deg);box-shadow:2px -3px 0 #cccfef44}
 .destination-art.irregular{transform:rotate(-22deg) scaleY(.67);border-radius:45% 70% 38% 68%;background:radial-gradient(ellipse at 32% 42%,#e4d6c5 0,transparent 40%),radial-gradient(ellipse at 63% 63%,var(--body-color),transparent 68%)}
 .destination-art.irregular:after{border:0;box-shadow:5px 4px 8px #aac8e844}
 .destination-art.elliptical{transform:rotate(-28deg) scaleY(.76);background:radial-gradient(ellipse,#fff0d8 0,#ead4b3 15%,var(--body-color) 28%,#bca68955 49%,transparent 73%)}
 .destination-art.elliptical:after{display:none}
+.destination-art.galaxy.lenticular{transform:rotate(-12deg) scaleY(.32);background:radial-gradient(ellipse,#fff1d5 0,#dcc497 19%,#67472e 25%,#24221f 32%,#b9a58b77 40%,transparent 75%)}
+.destination-art.galaxy.dust-lane{transform:rotate(-20deg);background:linear-gradient(10deg,transparent 40%,#19161be6 43% 53%,transparent 58%),radial-gradient(ellipse,#fff1d8,#d3b695 27%,#aa907953 52%,transparent 73%)}
+.destination-art.galaxy.cigar{transform:rotate(-30deg) scaleY(.27);background:radial-gradient(ellipse,#fff3d6,var(--body-color) 25%,#a74b4633 60%,transparent 77%)}
+.destination-art.galaxy.giant{transform:none;background:radial-gradient(ellipse,#fff6e8 0,#eed7ad 14%,#aa8f6988 40%,transparent 72%)}
+.destination-art.galaxy.lenticular:after,.destination-art.galaxy.dust-lane:after,.destination-art.galaxy.cigar:after,.destination-art.galaxy.giant:after{display:none}
 .destination-art.black-hole{background:radial-gradient(circle,#010204 0 31%,#ffe6b8 33%,var(--body-color) 37%,#5b302238 46%,transparent 67%);box-shadow:none}
 .destination-art.black-hole:after{content:'';position:absolute;inset:7px -3px;border:2px solid var(--body-color);border-top-color:#fff0cd;border-radius:50%;transform:rotate(-22deg) scaleY(.48);box-shadow:0 0 6px color-mix(in srgb,var(--body-color),transparent 55%)}
 .evidence-row{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0 17px;align-items:center}

@@ -59,6 +59,10 @@ export function createLabels({ camera, controls, world, onSelect }) {
         show = show && body.parentGalaxy === galaxyId && body.parentStarId === systemId
           && (mode === 'earth' || mode === 'solar') && item.id !== selected
           && camera.position.distanceTo(body.position) < Math.max(1400, (body.orbitRadius || 0) * 9);
+      } else if (body?.kind === 'spacecraft') {
+        show = show && solarSystem && (mode === 'earth' || mode === 'solar')
+          && isVisible(body.group) && item.id !== selected
+          && camera.position.distanceTo(body.position) < 1600;
       } else if (item.id === 'solar') show = show && galaxyId === 'galaxy' && mode === 'galaxy' && distance > 2800;
       else if (item.id === 'iss') show = show && satellitesVisible && isVisible(station) && solarSystem && camera.position.distanceTo(station.position) < 11;
       else if (item.id === 'moon') show = show && solarSystem && camera.position.distanceTo(earth.position) < 55 && selected !== 'iss';

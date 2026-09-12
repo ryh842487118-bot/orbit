@@ -21,7 +21,7 @@ function gaussian(random) {
 
 function spiralKnots(definition) {
   const arms = definition.arms || 2;
-  const twist = definition.id === 'andromeda' ? 2.05 : 1.5;
+  const twist = definition.armTwist ?? (definition.id === 'andromeda' ? 2.05 : 1.5);
   return Array.from({ length: 6 }, (_, index) => {
     const r = .34 + (index % 3) * .21;
     const angle = (index % arms) * TAU / arms + Math.log(r / .12) * twist;
@@ -30,6 +30,11 @@ function spiralKnots(definition) {
 }
 
 function cloudKnots(definition) {
+  if (definition.profile === 'cigar') return [
+    { x: -.34, z: .015, size: .07 },
+    { x: .25, z: -.025, size: .055 },
+    { x: .02, z: .015, size: .09 },
+  ];
   if (definition.id === 'lmc') return [
     { x: -.5, z: -.15, size: .11 },
     { x: .48, z: .22, size: .095 },
@@ -61,6 +66,10 @@ function createField(definition, pixels, compact) {
   const elliptical = definition.shape === 'elliptical';
   const compactElliptical = elliptical
     && (definition.profile || (definition.id === 'm32' ? 'compact' : 'diffuse')) === 'compact';
+  const giant = elliptical && definition.profile === 'giant';
+  const dustLane = elliptical && definition.profile === 'dust-lane';
+  const lenticular = spiral && definition.profile === 'lenticular';
+  const cigar = definition.profile === 'cigar';
   const axisRatio = THREE.MathUtils.clamp(definition.axisRatio ?? (compactElliptical ? .76 : .55), .35, 1);
   const andromeda = definition.id === 'andromeda';
   const largeCloud = definition.id === 'lmc';
@@ -73,8 +82,8 @@ function createField(definition, pixels, compact) {
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
-  const knots = elliptical ? [] : spiral ? spiralKnots(definition) : cloudKnots(definition);
-  const warm = new THREE.Color(elliptical ? (compactElliptical ? 0xffe5be : 0xe6d7bd)
+  const knots = elliptical || lenticular ? [] : spiral ? spiralKnots(definition) : cloudKnots(definition);
+  const warm = new THREE.Color(elliptical ? (compactElliptical || giant ? 0xffe5be : 0xe6d7bd)
     : andromeda ? 0xffd9a2 : 0xeacb9e);
   const blue = new THREE.Color(andromeda ? 0x97bdeb : 0x8ac7f5);
   const pink = new THREE.Color(0xed91bd);
@@ -86,23 +95,71 @@ function createField(definition, pixels, compact) {
   // outer arms, and star-forming regions instead of dropping an entire component.
   for (let index = 0; index < count; index++) {
     const population = random();
-    let x, y, z, r, isCore = false, isKnot = false, dust = 1;
-    if (elliptical) {
+    let x, y, z, r, isCore = false, isKnot = false, isOutflow = false, dust = 1;
+    if (cigar) {
+      // An elongated, clumpy starburst with sparse red lobes along its short
+      // axis. These particles suggest the observed outflow, not a flow model.
+      if (population < .085) {
+        const height = .12 + Math.pow(random(), .8) * .7;
+        x = gaussian(random) * (.035 + height * .16);
+        z = (random() < .5 ? -1 : 1) * height;
+        y = gaussian(random) * .025;
+        r = Math.hypot(x, z);
+        isOutflow = true;
+        dust = .44 * (1 - height * .55);
+      } else if (population < .45) {
+        const knot = knots[Math.floor(random() * knots.length)];
+        x = knot.x + gaussian(random) * knot.size;
+        z = knot.z + gaussian(random) * knot.size * .7;
+        y = gaussian(random) * .035;
+        r = Math.hypot(x, z);
+        isKnot = true;
+        isCore = true;
+      } else {
+        x = (random() * 2 - 1) * .94;
+        z = gaussian(random) * (.035 + .065 * (1 - Math.abs(x)));
+        y = gaussian(random) * .045;
+        r = Math.hypot(x, z);
+        dust = Math.abs(z + .025 * Math.sin(x * 12)) < .018 ? .17 : .8;
+      }
+    } else if (lenticular) {
+      // A broad, almost edge-on disk and large old bulge. Dimming the midplane
+      // leaves a visible dust lane without adding an opaque billboard in 3D.
+      isCore = population < (definition.bulgeFraction ?? .52);
+      if (isCore) {
+        r = Math.pow(random(), 1.18) * .55;
+        const azimuth = random() * TAU;
+        const height = random() * 2 - 1;
+        const equatorial = Math.sqrt(1 - height * height);
+        x = Math.cos(azimuth) * equatorial * r;
+        z = Math.sin(azimuth) * equatorial * r;
+        y = height * r * .72;
+        dust = Math.abs(y) < .028 ? .035 : 1;
+      } else {
+        r = .18 + Math.pow(random(), .72) * .82;
+        const angle = random() * TAU;
+        x = Math.cos(angle) * r;
+        z = Math.sin(angle) * r;
+        y = gaussian(random) * .018;
+        dust = Math.abs(y) < .009 ? .08 : .8;
+      }
+    } else if (elliptical) {
       // A spheroid of old stars: M32 has a strong central concentration, whereas
       // diffuse dwarfs have a broad, weakly peaked envelope. No disk or H-II knots.
-      isCore = population < (compactElliptical ? .4 : .035);
+      isCore = population < (compactElliptical ? .4 : giant ? .32 : dustLane ? .23 : .035);
       r = isCore
-        ? Math.pow(random(), 1.55) * (compactElliptical ? .14 : .18)
-        : Math.pow(random(), compactElliptical ? 1.1 : .57) * .96;
+        ? Math.pow(random(), 1.55) * (compactElliptical ? .14 : giant || dustLane ? .23 : .18)
+        : Math.pow(random(), compactElliptical ? 1.1 : giant ? .86 : dustLane ? .8 : .57) * .96;
       const azimuth = random() * TAU;
       const height = random() * 2 - 1;
       const equatorial = Math.sqrt(1 - height * height);
       x = Math.cos(azimuth) * equatorial * r;
       z = Math.sin(azimuth) * equatorial * r * axisRatio;
-      y = height * r * axisRatio * .78;
-      dust = compactElliptical ? .9 : .62;
+      y = height * r * axisRatio * (giant ? 1 : .78);
+      dust = compactElliptical ? .9 : giant ? .94 : dustLane ? .82 : .62;
+      if (dustLane && Math.abs(y) < .043 + Math.abs(x) * .035) dust *= .035;
     } else if (spiral) {
-      const bulgeFraction = andromeda ? .26 : .075;
+      const bulgeFraction = definition.bulgeFraction ?? (andromeda ? .26 : .075);
       if (population < bulgeFraction) {
         r = Math.pow(random(), 1.4) * (andromeda ? .24 : .13);
         const angle = random() * TAU;
@@ -121,8 +178,8 @@ function createField(definition, pixels, compact) {
         r = .1 + Math.pow(random(), .69) * .9;
         const arm = Math.floor(random() * (definition.arms || 2));
         const armAngle = arm * TAU / (definition.arms || 2)
-          + Math.log(r / .12) * (andromeda ? 2.05 : 1.5);
-        const armOffset = gaussian(random) * (andromeda ? .115 : .22);
+          + Math.log(r / .12) * (definition.armTwist ?? (andromeda ? 2.05 : 1.5));
+        const armOffset = gaussian(random) * (definition.armSpread ?? (andromeda ? .115 : .22));
         const inArm = population > (andromeda ? .48 : .39);
         const angle = inArm ? armAngle + armOffset : random() * TAU;
         x = Math.cos(angle) * r + gaussian(random) * .009;
@@ -156,11 +213,12 @@ function createField(definition, pixels, compact) {
     positions[index * 3] = x * radius;
     positions[index * 3 + 1] = y * radius;
     positions[index * 3 + 2] = z * radius;
-    color.copy(elliptical || isCore ? warm : blue);
+    color.copy(elliptical || lenticular || isCore ? warm : blue);
     if (elliptical) color.lerp(white, isCore ? .42 : .18 + r * .28);
     else if (!isCore && !isKnot) color.lerp(warm, Math.max(0, .42 - r * .7));
     if (isKnot && random() < (andromeda ? .22 : magellanic || spiral ? .4 : .12)) color.copy(pink);
     if (random() < .16) color.lerp(white, .75);
+    if (isOutflow) color.setHex(0xff5772);
     const intensity = (.58 + random() * .94) * dust;
     colors[index * 3] = color.r * intensity;
     colors[index * 3 + 1] = color.g * intensity;
@@ -193,24 +251,28 @@ export function createNearbyGalaxies(scene, pixels, definitions) {
     const elliptical = definition.shape === 'elliptical';
     const compactElliptical = elliptical
       && (definition.profile || (definition.id === 'm32' ? 'compact' : 'diffuse')) === 'compact';
+    const giant = elliptical && definition.profile === 'giant';
+    const dusty = definition.profile === 'dust-lane' || definition.profile === 'lenticular';
+    const cigar = definition.profile === 'cigar';
     const andromeda = definition.id === 'andromeda';
     const irregular = !spiral && !elliptical && definition.id !== 'lmc' && definition.id !== 'smc';
     const halo = glow(elliptical ? 0xffe3be : andromeda ? 0xffd6a0 : definition.color || 0xa2c8ef,
-      definition.radius * (elliptical ? (compactElliptical ? .42 : .6) : andromeda ? .56 : .25), 0);
+      definition.radius * (elliptical ? (compactElliptical ? .42 : giant ? .68 : .6)
+        : andromeda ? .56 : cigar ? .18 : .25), 0);
     halo.name = `${definition.id}-core-glow`;
     const accents = [halo];
-    const accentOpacities = [elliptical ? (compactElliptical ? .25 : .035)
-      : andromeda ? .31 : spiral ? .14 : irregular ? .025 : .09];
+    const accentOpacities = [dusty ? .015 : elliptical ? (compactElliptical ? .25 : giant ? .22 : .035)
+      : andromeda ? .31 : spiral ? .14 : cigar ? .065 : irregular ? .025 : .09];
     group.add(points, halo);
     // Only a couple of low-opacity glows: the stars carry the galaxy's shape.
     if (!andromeda) {
       for (const knot of knots.slice(0, 2)) {
-        const accent = glow(spiral ? 0xc897d9 : 0x8eb8ed,
-          definition.radius * (spiral ? .14 : irregular ? .2 : .32), 0);
+        const accent = glow(cigar ? 0xff9baf : spiral ? 0xc897d9 : 0x8eb8ed,
+          definition.radius * (spiral ? .14 : cigar ? .15 : irregular ? .2 : .32), 0);
         accent.position.set(knot.x * definition.radius, 0, knot.z * definition.radius);
         group.add(accent);
         accents.push(accent);
-        accentOpacities.push(spiral ? .1 : irregular ? .045 : .075);
+        accentOpacities.push(spiral ? .1 : cigar ? .07 : irregular ? .045 : .075);
       }
     }
     scene.add(group);
