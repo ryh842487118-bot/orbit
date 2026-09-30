@@ -125,3 +125,18 @@ Run `npm install`, `npm test`, and `npm run build` to install, validate, and reb
 Solar System textures come from [Solar System Scope](https://www.solarsystemscope.com/textures/) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) and are displayed with real-time lighting and shaders. The additional deep-space bodies use procedural artistic surfaces. See `assets/CREDITS.md` for the full attribution list. Three.js is distributed under the MIT License; see `assets/THREE-LICENSE.txt`.
 
 Small windows automatically collapse the default interface into Body Details and Explore & Controls sheets. Destination selection dismisses the sheet; larger viewports restore the full layout.
+
+## License and Attribution
+
+Except for third-party materials identified separately, the project's original code and documentation are licensed under the [Apache License 2.0](LICENSE), which permits commercial use, modification, copying, and distribution.
+
+When distributing this project or derivative works, comply with Section 4 of the license, including:
+
+- Give recipients a copy of the license.
+- Add prominent notices to modified files stating that you changed them.
+- Retain applicable copyright, patent, trademark, and attribution notices in the source form of distributed derivative works.
+- Preserve the applicable attribution notices in [NOTICE](NOTICE) when distributing derivative works, including the project name **ORBIT** and original repository URL **https://github.com/ryh842487118-bot/orbit**. Under Section 4(d), these notices may appear in an accompanying NOTICE file, source code or documentation, or a display where third-party notices normally appear.
+
+Third-party libraries, textures, and external data remain subject to their own licenses or terms of use and are not relicensed by this project's adoption of Apache-2.0. See [assets/CREDITS.md](assets/CREDITS.md) for the Solar System textures' CC BY 4.0 attribution requirements, [assets/THREE-LICENSE.txt](assets/THREE-LICENSE.txt) for the Three.js MIT License, and [docs/data-sources.md](docs/data-sources.md) for external data information. Commercial use must also comply with those applicable terms.
+
+This is a summary for convenience; [LICENSE](LICENSE) and applicable third-party terms govern the full rights and obligations. [NOTICE](NOTICE) provides attribution information only and does not add to or modify the Apache-2.0 license conditions.

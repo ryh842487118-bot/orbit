@@ -132,3 +132,18 @@ ORBIT.getState();          // 包含 activeGalaxyId、activeSystemId 和当前�
 小窗口会自动收起默认控件：底部「天体详情」展开介绍与数据，「探索与控制」展开导航、星体列表、图层与播放工具；选择目的地后自动收起，宽屏恢复完整布局。
 
 已在浏览器中验证 200×200、240×240、320×320 CSS 像素的方形窗口。画布自动跟随窗口比例，极小窗口的设置与控件通过滚动访问。
+
+## 许可证与来源署名
+
+除另有说明的第三方内容外，本项目原创代码和文档采用 [Apache License 2.0](LICENSE)，允许商业使用、修改、复制和分发。
+
+分发本项目或其衍生作品时，须遵守许可证第 4 条，包括：
+
+- 向接收者提供许可证副本。
+- 在修改过的文件中显著注明已作修改。
+- 在分发的衍生作品源码中保留仍适用的版权、专利、商标和署名声明。
+- 在分发的衍生作品中保留 [NOTICE](NOTICE) 中仍适用的来源署名，包括项目名称 **ORBIT** 和原始仓库地址 **https://github.com/ryh842487118-bot/orbit**。按第 4(d) 条，可将这些声明放在随附的 NOTICE 文件、源码或文档中，或放在通常显示第三方声明的界面中。
+
+第三方库、纹理和外部数据仍受各自的许可证或使用条款约束，不因本项目采用 Apache-2.0 而重新授权。太阳系纹理的 CC BY 4.0 署名要求见 [assets/CREDITS.md](assets/CREDITS.md)，Three.js 的 MIT 许可证见 [assets/THREE-LICENSE.txt](assets/THREE-LICENSE.txt)，外部数据说明见 [docs/data-sources.md](docs/data-sources.md)。商业使用时也须遵守这些适用条款。
+
+以上为便于理解的摘要；完整权利和义务以 [LICENSE](LICENSE) 及适用的第三方条款为准。[NOTICE](NOTICE) 仅提供来源信息，不添加或修改 Apache-2.0 的许可条件。
